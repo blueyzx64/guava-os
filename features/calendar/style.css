@@ -1,0 +1,300 @@
+/* feature: calendar (features/calendar)
+   The notification dot and Do Not Disturb pieces, the notification list moved into Quick
+   Settings (notificationList.js) and the calendar card. */
+
+.notification-badge {
+  icon-size: 10px;
+  padding: 0px;
+}
+
+.guava-dnd-indicator {
+  margin-left: 6px;
+  opacity: 0.85;
+}
+
+.guava-notifications {
+  margin: 0;
+  padding: 0;
+  border-radius: 12px;
+  max-width: 360px; /* Default quicksettings width */
+  max-height: 600px;
+  box-sizing: border-box;
+}
+
+.guava-notifications .message-list-clear-button {
+  margin: 4px 8px;
+  padding: 4px 16px;
+  border-radius: 999px;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease,
+              box-shadow 150ms ease;
+  font-size: 0.9em;
+}
+
+.guava-notifications .message-list-clear-button:focus {
+  box-shadow: inset 0 0 0 2px alpha(-st-focus-ring-color, 0.45);
+}
+
+.guava-notifications .message-list-clear-button.disabled,
+.guava-notifications .message-list-clear-button.disabled:hover,
+.guava-notifications .message-list-clear-button.disabled:active {
+  opacity: -st-disabled-opacity;
+  box-shadow: none;
+}
+
+/* Notification expand buttons and close button. Gated like the rest: they restyle stock
+   messages, so they only apply with Popup Menu Styling or inside Guava's own list. */
+.guava-popup-styled .message .message-expand-button,
+.guava-popup-styled .message .message-close-button,
+.guava-popup-styled .message-group-header .message-collapse-button,
+.guava-notifications .message .message-expand-button,
+.guava-notifications .message .message-close-button,
+.guava-notifications .message-group-header .message-collapse-button {
+  -st-icon-style: symbolic;
+  min-width: 16px;
+  min-height: 16px;
+  padding: 4px;
+  border-radius: 999px;
+  box-sizing: border-box;
+}
+
+/* Notification and grouped notifications titles - make normal size */
+.guava-popup-styled .message-title,
+.guava-popup-styled .message-group-title,
+.guava-notifications .message-title,
+.guava-notifications .message-group-title {
+  font-size: 1em;
+  font-weight: normal;
+}
+
+.guava-notifications .message-content,
+.guava-notifications .message-body {
+  font-size: 0.95em;
+}
+
+/* Hide scrollbar and remove its reserved space */
+.guava-notification-scroll StScrollBar {
+    min-width: 0 !important;
+}
+
+/* Target scroll content container */
+.guava-notification-scroll StScrollView > * {
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+}
+
+.guava-dnd-button {
+  min-width: 24px;
+  min-height: 24px;
+  width: 24px;
+  height: 24px;
+  padding: 8px;
+  border-radius: 999px !important;
+  border-width: 0;
+  transition: background-color 150ms ease;
+}
+
+.guava-dnd-button:checked {
+  background-color: -st-accent-color;
+}
+
+
+/* feature: calendar (index.js): the date menu as a macOS-like calendar card
+   Scoped by .guava-datemenu on the date menu box while the feature is on. A clean month
+   grid, a two-line header, today in an accent circle, events as a plain list. World clocks
+   and weather are hidden by the feature. Colours under .guava-datemenu-calm (off under high
+   contrast) and .guava-datemenu-light. Type: 14px titles, 12px secondary text minimum. */
+
+.guava-datemenu #calendarArea {
+    padding: 8px;
+}
+
+.guava-datemenu .datemenu-calendar-column {
+    spacing: 6px;
+}
+
+.guava-datemenu .datemenu-today-button {
+    padding: 4px 8px 2px 8px;
+    border-radius: 12px;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.guava-datemenu .datemenu-today-button .day-label {
+    font-size: 9pt;
+    font-weight: 600;
+}
+
+.guava-datemenu .datemenu-today-button .date-label {
+    font-size: 13pt;
+    font-weight: 700;
+}
+
+.guava-datemenu .calendar {
+    padding: 0;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.guava-datemenu .calendar .calendar-month-label {
+    font-size: 10.5pt;
+    font-weight: 600;
+    padding: 4px 0;
+    background-color: transparent;
+}
+
+.guava-datemenu .calendar .pager-button {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background-color: transparent;
+}
+
+.guava-datemenu .calendar .calendar-change-month-back StIcon,
+.guava-datemenu .calendar .calendar-change-month-forward StIcon {
+    icon-size: 14px;
+}
+
+.guava-datemenu .calendar .calendar-day-heading {
+    font-size: 9pt;
+    font-weight: 600;
+    margin: 4px 2px 2px 2px;
+    padding: 0;
+    background-color: transparent;
+}
+
+.guava-datemenu .calendar .calendar-day {
+    width: 34px;
+    height: 34px;
+    margin: 1px;
+    font-size: 10.5pt;
+    font-weight: normal;
+    border-radius: 999px;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.guava-datemenu .events-button {
+    padding: 10px 12px;
+    border-radius: 12px;
+    border-width: 0;
+    box-shadow: none;
+}
+
+.guava-datemenu .events-button .events-title {
+    font-size: 9pt;
+    font-weight: 600;
+    padding-bottom: 4px;
+}
+
+.guava-datemenu .events-button .event-summary {
+    font-size: 10.5pt;
+    font-weight: 600;
+}
+
+.guava-datemenu .events-button .event-time,
+.guava-datemenu .events-button .event-placeholder {
+    font-size: 9pt;
+    font-style: normal;
+}
+
+/* The notification list (only when "Keep notification panel" is on): quiet cards */
+.guava-datemenu .message {
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+/* dark */
+.guava-datemenu-calm .datemenu-today-button .day-label,
+.guava-datemenu-calm .calendar .calendar-day-heading,
+.guava-datemenu-calm .events-button .events-title,
+.guava-datemenu-calm .events-button .event-time,
+.guava-datemenu-calm .events-button .event-placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.guava-datemenu-calm .datemenu-today-button .date-label,
+.guava-datemenu-calm .calendar .calendar-month-label,
+.guava-datemenu-calm .calendar .calendar-day {
+    color: #ffffff;
+}
+
+.guava-datemenu-calm .calendar .calendar-day.calendar-weekend {
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.guava-datemenu-calm .calendar .calendar-day.calendar-other-month {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.guava-datemenu-calm .calendar .calendar-day:hover,
+.guava-datemenu-calm .calendar .pager-button:hover,
+.guava-datemenu-calm .datemenu-today-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.guava-datemenu-calm .calendar .calendar-day:selected {
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.guava-datemenu-calm .events-button,
+.guava-datemenu-calm .message {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.guava-datemenu-calm .events-button:hover {
+    background-color: rgba(255, 255, 255, 0.11);
+}
+
+/* light */
+.guava-datemenu-calm.guava-datemenu-light .datemenu-today-button .day-label,
+.guava-datemenu-calm.guava-datemenu-light .calendar .calendar-day-heading,
+.guava-datemenu-calm.guava-datemenu-light .events-button .events-title,
+.guava-datemenu-calm.guava-datemenu-light .events-button .event-time,
+.guava-datemenu-calm.guava-datemenu-light .events-button .event-placeholder {
+    color: rgba(0, 0, 0, 0.55);
+}
+
+.guava-datemenu-calm.guava-datemenu-light .datemenu-today-button .date-label,
+.guava-datemenu-calm.guava-datemenu-light .calendar .calendar-month-label,
+.guava-datemenu-calm.guava-datemenu-light .calendar .calendar-day {
+    color: #1d1d1f;
+}
+
+.guava-datemenu-calm.guava-datemenu-light .calendar .calendar-day.calendar-weekend {
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.guava-datemenu-calm.guava-datemenu-light .calendar .calendar-day.calendar-other-month {
+    color: rgba(0, 0, 0, 0.28);
+}
+
+.guava-datemenu-calm.guava-datemenu-light .calendar .calendar-day:hover,
+.guava-datemenu-calm.guava-datemenu-light .calendar .pager-button:hover,
+.guava-datemenu-calm.guava-datemenu-light .datemenu-today-button:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+.guava-datemenu-calm.guava-datemenu-light .calendar .calendar-day:selected {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.guava-datemenu-calm.guava-datemenu-light .events-button,
+.guava-datemenu-calm.guava-datemenu-light .message {
+    background-color: rgba(0, 0, 0, 0.045);
+}
+
+.guava-datemenu-calm.guava-datemenu-light .events-button:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Today: the accent circle, whatever the style, hover or selection */
+.guava-datemenu .calendar .calendar-day.calendar-today,
+.guava-datemenu .calendar .calendar-day.calendar-today:hover,
+.guava-datemenu .calendar .calendar-day.calendar-today:selected,
+.guava-datemenu-calm.guava-datemenu-light .calendar .calendar-day.calendar-today,
+.guava-datemenu-calm.guava-datemenu-light .calendar .calendar-day.calendar-today:hover,
+.guava-datemenu-calm.guava-datemenu-light .calendar .calendar-day.calendar-today:selected {
+    font-weight: 700;
+    color: -st-accent-fg-color;
+    background-color: -st-accent-color;
+}

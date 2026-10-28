@@ -1,0 +1,83 @@
+/* feature: stage-manager */
+/* The strip has no panel under the entries (macOS Sequoia): the floor is an invisible hover
+   and drop area. Only a dragged stage window lights it up. */
+.guava-stage-strip {
+    border-radius: 20px;
+    background-color: transparent;
+}
+
+/* An entry is only a hit box: the window clone is its look */
+.guava-stage-card {
+    padding: 0;
+    background-color: transparent;
+    border: none;
+}
+
+.guava-stage-focus {
+    border-radius: 10px;
+    border: 2px solid -st-accent-color;
+    background-color: transparent;
+}
+
+.guava-stage-icon-tile {
+    border-radius: 10px;
+    background-color: rgba(40, 40, 44, 0.55);
+}
+
+.guava-stage-badge {
+    background-color: transparent;
+    padding: 0;
+}
+
+.guava-stage-badge-icon {
+    icon-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+/* A stage window dragged over the strip: the floor lights up to take it */
+.guava-stage-strip:drop {
+    background-color: rgba(255, 255, 255, 0.10);
+    border: 2px solid -st-accent-color;
+}
+
+/* Hover peek: the app names under the lifted window */
+.guava-stage-label {
+    background-color: transparent;
+}
+
+.guava-stage-label-text {
+    font-size: 9pt;
+    font-weight: 600;
+    color: #fff;
+    background-color: rgba(28, 28, 30, 0.72);
+    border-radius: 999px;
+    padding: 3px 10px;
+}
+
+/* A dragged entry over another's card: the card and the two halves of the stage light up */
+.guava-stage-card:drop {
+    background-color: rgba(255, 255, 255, 0.14);
+    border: 2px solid -st-accent-color;
+    border-radius: 18px;
+}
+
+.guava-stage-side {
+    border-radius: 22px;
+    background-color: rgba(255, 255, 255, 0.16);
+    border: 3px solid -st-accent-color;
+}
+
+/* While an entry is dragged, the stage is a drop target: "Add to Stage" */
+.guava-stage-drop {
+    border-radius: 18px;
+    background-color: rgba(255, 255, 255, 0.10);
+    border: 2px solid -st-accent-color;
+}
+
+.guava-stage-drop-label {
+    font-size: 11pt;
+    font-weight: 600;
+    color: #fff;
+    background-color: rgba(28, 28, 30, 0.7);
+    border-radius: 999px;
+    padding: 6px 14px;
+}

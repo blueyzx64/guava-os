@@ -1,0 +1,41 @@
+/* feature: menu-bar-items */
+/* Status items, pinned controls and the overflow chevron: plain icons like the rest of the
+   macOS menu bar (the bar itself is styled by menu-bar). */
+
+.guava-menubar-pinned-box {
+    spacing: 4px;
+}
+
+.guava-menubar-pinned-label {
+    font-size: 10pt;
+    font-weight: 500;
+    font-feature-settings: "tnum";
+}
+
+.guava-menubar-chevron .system-status-icon {
+    icon-size: 12px;
+}
+
+.guava-menubar-items-info {
+    font-size: 9.5pt;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.guava-menubar-pinned-slider {
+    spacing: 8px;
+    min-width: 220px;
+}
+
+.guava-menubar-pinned-media-box {
+    spacing: 18px;
+}
+
+.guava-menubar-pinned-media-button {
+    padding: 6px;
+    border-radius: 999px;
+}
+
+.guava-menubar-pinned-media-button:hover,
+.guava-menubar-pinned-media-button:focus {
+    background-color: rgba(255, 255, 255, 0.12);
+}

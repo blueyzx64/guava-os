@@ -1,0 +1,696 @@
+/* feature: notch */
+.guava-notch {
+    background-color: #000000;
+    color: #ffffff;
+    /* No box-shadow: the island clips to its allocation, so a shadow shows only as a
+       dark square in the corners around the rounded bottom. */
+}
+
+.guava-notch-placeholder {
+    background: transparent;
+}
+
+/* The concave fillets beside the island's top corners; view.js paints them with Cairo in the
+   island's own background colour, so the actor itself draws nothing. */
+.guava-notch-ear {
+    background: transparent;
+}
+
+/* Type scale (macOS-like, never below 12px): 15 semibold media title, 14 semibold primary,
+   13 secondary, 12 captions and times. Secondary text is white at 60 %. Spacing is a 4px grid;
+   the dashboard grid itself (paddings, column widths) is in dashboardModel.js. */
+
+/* ---- pills: idle, live activity, confirmation, compact notification ---- */
+.guava-notch-row {
+    spacing: 10px;
+    padding: 0 12px;
+}
+
+.guava-notch-pill-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.guava-notch-value {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    min-width: 24px;
+    text-align: right;
+    font-feature-settings: "tnum";
+}
+
+.guava-notch-badge {
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    padding: 1px 7px;
+}
+
+.guava-notch-icon {
+    color: #ffffff;
+}
+
+/* cover art: St clips a background image to the radius */
+.guava-notch-artwork {
+    background-color: transparent;
+}
+
+.guava-notch-artwork-small {
+    border-radius: 6px;
+}
+
+.guava-notch-artwork-large {
+    border-radius: 12px;
+}
+
+.guava-notch-artwork-empty {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* waveform at the right of the music pill */
+.guava-notch-bars {
+    spacing: 3px;
+    min-height: 16px;
+}
+
+.guava-notch-bar {
+    width: 3px;
+    border-radius: 2px;
+    background-color: -st-accent-color;
+}
+
+/* the waveform scales its bars (transforms only); 16px is their full height */
+.guava-notch-bars {
+    height: 16px;
+}
+
+.guava-notch-bars-paused .guava-notch-bar {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* volume / brightness bar */
+.guava-notch-track {
+    height: 6px;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+.guava-notch-fill {
+    border-radius: 3px;
+    background-color: #ffffff;
+}
+
+/* ---- notification card: 20px sides, inner radii concentric with the 32px outer ---- */
+.guava-notch-card {
+    padding: 12px 20px 16px 20px;
+    spacing: 4px;
+}
+
+.guava-notch-card-header {
+    spacing: 8px;
+    height: 26px;
+}
+
+.guava-notch-card-app {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.guava-notch-card-time {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    font-feature-settings: "tnum";
+}
+
+.guava-notch-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.guava-notch-card-body {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.guava-notch-close {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.guava-notch-close:hover,
+.guava-notch-close:focus {
+    background-color: rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+}
+
+.guava-notch-actions {
+    spacing: 8px;
+    padding-top: 6px;
+}
+
+.guava-notch-action {
+    height: 28px;
+    padding: 0 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.14);
+    text-align: center;
+}
+
+.guava-notch-action:hover,
+.guava-notch-action:focus {
+    background-color: rgba(255, 255, 255, 0.26);
+}
+
+/* ---- dashboard ---- */
+/* header band, level with the top bar */
+.guava-notch-dash-header {
+    height: 32px;
+    padding: 0 20px 0 14px;
+    spacing: 8px;
+}
+
+.guava-notch-dash-date {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    font-feature-settings: "tnum";
+}
+
+.guava-notch-col {
+    spacing: 10px;
+}
+
+/* media hero */
+.guava-notch-media-top {
+    spacing: 14px;
+    height: 68px;
+}
+
+.guava-notch-media-text {
+    spacing: 2px;
+}
+
+.guava-notch-media-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.guava-notch-media-artist {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.guava-notch-media-app {
+    margin-top: 2px;
+}
+
+.guava-notch-scrub {
+    spacing: 10px;
+    height: 16px;
+}
+
+.guava-notch-scrub-time {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    font-feature-settings: "tnum";
+    min-width: 36px;
+}
+
+.guava-notch-scrub-remaining {
+    text-align: right;
+}
+
+/* the bar's click target: taller than the 4px bar, transparent */
+.guava-notch-scrub-hit {
+    padding: 6px 0;
+}
+
+.guava-notch-scrub-track {
+    height: 4px;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.guava-notch-scrub-fill {
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.85);
+}
+
+.guava-notch-controls {
+    spacing: 28px;
+}
+
+/* white glyphs, no discs; a soft circle only on hover */
+.guava-notch-control {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    color: #ffffff;
+}
+
+.guava-notch-control:hover,
+.guava-notch-control:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.guava-notch-control:active {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+/* clock, when nothing is playing */
+.guava-notch-clock {
+    spacing: 2px;
+}
+
+.guava-notch-clock-row {
+    spacing: 4px;
+}
+
+.guava-notch-clock-time {
+    font-size: 40px;
+    font-weight: 600;
+    color: #ffffff;
+    font-feature-settings: "tnum";
+}
+
+.guava-notch-clock-suffix {
+    font-size: 15px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    padding-bottom: 7px;
+}
+
+.guava-notch-clock-date {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* notification list: 44px rows, icon 20 */
+.guava-notch-list {
+    spacing: 0;
+}
+
+.guava-notch-recent {
+    height: 44px;
+    padding: 0 8px;
+    border-radius: 12px;
+}
+
+.guava-notch-recent:hover,
+.guava-notch-recent:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.guava-notch-recent-row {
+    spacing: 10px;
+}
+
+.guava-notch-recent-line {
+    spacing: 8px;
+}
+
+.guava-notch-recent-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.guava-notch-recent-time,
+.guava-notch-recent-sub {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.guava-notch-recent-time {
+    font-feature-settings: "tnum";
+}
+
+.guava-notch-more {
+    height: 24px;
+    padding: 0 8px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.guava-notch-more:hover,
+.guava-notch-more:focus {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.guava-notch-empty-text {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* level with the middle of the large clock and of the cover art */
+.guava-notch-list-empty {
+    padding-top: 14px;
+}
+
+/* clipboard column */
+.guava-notch-caption {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 0 8px;
+}
+
+.guava-notch-clip {
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 10px;
+}
+
+.guava-notch-clip:hover,
+.guava-notch-clip:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.guava-notch-clip-text {
+    font-size: 14px;
+    color: #ffffff;
+}
+
+/* ---- v3: tints (Apple's dark-mode system colours) ---- */
+.guava-notch-glyph { color: #ffffff; }
+.guava-notch-tint-accent { color: -st-accent-color; }
+.guava-notch-tint-orange { color: #ff9f0a; }
+.guava-notch-tint-red { color: #ff453a; }
+.guava-notch-tint-green { color: #30d158; }
+.guava-notch-tint-blue { color: #0a84ff; }
+
+/* the code itself, in tabular figures with a little tracking */
+.guava-notch-code {
+    font-feature-settings: "tnum";
+    letter-spacing: 1px;
+}
+
+/* one action inside the pill: "Copy" for a code, a stop square for a recording */
+.guava-notch-pill-action {
+    height: 22px;
+    min-width: 22px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.guava-notch-pill-action:hover,
+.guava-notch-pill-action:focus {
+    background-color: rgba(255, 255, 255, 0.28);
+}
+
+.guava-notch-pill-action-stop {
+    padding: 0;
+    width: 22px;
+    color: #ff453a;
+    background-color: rgba(255, 69, 58, 0.2);
+}
+
+.guava-notch-mini-track {
+    height: 4px;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.guava-notch-mini-fill {
+    border-radius: 2px;
+    background-color: #0a84ff;
+}
+
+/* ---- tabs in the header band ---- */
+.guava-notch-tabs {
+    spacing: 2px;
+}
+
+.guava-notch-tab {
+    height: 24px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.guava-notch-tab:hover,
+.guava-notch-tab:focus {
+    color: #ffffff;
+}
+
+.guava-notch-tab:checked {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.14);
+}
+
+.guava-notch-tab-body {
+    padding: 4px 20px 20px 20px;
+    spacing: 20px;
+}
+
+/* ---- Now: activity rows share the notification rows' 44px grid ---- */
+.guava-notch-activity-row {
+    height: 44px;
+    padding: 0 8px;
+    spacing: 10px;
+}
+
+.guava-notch-activity-disc {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.guava-notch-disc-orange { background-color: rgba(255, 159, 10, 0.18); }
+.guava-notch-disc-red { background-color: rgba(255, 69, 58, 0.18); }
+.guava-notch-disc-green { background-color: rgba(48, 209, 88, 0.18); }
+.guava-notch-disc-blue { background-color: rgba(10, 132, 255, 0.2); }
+
+.guava-notch-row-action {
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.guava-notch-row-action:hover,
+.guava-notch-row-action:focus {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+/* ---- Tray: the file shelf ---- */
+.guava-notch-shelf {
+    spacing: 8px;
+    border-radius: 16px;
+}
+
+/* a file drag over the notch: the shelf becomes a dashed drop area */
+.guava-notch-shelf-dropping {
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 2px dashed rgba(255, 255, 255, 0.35);
+    padding: 4px 8px;
+}
+
+.guava-notch-shelf-bar {
+    height: 26px;
+    spacing: 6px;
+}
+
+.guava-notch-shelf-selected {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.guava-notch-chip {
+    height: 24px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.guava-notch-chip:hover,
+.guava-notch-chip:focus {
+    background-color: rgba(255, 255, 255, 0.24);
+}
+
+.guava-notch-button-box {
+    spacing: 6px;
+}
+
+.guava-notch-shelf-tile {
+    height: 48px;
+    padding: 4px;
+    border-radius: 12px;
+}
+
+.guava-notch-shelf-tile:hover,
+.guava-notch-shelf-tile:focus {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.guava-notch-shelf-tile-selected {
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.guava-notch-shelf-missing {
+    opacity: 0.45;
+}
+
+.guava-notch-shelf-name {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.guava-notch-shelf-empty {
+    spacing: 8px;
+    padding-top: 10px;
+}
+
+.guava-notch-shelf-empty-icon {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.guava-notch-shelf-hint {
+    font-size: 13px;
+}
+
+/* ---- Widgets ---- */
+.guava-notch-widget-button {
+    border-radius: 18px;
+}
+
+.guava-notch-widget {
+    padding: 10px 12px;
+    spacing: 6px;
+    border-radius: 18px;
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.guava-notch-widget-button:hover .guava-notch-widget,
+.guava-notch-widget-button:focus .guava-notch-widget {
+    background-color: rgba(255, 255, 255, 0.11);
+}
+
+.guava-notch-cal-weekday {
+    font-size: 12px;
+    font-weight: 700;
+    color: #ff453a;
+}
+
+.guava-notch-cal-day {
+    font-size: 22px;
+    font-weight: 600;
+    color: #ffffff;
+    font-feature-settings: "tnum";
+}
+
+.guava-notch-cal-event {
+    spacing: 8px;
+}
+
+.guava-notch-cal-bar {
+    width: 3px;
+    border-radius: 2px;
+    background-color: -st-accent-color;
+}
+
+.guava-notch-cal-summary {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.guava-notch-cal-time,
+.guava-notch-cal-none,
+.guava-notch-wx-summary {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.guava-notch-wx-place {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.guava-notch-wx-line {
+    spacing: 8px;
+}
+
+.guava-notch-wx-temp {
+    font-size: 26px;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.guava-notch-wx-off {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.guava-notch-toggles {
+    spacing: 8px;
+}
+
+.guava-notch-toggle-box {
+    spacing: 4px;
+}
+
+.guava-notch-toggle {
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.14);
+}
+
+.guava-notch-toggle:hover,
+.guava-notch-toggle:focus {
+    background-color: rgba(255, 255, 255, 0.24);
+}
+
+.guava-notch-toggle:checked {
+    color: -st-accent-fg-color;
+    background-color: -st-accent-color;
+}
+
+.guava-notch-toggle-caption {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.guava-notch-presets {
+    spacing: 4px;
+    padding-top: 2px;
+}
+
+.guava-notch-preset {
+    padding: 0 8px;
+    height: 22px;
+    font-size: 12px;
+}

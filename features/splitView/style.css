@@ -1,0 +1,26 @@
+/* feature: split-view */
+/* Full screen Split View: the picker on the free half (the Space's other windows as live
+   thumbnails), dimmed like macOS's Mission Control-style spread. */
+.guava-split-picker {
+    background-color: rgba(20, 22, 30, 0.72);
+}
+
+.guava-split-thumb {
+    padding: 0;
+    border-radius: 12px;
+    background-color: transparent;
+    border: 2px solid transparent;
+}
+
+.guava-split-thumb:hover,
+.guava-split-thumb:focus {
+    border-color: -st-accent-color;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.guava-split-thumb-label {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 10pt;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}

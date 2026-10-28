@@ -1,0 +1,248 @@
+/* feature: spotlight
+   Only guava- classes. ModalSurface (lib/modalSurface.js) draws no blur: the frame itself is
+   the backing, a rounded translucent fill with a 1px rim and a soft shadow, dense enough
+   that text stays legible over a white window. Quick Paste shares the .guava-modal* rules.
+   Spotlight frame: radius 24 (inline from ModalSurface), padding 8, rows radius 10. The frame
+   is 680px wide (set by ModalSurface). */
+.guava-spotlight {
+  padding: 8px;
+  spacing: 0;
+}
+
+.guava-spotlight-bar {
+  spacing: 12px;
+  padding: 0 14px;
+  height: 56px;
+}
+
+.guava-spotlight-glass-icon {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.guava-modal-light .guava-spotlight-glass-icon {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.guava-spotlight-entry,
+.guava-spotlight-entry:focus,
+.guava-spotlight-entry:hover {
+  font-size: 22px;
+  min-height: 56px;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+  color: #ffffff;
+  caret-color: -st-accent-color;
+  selection-background-color: -st-accent-color;
+  selected-color: -st-accent-fg-color;
+  hint-color: rgba(255, 255, 255, 0.45);
+}
+
+.guava-modal-light .guava-spotlight-entry,
+.guava-modal-light .guava-spotlight-entry:focus,
+.guava-modal-light .guava-spotlight-entry:hover {
+  color: #1d1d1f;
+  hint-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Hairline between the field and the results, as on macOS */
+.guava-spotlight-scroll {
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  padding-top: 4px;
+  margin: 0 6px;
+}
+
+.guava-modal-light .guava-spotlight-scroll {
+  border-top: 1px solid rgba(0, 0, 0, 0.10);
+}
+
+.guava-spotlight-list {
+  spacing: 1px;
+  padding: 0 0 2px 0;
+}
+
+.guava-spotlight-section {
+  font-size: 11px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.55);
+  padding: 8px 10px 3px 10px;
+}
+
+.guava-modal-light .guava-spotlight-section {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.guava-spotlight-row {
+  border-radius: 10px;
+  padding: 6px 8px;
+  spacing: 12px;
+}
+
+.guava-spotlight-row:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.guava-modal-light .guava-spotlight-row:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.guava-spotlight-row:selected,
+.guava-spotlight-row:selected:hover,
+.guava-modal-light .guava-spotlight-row:selected,
+.guava-modal-light .guava-spotlight-row:selected:hover {
+  background-color: -st-accent-color;
+  color: -st-accent-fg-color;
+}
+
+.guava-spotlight-texts {
+  spacing: 1px;
+}
+
+.guava-spotlight-title {
+  font-size: 14px;
+}
+
+.guava-spotlight-subtitle {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.guava-modal-light .guava-spotlight-subtitle {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.guava-spotlight-return {
+  font-size: 13px;
+  color: transparent;
+}
+
+.guava-spotlight-row:selected .guava-spotlight-subtitle,
+.guava-spotlight-row:selected .guava-spotlight-return,
+.guava-modal-light .guava-spotlight-row:selected .guava-spotlight-subtitle,
+.guava-modal-light .guava-spotlight-row:selected .guava-spotlight-return {
+  color: -st-accent-fg-color;
+}
+
+/* Top hit: larger */
+.guava-spotlight-top {
+  padding: 8px 8px;
+}
+
+.guava-spotlight-top .guava-spotlight-title {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+/* Calculator result reads as a big number */
+.guava-spotlight-calc .guava-spotlight-title {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* Tahoe: the browse-view buttons right of the empty field, Super+1..4 */
+.guava-spotlight-views {
+  spacing: 4px;
+}
+
+.guava-spotlight-view-button {
+  border-radius: 999px;
+  padding: 7px;
+  color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.guava-spotlight-view-button:hover {
+  background-color: rgba(255, 255, 255, 0.16);
+}
+
+.guava-spotlight-view-button:checked,
+.guava-spotlight-view-button:checked:hover {
+  background-color: -st-accent-color;
+  color: -st-accent-fg-color;
+}
+
+.guava-modal-light .guava-spotlight-view-button {
+  color: rgba(0, 0, 0, 0.62);
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.guava-modal-light .guava-spotlight-view-button:hover {
+  background-color: rgba(0, 0, 0, 0.11);
+}
+
+.guava-modal-light .guava-spotlight-view-button:checked,
+.guava-modal-light .guava-spotlight-view-button:checked:hover {
+  background-color: -st-accent-color;
+  color: -st-accent-fg-color;
+}
+
+/* The active "/" filter, as a token chip */
+.guava-spotlight-chip {
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 3px 10px;
+  background-color: -st-accent-color;
+  color: -st-accent-fg-color;
+}
+
+/* A Quick Key next to its row */
+.guava-spotlight-key {
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 5px;
+  padding: 1px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.guava-modal-light .guava-spotlight-key {
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.guava-spotlight-row:selected .guava-spotlight-key {
+  border-color: -st-accent-fg-color;
+  color: -st-accent-fg-color;
+}
+
+/* Apps view: a grid of tiles (Tahoe's Applications) */
+.guava-spotlight-grid-row {
+  spacing: 4px;
+  padding: 0 2px;
+}
+
+.guava-spotlight-tile {
+  width: 100px;
+  padding: 10px 4px 8px 4px;
+  spacing: 6px;
+  border-radius: 14px;
+}
+
+.guava-spotlight-tile-title {
+  font-size: 12px;
+  text-align: center;
+}
+
+/* A message row (a view that is empty or turned off) */
+.guava-spotlight-note,
+.guava-spotlight-note:hover {
+  background-color: transparent;
+}
+
+.guava-spotlight-note .guava-spotlight-title {
+  font-weight: 600;
+}
+
+/* A "/" filter with no hits */
+.guava-spotlight-empty {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  padding: 14px 10px;
+  text-align: center;
+}
+
+.guava-modal-light .guava-spotlight-empty {
+  color: rgba(0, 0, 0, 0.5);
+}

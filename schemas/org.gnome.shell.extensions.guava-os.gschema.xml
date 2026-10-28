@@ -1,0 +1,1522 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+    <schema id="org.gnome.shell.extensions.guava-os" path="/org/gnome/shell/extensions/guava-os/">
+
+      <!-- Keys are grouped by feature, in the order of the preferences sidebar. New keys use
+           the feature prefix (menubar-, dock-, windows-, sm-, notch-, glass-...). -->
+
+      <!-- Internal bookkeeping (never shown in prefs) -->
+      <key name="saved-originals" type="s">
+        <default>''</default>
+        <summary>Saved originals of GNOME settings Guava changed (internal)</summary>
+        <description>JSON written by core/originals.js: the user's own value of every GNOME setting Guava currently owns (for example the window button-layout), so it can be put back after a crash. Do not edit.</description>
+      </key>
+      <key name="saved-originals-backup" type="s">
+        <default>''</default>
+        <summary>Unreadable saved originals, kept (internal)</summary>
+        <description>Internal. The text of saved-originals when it could not be parsed, kept so a damaged store is never silently lost. Do not edit.</description>
+      </key>
+
+      <!-- Setup Assistant (features/onboarding) -->
+      <key name="onboarding" type="s">
+        <choices>
+          <choice value="new"/>
+          <choice value="requested"/>
+          <choice value="shown"/>
+          <choice value="done"/>
+        </choices>
+        <default>'new'</default>
+        <summary>Setup Assistant state (internal)</summary>
+        <description>Internal. "new": the Setup Assistant was never offered; Guava opens it once, after the session has started. "requested": Guava opened the preferences for it. "shown": it is up. "done": finished or skipped. Run it again from Guava Settings > About.</description>
+      </key>
+
+      <!-- Menu bar (features/menuBar, features/calendar) -->
+      <key name="menubar-show-activities" type="b">
+        <default>false</default>
+        <summary>Show the Activities button</summary>
+        <description>Show GNOME's Activities button (the workspace pill) at the left of the menu bar. Off, as on macOS: the menu bar starts with the logo menu.</description>
+      </key>
+      <key name="menubar-logo" type="s">
+        <choices><choice value="fedora"/><choice value="guava"/><choice value="none"/></choices>
+        <default>'fedora'</default>
+        <summary>Logo menu</summary>
+        <description>The logo at the left end of the menu bar, which opens the logo menu (About This PC, System Settings, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out). "fedora" shows the system's logo, "guava" Guava's, "none" removes the logo menu.</description>
+      </key>
+      <key name="menubar-app-menu" type="b">
+        <default>true</default>
+        <summary>App menus</summary>
+        <description>Show the focused app's name in bold and its menus (App, File, Edit, View, Window, Help) after the logo, as on macOS.</description>
+      </key>
+      <key name="menubar-native-menus" type="b">
+        <default>true</default>
+        <summary>Apps' own menus</summary>
+        <description>Show the menus an app exports in place of the generic File, Edit and View: GTK menu bars (org.gtk.Menus) and DBusMenu menu bars from Qt, Electron, LibreOffice and other X11 apps. While on, Guava runs the com.canonical.AppMenu.Registrar service unless another program already does.</description>
+      </key>
+      <key name="menubar-atspi-menus" type="b">
+        <default>false</default>
+        <summary>Read menus through accessibility (experimental)</summary>
+        <description>For apps with no exported menus, read the menu bar in the focused window from the accessibility tree (AT-SPI) and invoke its items from there.</description>
+      </key>
+      <key name="menubar-atspi-popovers" type="b">
+        <default>false</default>
+        <summary>Read primary menus of apps without a menu bar (experimental)</summary>
+        <description>With accessibility menus on, open the primary menu (the ☰ button) of apps without a menu bar out of sight, read its items into the app menu, and remember them per app. The app sees its menu open and close. Needs the accessibility bus, which GNOME starts on demand; Guava never changes the toolkit-accessibility setting.</description>
+      </key>
+      <key name="menubar-transparent" type="b">
+        <default>true</default>
+        <summary>Transparent menu bar</summary>
+        <description>The menu bar is transparent over the wallpaper, and its text turns dark or light by the wallpaper's brightness under it. Off shows the menu bar background all the time.</description>
+      </key>
+      <key name="menubar-solid-on-window" type="b">
+        <default>false</default>
+        <summary>Solid menu bar when a window touches it</summary>
+        <description>Off (the default, as on macOS): the transparent menu bar stays transparent over maximized windows. On: it turns solid while a window touches it or is maximized.</description>
+      </key>
+      <key name="menubar-fullscreen-visible" type="b">
+        <default>false</default>
+        <summary>Always show the menu bar in full screen</summary>
+        <description>Off, as on macOS: the menu bar hides over full-screen windows and slides in when the pointer touches the top edge. On keeps it shown.</description>
+      </key>
+      <key name="menubar-privacy-dots" type="b">
+        <default>true</default>
+        <summary>Privacy dots</summary>
+        <description>Show an orange dot while an app uses the microphone, a green one for the camera and a purple one while the screen is shared or recorded, in place of GNOME's privacy icons. Click a dot to see which app.</description>
+      </key>
+      <key name="menubar-command-glyphs" type="b">
+        <default>true</default>
+        <summary>Shortcut glyphs</summary>
+        <description>Write shortcuts in menus with macOS symbols (⌘ for Super, ⌃ Control, ⌥ Alt, ⇧ Shift). Off writes them in words (Super+H).</description>
+      </key>
+      <key name="menubar-clock-option-dnd" type="b">
+        <default>true</default>
+        <summary>Alt-click the clock for Do Not Disturb</summary>
+        <description>Alt-clicking the clock turns Do Not Disturb on or off, like Option-click on macOS.</description>
+      </key>
+      <key name="menubar-focus-shortcut" type="as">
+        <default>['&lt;Control&gt;F2']</default>
+        <summary>Focus the menu bar</summary>
+        <description>Opens the app menu so the menus can be used with the keyboard (Left and Right move between menus), like Ctrl+F2 on macOS. F10 is the other common choice, but it takes F10 from apps. Empty means no shortcut.</description>
+      </key>
+      <key name="menubar-force-quit-shortcut" type="as">
+        <default>['&lt;Super&gt;&lt;Alt&gt;Escape']</default>
+        <summary>Force Quit shortcut</summary>
+        <description>Opens the Force Quit Applications window. Empty means no shortcut.</description>
+      </key>
+      <key name="move-calendar-right" type="b">
+        <default>true</default>
+        <summary>Move Calendar to Right</summary>
+        <description>Move the calendar to the right side of the top panel and hide the notifications panel.</description>
+      </key>
+      <key name="keep-notification-panel" type="b">
+        <default>false</default>
+        <summary>Keep GNOME Notification Panel</summary>
+        <description>When Move Calendar to Right is enabled, keep the native notification/calendar combined layout (only the panel position changes).</description>
+      </key>
+      <key name="notification-indicator-style" type="s">
+        <choices>
+          <choice value="default"/>
+          <choice value="accent"/>
+          <choice value="symbolic"/>
+        </choices>
+        <default>'default'</default>
+        <summary>Notification Indicator Style</summary>
+        <description>Color style of the top-panel notification indicator dot: default (red), accent (follows accent color), or symbolic (theme foreground).</description>
+      </key>
+      <key name="custom-dnd-button" type="b">
+        <default>true</default>
+        <summary>Custom Do Not Disturb Button</summary>
+        <description>Replace the system Do Not Disturb quick settings button with Guava's custom implementation.</description>
+      </key>
+
+      <!-- Dock (features/dock) -->
+      <key name="dock" type="b">
+        <default>true</default>
+        <summary>Guava Dock</summary>
+        <description>Guava's own macOS-style dock: pinned apps (GNOME favourites), running and recent apps, a Downloads stack and the Trash. Dash to Dock is turned off while it runs and turned back on after.</description>
+      </key>
+      <key name="dock-position" type="s">
+        <choices>
+          <choice value="bottom"/>
+          <choice value="left"/>
+          <choice value="right"/>
+        </choices>
+        <default>'bottom'</default>
+        <summary>Dock position on screen</summary>
+        <description>The screen edge the dock sits on: bottom, left or right.</description>
+      </key>
+      <key name="dock-icon-size" type="i">
+        <range min="24" max="128"/>
+        <default>48</default>
+        <summary>Dock size</summary>
+        <description>Size of the dock's icons in pixels.</description>
+      </key>
+      <key name="dock-autohide" type="b">
+        <default>false</default>
+        <summary>Automatically hide and show the Dock</summary>
+        <description>Hide the dock until the pointer rests on, or pushes against, its screen edge. Windows may then use the whole screen.</description>
+      </key>
+      <key name="dock-autohide-delay" type="i">
+        <range min="0" max="2000"/>
+        <default>500</default>
+        <summary>Auto-hide reveal delay</summary>
+        <description>Milliseconds the pointer rests on the edge before the hidden dock shows. Pushing against the edge shows it at once.</description>
+      </key>
+      <key name="dock-show-recents" type="b">
+        <default>true</default>
+        <summary>Show suggested and recent apps in Dock</summary>
+        <description>Keep up to three recently used apps that are not pinned in their own section after the pinned apps.</description>
+      </key>
+      <key name="dock-recent-apps" type="as">
+        <default>[]</default>
+        <summary>Recent apps (internal)</summary>
+        <description>Internal. The recently used unpinned apps the dock shows, newest first. Written by the dock.</description>
+      </key>
+      <key name="dock-running-dots" type="b">
+        <default>true</default>
+        <summary>Show indicators for open applications</summary>
+        <description>A small dot under the icon of every running app.</description>
+      </key>
+      <key name="dock-minimize-to-app" type="b">
+        <default>false</default>
+        <summary>Minimize windows into application icon</summary>
+        <description>Minimized windows go into their app's icon. Off: each minimized window gets its own tile next to the Downloads stack.</description>
+      </key>
+      <key name="dock-minimize-effect" type="s">
+        <choices>
+          <choice value="genie"/>
+          <choice value="scale"/>
+          <choice value="gnome"/>
+        </choices>
+        <default>'genie'</default>
+        <summary>Minimize windows using</summary>
+        <description>The effect that takes a window into the Dock and back: genie (the magic lamp, the macOS default), scale (a plain shrink) or gnome (GNOME's own). Reduced motion turns both into a fade.</description>
+      </key>
+      <key name="dock-magnification" type="b">
+        <default>false</default>
+        <summary>Magnification</summary>
+        <description>Icons under the pointer grow, with a smooth falloff to their neighbours (off by default, as on macOS).</description>
+      </key>
+      <key name="dock-magnification-size" type="i">
+        <range min="24" max="160"/>
+        <default>96</default>
+        <summary>Magnified icon size</summary>
+        <description>Size in pixels of the icon right under the pointer while magnification is on (never smaller than the Dock's icons).</description>
+      </key>
+      <key name="dock-launch-animation" type="b">
+        <default>true</default>
+        <summary>Animate opening applications</summary>
+        <description>An app's icon bounces while the app starts.</description>
+      </key>
+      <key name="dock-attention-bounce" type="b">
+        <default>true</default>
+        <summary>Bounce when apps need attention</summary>
+        <description>An app's icon bounces when one of its windows asks for attention or the app marks itself urgent.</description>
+      </key>
+      <key name="dock-badges" type="b">
+        <default>true</default>
+        <summary>Show badges and progress on Dock icons</summary>
+        <description>Red counts and progress bars that apps publish through the LauncherEntry D-Bus API (com.canonical.Unity.LauncherEntry).</description>
+      </key>
+      <key name="dock-background-apps" type="b">
+        <default>true</default>
+        <summary>Show apps running in the background</summary>
+        <description>Apps with no window that run in the background (the Background portal list GNOME's Quick Settings show) appear in the Dock with a grey dot.</description>
+      </key>
+      <key name="dock-folders" type="as">
+        <default>[]</default>
+        <summary>Folder stacks</summary>
+        <description>Folders kept in the Dock as stacks, beside the Downloads stack (absolute paths). Drag a folder to the right side of the Dock to add one.</description>
+      </key>
+      <key name="dock-downloads" type="b">
+        <default>true</default>
+        <summary>Downloads stack in the Dock</summary>
+        <description>Show the Downloads folder before the Trash; click it to see the newest files.</description>
+      </key>
+      <key name="dock-downloads-view" type="s">
+        <choices>
+          <choice value="automatic"/>
+          <choice value="fan"/>
+          <choice value="grid"/>
+          <choice value="list"/>
+        </choices>
+        <default>'automatic'</default>
+        <summary>Downloads stack view</summary>
+        <description>How the Downloads stack opens: automatic (a fan for a few files from a bottom dock, else a grid), fan, grid or list.</description>
+      </key>
+
+      <key name="dock-mission-control" type="b">
+        <default>false</default>
+        <summary>Mission Control in the dock</summary>
+        <description>Shows a Mission Control item in the dock, next to the apps. Off by default, as on macOS.</description>
+      </key>
+
+      <!-- Windows (features/appButtons: the apps' own titlebar buttons; features/fullscreenSpace, features/roundedCorners) -->
+      <key name="button-size" type="s">
+        <default>'small'</default>
+        <summary>Button size</summary>
+        <description>Size of the macOS traffic lights in app titlebars (small: 14px, normal: 16px).</description>
+      </key>
+      <key name="window-controls-side" type="s">
+        <choices>
+          <choice value="right"/>
+          <choice value="left"/>
+        </choices>
+        <default>'right'</default>
+        <summary>Window buttons side</summary>
+        <description>Which side of the apps' own titlebars holds the close, minimize and maximize buttons (the GNOME window button-layout, which Guava sets and restores). 'right' (default) is the GNOME side: minimize, maximize, close. 'left' is the macOS side: close, minimize, maximize. Window buttons always stay on the app's titlebar; Guava draws none in the top bar.</description>
+      </key>
+      <key name="app-buttons-style" type="s">
+        <choices>
+          <choice value="gnome"/>
+          <choice value="macos"/>
+        </choices>
+        <default>'macos'</default>
+        <summary>App titlebar buttons style</summary>
+        <description>'gnome' leaves the apps' buttons in the stock libadwaita/GTK look, 'macos' applies Guava's traffic-light GTK CSS (see button-size). Open apps pick up a change when restarted.</description>
+      </key>
+      <key name="app-buttons-set" type="s">
+        <choices>
+          <choice value="all"/>
+          <choice value="close"/>
+        </choices>
+        <default>'all'</default>
+        <summary>App titlebar buttons set</summary>
+        <description>Which buttons the apps show in their own titlebar, on the side window-controls-side names: 'all' (close, minimize and maximize) or 'close' only (the stock Fedora layout).</description>
+      </key>
+      <key name="move-window-to-new-workspace" type="b">
+        <default>true</default>
+        <summary>Move Window to New Workspace</summary>
+        <description>Enable or disable moving windows to new workspaces.</description>
+      </key>
+      <key name="rounded-corners" type="b">
+        <default>true</default>
+        <summary>Rounded window corners</summary>
+        <description>Round the corners of normal and dialog windows (see rounded-corners-which). Maximized, tiled and fullscreen windows keep square corners.</description>
+      </key>
+      <key name="rounded-corners-which" type="s">
+        <choices>
+          <choice value="top"/>
+          <choice value="all"/>
+        </choices>
+        <default>'top'</default>
+        <summary>Which corners are rounded</summary>
+        <description>'top' rounds the top-left and top-right corners and keeps the bottom ones square; 'all' rounds all four.</description>
+      </key>
+      <key name="rounded-corners-radius" type="i">
+        <default>12</default>
+        <range min="0" max="24"/>
+        <summary>Corner radius</summary>
+        <description>Radius of the rounded window corners, in logical pixels.</description>
+      </key>
+      <key name="rounded-corners-blacklist" type="as">
+        <default>[]</default>
+        <summary>Apps without rounded corners</summary>
+        <description>Windows whose WM_CLASS or app id (for example "org.gnome.Terminal" or "firefox") is listed keep square corners. Not case-sensitive.</description>
+      </key>
+
+      <!-- Window tiling, Hide (features/windows) -->
+      <key name="windows-tiling" type="b">
+        <default>true</default>
+        <summary>Window tiling</summary>
+        <description>Guava tiles windows the way macOS 15 does: by dragging to the screen edges, corners, menu bar and the snap layouts at the top centre, and with keyboard shortcuts. While it runs, GNOME's own edge tiling (org.gnome.mutter edge-tiling) is off; the user's value is saved and restored.</description>
+      </key>
+      <key name="windows-tile-drag-edges" type="b">
+        <default>true</default>
+        <summary>Drag windows to screen edges to tile</summary>
+        <description>Drag a window to the left or right edge for a half, or to a corner for a quarter. A translucent outline shows the tile; releasing tiles the window.</description>
+      </key>
+      <key name="windows-tile-drag-menubar" type="b">
+        <default>true</default>
+        <summary>Drag windows to menu bar to fill screen</summary>
+        <description>Drag a window onto the top bar to fill the screen (without full screen).</description>
+      </key>
+      <key name="windows-tile-drag-picker" type="b">
+        <default>true</default>
+        <summary>Snap layouts at the top centre while dragging</summary>
+        <description>Dragging a window to the top edge at the centre of the screen slides a handle down under the top bar (Windows 11 Snap Layouts). Moving onto the handle expands it into a bar of layouts (halves, thirds, quarters); releasing over a zone tiles the window there, releasing elsewhere on the bar does nothing.</description>
+      </key>
+      <key name="windows-tile-drag-modifier" type="b">
+        <default>true</default>
+        <summary>Hold Alt while dragging windows to tile</summary>
+        <description>While Alt (the macOS Option key) is held during a drag, the half outlines show at once, without reaching the edge.</description>
+      </key>
+      <key name="windows-tile-margins" type="b">
+        <default>false</default>
+        <summary>Tiled windows have margins</summary>
+        <description>Leave a small margin around and between tiled windows. Off by default, as on macOS.</description>
+      </key>
+      <key name="windows-tile-left-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;Left']</default>
+        <summary>Tile left shortcut</summary>
+        <description>Move the focused window to the left half of the screen. A shortcut that GNOME or another active Guava shortcut already uses is left unbound.</description>
+      </key>
+      <key name="windows-tile-right-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;Right']</default>
+        <summary>Tile right shortcut</summary>
+        <description>Move the focused window to the right half of the screen. A shortcut that GNOME or another active Guava shortcut already uses is left unbound.</description>
+      </key>
+      <key name="windows-tile-top-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;Up']</default>
+        <summary>Tile top shortcut</summary>
+        <description>Move the focused window to the top half of the screen. A shortcut that GNOME or another active Guava shortcut already uses is left unbound.</description>
+      </key>
+      <key name="windows-tile-bottom-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;Down']</default>
+        <summary>Tile bottom shortcut</summary>
+        <description>Move the focused window to the bottom half of the screen. Left unbound while Stage Manager uses the same shortcut. A shortcut that GNOME or another active Guava shortcut already uses is left unbound.</description>
+      </key>
+      <key name="windows-fill-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;f']</default>
+        <summary>Fill shortcut</summary>
+        <description>Fill the screen with the focused window, without full screen. A shortcut that GNOME or another active Guava shortcut already uses is left unbound.</description>
+      </key>
+      <key name="windows-center-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;c']</default>
+        <summary>Center shortcut</summary>
+        <description>Centre the focused window on the screen. A shortcut that GNOME or another active Guava shortcut already uses is left unbound.</description>
+      </key>
+      <key name="windows-restore-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;r']</default>
+        <summary>Return to previous size shortcut</summary>
+        <description>Put the focused window back where it was before it was tiled. A shortcut that GNOME or another active Guava shortcut already uses is left unbound.</description>
+      </key>
+      <key name="windows-arrange-left-right-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;&lt;Shift&gt;Left']</default>
+        <summary>Arrange left and right shortcut</summary>
+        <description>The focused window on the left half, the previous window on the right half. A shortcut that GNOME or another active Guava shortcut already uses is left unbound.</description>
+      </key>
+      <key name="windows-arrange-right-left-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;&lt;Shift&gt;Right']</default>
+        <summary>Arrange right and left shortcut</summary>
+        <description>The focused window on the right half, the previous window on the left half. A shortcut that GNOME or another active Guava shortcut already uses is left unbound.</description>
+      </key>
+      <key name="windows-arrange-top-bottom-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;&lt;Shift&gt;Up']</default>
+        <summary>Arrange top and bottom shortcut</summary>
+        <description>The focused window on the top half, the previous window on the bottom half. A shortcut that GNOME or another active Guava shortcut already uses is left unbound.</description>
+      </key>
+      <key name="windows-arrange-bottom-top-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;&lt;Shift&gt;Down']</default>
+        <summary>Arrange bottom and top shortcut</summary>
+        <description>The focused window on the bottom half, the previous window on the top half. A shortcut that GNOME or another active Guava shortcut already uses is left unbound.</description>
+      </key>
+      <key name="windows-arrange-left-quarters-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;&lt;Alt&gt;&lt;Shift&gt;Left']</default>
+        <summary>Arrange left and quarters shortcut</summary>
+        <description>The focused window on the left half, the next two windows in the right quarters. A shortcut that GNOME or another active Guava shortcut already uses is left unbound.</description>
+      </key>
+      <key name="windows-arrange-right-quarters-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;&lt;Alt&gt;&lt;Shift&gt;Right']</default>
+        <summary>Arrange right and quarters shortcut</summary>
+        <description>The focused window on the right half, the next two windows in the left quarters. A shortcut that GNOME or another active Guava shortcut already uses is left unbound.</description>
+      </key>
+      <key name="windows-arrange-top-quarters-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;&lt;Alt&gt;&lt;Shift&gt;Up']</default>
+        <summary>Arrange top and quarters shortcut</summary>
+        <description>The focused window on the top half, the next two windows in the bottom quarters. A shortcut that GNOME or another active Guava shortcut already uses is left unbound.</description>
+      </key>
+      <key name="windows-arrange-bottom-quarters-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;&lt;Alt&gt;&lt;Shift&gt;Down']</default>
+        <summary>Arrange bottom and quarters shortcut</summary>
+        <description>The focused window on the bottom half, the next two windows in the top quarters. A shortcut that GNOME or another active Guava shortcut already uses is left unbound.</description>
+      </key>
+      <key name="windows-app-hide" type="b">
+        <default>true</default>
+        <summary>Hide and Hide Others</summary>
+        <description>Hide an app (Super+H, or Hide in the app menu): its windows are minimized without the minimize effect and come back together when the app is activated again. Hide Others hides every other app.</description>
+      </key>
+      <key name="windows-hide-shortcut" type="as">
+        <default>['&lt;Super&gt;h']</default>
+        <summary>Hide shortcut</summary>
+        <description>Hides the focused app. While it is GNOME's minimize shortcut (Super+H by default), Guava takes it from GNOME's minimize binding and gives it back on disable.</description>
+      </key>
+      <key name="windows-hide-others-shortcut" type="as">
+        <default>['&lt;Alt&gt;&lt;Super&gt;h']</default>
+        <summary>Hide Others shortcut</summary>
+        <description>Hides every app except the focused one.</description>
+      </key>
+
+      <!-- Shell behaviour (features/shellBehaviour) -->
+      <key name="overview-gestures-workspace-only" type="b">
+        <default>true</default>
+        <summary>Swipe up only to the workspace overview</summary>
+        <description>The overview swipe (three fingers on the touchpad or the touchscreen) stops at the workspace overview and never goes on into the app grid. The app grid stays on the apps button, Super+A and the Launchpad.</description>
+      </key>
+      <key name="disable-hot-corner" type="b">
+        <default>true</default>
+        <summary>Disable the hot corner</summary>
+        <description>No hot corner opens the overview while Guava runs. The GNOME setting enable-hot-corners is left as it is and applies again when this is off.</description>
+      </key>
+
+      <!-- Appearance (features/liquidGlass, features/appearance, lib/glass.js); glass-* and appearance-* are v3 -->
+      <key name="liquid-glass" type="b">
+        <default>true</default>
+        <summary>Liquid Glass</summary>
+        <description>Faux Liquid Glass on every Guava surface: a translucent tint with a sheen, a rim and a soft shadow; no blur. Off keeps the theme's solid surfaces.</description>
+      </key>
+      <key name="liquid-glass-surfaces" type="as">
+        <default>['panel', 'menus', 'dock', 'overlays']</default>
+        <summary>Liquid Glass surfaces</summary>
+        <description>Which surfaces use glass: panel, menus, dock, overlays.</description>
+      </key>
+      <key name="glass-tint" type="i">
+        <default>0</default>
+        <range min="0" max="100"/>
+        <summary>Glass: Clear to Tinted</summary>
+        <description>0 is Clear, the macOS default: the most see-through glass that keeps text readable. 100 is Tinted: more opaque glass. Has no effect while Reduce Transparency or Increase Contrast is on.</description>
+      </key>
+      <key name="glass-wallpaper-tint" type="b">
+        <default>true</default>
+        <summary>Wallpaper tinting</summary>
+        <description>Mix a little of the wallpaper's average colour into the glass, like macOS. The wallpaper is sampled once each time it changes.</description>
+      </key>
+      <key name="glass-noise" type="b">
+        <default>false</default>
+        <summary>Frosted grain</summary>
+        <description>Add a faint grain to the glass, so it reads as frosted. Replaces the top-to-bottom sheen (St draws one or the other).</description>
+      </key>
+      <key name="glass-reduce-transparency" type="b">
+        <default>false</default>
+        <summary>Reduce Transparency</summary>
+        <description>Make every Guava glass surface opaque, without the wallpaper tint. The rim stays.</description>
+      </key>
+      <key name="glass-increase-contrast" type="b">
+        <default>false</default>
+        <summary>Increase Contrast</summary>
+        <description>Opaque, flat surfaces with strong borders. Implies Reduce Transparency. GNOME's High Contrast does the same.</description>
+      </key>
+      <key name="glass-show-borders" type="b">
+        <default>false</default>
+        <summary>Show Borders</summary>
+        <description>Draw a clearly visible border around every Guava glass surface, so overlapping surfaces stay apart.</description>
+      </key>
+      <key name="appearance-auto" type="b">
+        <default>false</default>
+        <summary>Auto Light and Dark</summary>
+        <description>Switch between Light by day and Dark by night (GNOME's color-scheme). Guava switches only while you are idle, and puts your own choice back when this is off. Choosing a style yourself turns Auto off.</description>
+      </key>
+      <key name="appearance-auto-schedule" type="s">
+        <choices>
+          <choice value="sun"/>
+          <choice value="custom"/>
+        </choices>
+        <default>'sun'</default>
+        <summary>Auto schedule</summary>
+        <description>"sun": Dark from sunset to sunrise (from the location GNOME's Night Light last saw, else your time zone). "custom": the two times below.</description>
+      </key>
+      <key name="appearance-auto-light-minute" type="i">
+        <default>420</default>
+        <range min="0" max="1439"/>
+        <summary>Light from (minutes after midnight)</summary>
+        <description>Custom schedule: when Light begins, in minutes after midnight (420 = 07:00).</description>
+      </key>
+      <key name="appearance-auto-dark-minute" type="i">
+        <default>1140</default>
+        <range min="0" max="1439"/>
+        <summary>Dark from (minutes after midnight)</summary>
+        <description>Custom schedule: when Dark begins, in minutes after midnight (1140 = 19:00).</description>
+      </key>
+      <key name="appearance-accent" type="s">
+        <choices>
+          <choice value="multicolor"/>
+          <choice value="blue"/>
+          <choice value="purple"/>
+          <choice value="pink"/>
+          <choice value="red"/>
+          <choice value="orange"/>
+          <choice value="yellow"/>
+          <choice value="green"/>
+          <choice value="graphite"/>
+        </choices>
+        <default>'multicolor'</default>
+        <summary>Accent colour</summary>
+        <description>"multicolor" (the macOS default) follows the GNOME accent colour and leaves it alone. Any other value sets GNOME's accent-color while Guava runs (graphite is GNOME's slate) and gives yours back when Guava stops.</description>
+      </key>
+      <key name="appearance-highlight" type="s">
+        <choices>
+          <choice value="accent"/>
+          <choice value="blue"/>
+          <choice value="purple"/>
+          <choice value="pink"/>
+          <choice value="red"/>
+          <choice value="orange"/>
+          <choice value="yellow"/>
+          <choice value="green"/>
+          <choice value="graphite"/>
+        </choices>
+        <default>'accent'</default>
+        <summary>Highlight colour</summary>
+        <description>The text selection colour in Guava's search fields (Spotlight, clipboard). "accent" follows the accent colour, the macOS default.</description>
+      </key>
+      <key name="macos-text-rendering" type="b">
+        <default>true</default>
+        <summary>macOS text rendering</summary>
+        <description>Draw text unhinted with grayscale antialiasing, as macOS does. Sets GNOME's font-hinting and font-antialiasing while Guava runs and gives yours back when it stops. Choosing another rendering in GNOME Tweaks turns this off.</description>
+      </key>
+      <key name="macos-font" type="b">
+        <default>true</default>
+        <summary>macOS font</summary>
+        <description>Use SF Pro when installed, else Inter, as the interface and document font at your own size (and SF Mono as the monospace font when installed). Nothing changes while neither is installed. Your fonts come back when this goes off or Guava stops; choosing another font in GNOME Tweaks turns this off.</description>
+      </key>
+      <key name="appearance-icon-style" type="s">
+        <choices>
+          <choice value="default"/>
+          <choice value="dark"/>
+          <choice value="clear"/>
+          <choice value="tinted"/>
+        </choices>
+        <default>'default'</default>
+        <summary>Icon style</summary>
+        <description>The look of app icons Guava draws (dock, Spotlight, switcher, Launchpad), as in macOS Tahoe: Default, Dark (darker icons), Clear (decolourised, translucent) or Tinted (in the accent colour).</description>
+      </key>
+      <key name="popup-menu-styling" type="b">
+        <default>true</default>
+        <summary>Menu and App Styling</summary>
+        <description>Restyle shell popup menus with taller items and accent-colored hover, selected and checked entries, and apply the GTK 3 and GTK 4 app fixes (fixes3.css, fixes4.css).</description>
+      </key>
+
+      <!-- Keyboard (features/inputIndicator, features/emoji) -->
+      <key name="input-indicator" type="b">
+        <default>true</default>
+        <summary>Text cursor indicators</summary>
+        <description>Show a small badge at the text cursor when Caps Lock or the input source changes (macOS Sonoma). Near the pointer when the app does not report its cursor.</description>
+      </key>
+      <key name="input-indicator-caps-lock" type="b">
+        <default>true</default>
+        <summary>Caps Lock indicator</summary>
+        <description>Show the Caps Lock badge at the text cursor when Caps Lock is turned on or off.</description>
+      </key>
+      <key name="input-indicator-source" type="b">
+        <default>true</default>
+        <summary>Input source indicator</summary>
+        <description>Show the new input source (for example EN or DE) at the text cursor when it changes.</description>
+      </key>
+      <key name="emoji-picker" type="b">
+        <default>true</default>
+        <summary>Emoji and Symbols</summary>
+        <description>A searchable emoji popover at the text cursor that types the chosen emoji into the focused app (macOS Character Viewer).</description>
+      </key>
+      <key name="emoji-shortcut" type="as">
+        <default><![CDATA[['<Control><Super>space']]]></default>
+        <summary>Emoji and Symbols shortcut</summary>
+        <description>Opens the emoji popover (macOS: Control-Command-Space). Empty means no shortcut.</description>
+      </key>
+      <key name="emoji-skin-tone" type="i">
+        <default>0</default>
+        <range min="0" max="5"/>
+        <summary>Emoji skin tone</summary>
+        <description>0 is the default yellow; 1 to 5 are light to dark. Set from the popover.</description>
+      </key>
+      <key name="emoji-recents" type="as">
+        <default>[]</default>
+        <summary>Recently used emoji</summary>
+        <description>Written by the emoji popover, newest first. Kept only in your settings.</description>
+      </key>
+
+      <!-- Control Center (features/controlCenter) -->
+      <key name="control-center" type="b">
+        <default>true</default>
+        <summary>Control Center</summary>
+        <description>Re-lay out the Quick Settings menu like the macOS Control Center: blocks for connectivity, focus, display, sound and media, with Stage Manager and Liquid Glass tiles. GNOME keeps running every toggle. Off restores the stock menu.</description>
+      </key>
+      <key name="control-center-user-row" type="b">
+        <default>true</default>
+        <summary>Control Center user row</summary>
+        <description>Show your picture and name in the Control Center footer, with the battery time left. Replaces the old username label in the top bar (add-username-to-quick-menu, migrated).</description>
+      </key>
+      <key name="battery-percentage-always" type="b">
+        <default>false</default>
+        <summary>Always show battery percentage</summary>
+        <description>Show the battery charge in the top bar at any level, not only when it is low. Not shown while GNOME's own battery percentage is on.</description>
+      </key>
+      <key name="control-center-layout" type="as">
+        <default>[]</default>
+        <summary>Control Center layout</summary>
+        <description>The controls of the Control Center in order, each "id:size" (small, medium or large), as arranged with Edit Controls. Empty means Guava's default arrangement. Controls left out are hidden; other extensions' items are always kept.</description>
+      </key>
+
+      <!-- Low Power Mode (features/lowPower) -->
+      <key name="low-power-battery" type="b">
+        <default>false</default>
+        <summary>Low Power Mode on battery</summary>
+        <description>Hold the power-saver profile of power-profiles-daemon while the computer runs on battery. The hold is released on power or when Guava stops, so GNOME's own choice comes back.</description>
+      </key>
+      <key name="low-power-adapter" type="b">
+        <default>false</default>
+        <summary>Low Power Mode on power adapter</summary>
+        <description>Hold the power-saver profile while the computer is plugged in (or has no battery).</description>
+      </key>
+
+      <!-- Menu bar items (features/menuBarItems) -->
+      <key name="menubar-status-items" type="b">
+        <default>true</default>
+        <summary>App status icons</summary>
+        <description>Show apps' status icons (StatusNotifierItem tray icons: Discord, Steam, Nextcloud...) in the menu bar with their menus. When the AppIndicator extension is enabled, it draws them and Guava only hides and orders them.</description>
+      </key>
+      <key name="menubar-pinned" type="as">
+        <default>[]</default>
+        <summary>Controls in the menu bar</summary>
+        <description>Control Center controls shown in the menu bar, each "id=always" or "id=active" (only while active). Ids: wifi, bluetooth, sound, battery, focus, now-playing, keyboard-brightness, screen-recording.</description>
+      </key>
+      <key name="menubar-battery-percentage" type="b">
+        <default>false</default>
+        <summary>Battery percentage in the menu bar</summary>
+        <description>Show the charge next to the pinned Battery item (macOS shows no percentage by default).</description>
+      </key>
+      <key name="menubar-item-order" type="as">
+        <default>[]</default>
+        <summary>Menu bar item order</summary>
+        <description>The order of the managed menu bar items, left to right (pin:wifi, sni:discord, stock:keyboard...). New items go first.</description>
+      </key>
+      <key name="menubar-item-hidden" type="as">
+        <default>[]</default>
+        <summary>Hidden menu bar items</summary>
+        <description>Managed menu bar items the user hid.</description>
+      </key>
+      <key name="menubar-item-registry" type="as">
+        <default>[]</default>
+        <summary>Known menu bar items (internal)</summary>
+        <description>Written by Guava: the items it has seen ("id&#9;title"), so the preferences can list them.</description>
+      </key>
+      <key name="menubar-overflow" type="b">
+        <default>true</default>
+        <summary>Menu bar overflow</summary>
+        <description>When the menu bar is crowded, put the items that do not fit behind a chevron.</description>
+      </key>
+
+      <!-- Stage Manager (features/stageManager) -->
+      <key name="stage-manager" type="b">
+        <default>false</default>
+        <summary>Stage Manager</summary>
+        <description>Show the other apps as live, stacked thumbnails in a strip at the screen edge. Click one to switch to it. While Stage Manager is on, Minimize to Dock, window tiling by drag and Move Fullscreen Window are paused (their settings are kept).</description>
+      </key>
+      <key name="stage-manager-side" type="s">
+        <default>'left'</default>
+        <summary>Stage Manager strip side</summary>
+        <description>Which screen edge holds the strip: "left" or "right". With the dock on the left or right edge, the strip always takes the other side.</description>
+      </key>
+      <key name="stage-manager-autohide" type="b">
+        <default>true</default>
+        <summary>Auto-hide the strip</summary>
+        <description>Hide the strip while a window on the stage overlaps it, and show it again when the pointer pushes against the screen edge.</description>
+      </key>
+      <key name="stage-manager-group-by-app" type="b">
+        <default>true</default>
+        <summary>Show an app's windows all at once</summary>
+        <description>On ("All at Once", macOS default): an app's windows come onto the stage together and share one strip entry; a new window joins its app on the stage. Off ("One at a Time"): each window is its own entry, and a new window gets its own stage.</description>
+      </key>
+      <key name="stage-manager-shortcut" type="as">
+        <default>[]</default>
+        <summary>Stage Manager shortcut</summary>
+        <description>Turns Stage Manager on or off. Empty means no shortcut; prefs has a button for Ctrl+Super+S.</description>
+      </key>
+      <key name="stage-manager-new-windows" type="s">
+        <choices>
+          <choice value='replace'/>
+          <choice value='join'/>
+        </choices>
+        <default>'replace'</default>
+        <summary>New windows in Stage Manager</summary>
+        <description>"replace": a new app window takes the stage and the previous set goes to the strip as one entry (macOS). "join": the new window joins the set on the stage. Alt-click an app (dock, app grid) to open it into the current stage once.</description>
+      </key>
+      <key name="stage-manager-wallpaper-click" type="b">
+        <default>true</default>
+        <summary>Click the wallpaper to show the desktop</summary>
+        <description>A click on the wallpaper sends the windows on the stage to the strip; another click brings them back.</description>
+      </key>
+      <key name="stage-manager-tilt" type="i">
+        <default>22</default>
+        <range min="0" max="40"/>
+        <summary>Strip tilt</summary>
+        <description>How far, in degrees, the windows in the strip turn toward the stage. 0 lays them flat.</description>
+      </key>
+      <key name="stage-manager-animation-speed" type="d">
+        <default>1.0</default>
+        <range min="0.5" max="2.0"/>
+        <summary>Stage Manager animation speed</summary>
+        <description>1 is normal, 2 twice as fast, 0.5 half as fast. Reduced motion still replaces the moves with short fades.</description>
+      </key>
+      <key name="stage-manager-remove-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;Down']</default>
+        <summary>Remove from set shortcut</summary>
+        <description>Takes the focused window out of the set on the stage and puts it in the strip. Only active while Stage Manager is on.</description>
+      </key>
+      <key name="stage-manager-show-recent" type="b">
+        <default>true</default>
+        <summary>Show recent apps</summary>
+        <description>Show the strip of recent apps beside the stage. Off keeps it hidden until the pointer pushes against the screen edge (macOS "Show recent apps in Stage Manager").</description>
+      </key>
+      <key name="stage-manager-strip-background" type="b">
+        <default>true</default>
+        <summary>Strip background</summary>
+        <description>Draw a soft glass panel behind the strip of recent apps, so it reads apart from the app windows behind it. Off leaves the entries floating on the desktop (as macOS does).</description>
+      </key>
+      <key name="stage-manager-next-shortcut" type="as">
+        <default>['&lt;Super&gt;&lt;Alt&gt;Page_Down']</default>
+        <summary>Next set shortcut</summary>
+        <description>Puts the next set or app on the stage, in the order they were opened. Only active while Stage Manager is on.</description>
+      </key>
+      <key name="stage-manager-previous-shortcut" type="as">
+        <default>['&lt;Super&gt;&lt;Alt&gt;Page_Up']</default>
+        <summary>Previous set shortcut</summary>
+        <description>Puts the previous set or app on the stage. Only active while Stage Manager is on.</description>
+      </key>
+      <key name="stage-manager-slot-1-shortcut" type="as">
+        <default>['&lt;Super&gt;&lt;Alt&gt;1']</default>
+        <summary>Switch to strip entry 1</summary>
+        <description>Puts entry 1 of the strip (counted from the top) on the stage. Only active while Stage Manager is on.</description>
+      </key>
+      <key name="stage-manager-slot-2-shortcut" type="as">
+        <default>['&lt;Super&gt;&lt;Alt&gt;2']</default>
+        <summary>Switch to strip entry 2</summary>
+        <description>Puts entry 2 of the strip (counted from the top) on the stage. Only active while Stage Manager is on.</description>
+      </key>
+      <key name="stage-manager-slot-3-shortcut" type="as">
+        <default>['&lt;Super&gt;&lt;Alt&gt;3']</default>
+        <summary>Switch to strip entry 3</summary>
+        <description>Puts entry 3 of the strip (counted from the top) on the stage. Only active while Stage Manager is on.</description>
+      </key>
+      <key name="stage-manager-slot-4-shortcut" type="as">
+        <default>['&lt;Super&gt;&lt;Alt&gt;4']</default>
+        <summary>Switch to strip entry 4</summary>
+        <description>Puts entry 4 of the strip (counted from the top) on the stage. Only active while Stage Manager is on.</description>
+      </key>
+      <key name="stage-manager-slot-5-shortcut" type="as">
+        <default>['&lt;Super&gt;&lt;Alt&gt;5']</default>
+        <summary>Switch to strip entry 5</summary>
+        <description>Puts entry 5 of the strip (counted from the top) on the stage. Only active while Stage Manager is on.</description>
+      </key>
+      <key name="stage-manager-slot-6-shortcut" type="as">
+        <default>['&lt;Super&gt;&lt;Alt&gt;6']</default>
+        <summary>Switch to strip entry 6</summary>
+        <description>Puts entry 6 of the strip (counted from the top) on the stage. Only active while Stage Manager is on.</description>
+      </key>
+
+      <!-- Launchpad (features/launchpad) -->
+      <key name="launchpad" type="b">
+        <default>true</default>
+        <summary>Launchpad</summary>
+        <description>A full-screen grid of every app, with pages, search, folders and drag to reorder (macOS 11 to 15). Its folders and order are GNOME's own (org.gnome.desktop.app-folders and app-picker-layout), so the Activities app grid stays the same.</description>
+      </key>
+      <key name="launchpad-shortcut" type="as">
+        <default>['&lt;Super&gt;a', 'F4']</default>
+        <summary>Launchpad shortcut</summary>
+        <description>Opens and closes Launchpad. While Launchpad runs, GNOME's own "Show all apps" shortcut gives up these keys (Super+A by default) and gets them back when Launchpad stops. Empty means no shortcut.</description>
+      </key>
+      <key name="launchpad-delete-apps" type="b">
+        <default>true</default>
+        <summary>Delete apps in Launchpad</summary>
+        <description>In jiggle mode (hold Alt, or press and hold an icon), show a delete button on apps their owner can remove: Only Flatpak apps (through GNOME Software). No other app gets one.</description>
+      </key>
+      <key name="dock-launchpad" type="b">
+        <default>true</default>
+        <summary>Launchpad in the Dock</summary>
+        <description>Show the Launchpad icon at the start of the Dock.</description>
+      </key>
+
+      <!-- Full screen Split View (features/splitView) -->
+      <key name="split-view" type="b">
+        <default>true</default>
+        <summary>Full screen Split View</summary>
+        <description>Tile a full-screen window to the left or right of the screen with a shortcut (split-view-left-shortcut, split-view-right-shortcut) and pick the window for the other half (macOS Split View). Esc cancels the pick; making a window of the pair full screen or maximized ends the pair.</description>
+      </key>
+      <key name="split-view-left-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;&lt;Alt&gt;Left']</default>
+        <summary>Split View: tile left shortcut</summary>
+        <description>Tile the focused full-screen window to the left half and pick the window for the right half. Empty means no shortcut.</description>
+      </key>
+      <key name="split-view-right-shortcut" type="as">
+        <default>['&lt;Control&gt;&lt;Super&gt;&lt;Alt&gt;Right']</default>
+        <summary>Split View: tile right shortcut</summary>
+        <description>Tile the focused full-screen window to the right half and pick the window for the left half. Empty means no shortcut.</description>
+      </key>
+
+      <!-- Mission Control (features/missionControl) -->
+      <key name="mission-control" type="b">
+        <default>true</default>
+        <summary>Mission Control</summary>
+        <description>The overview becomes macOS Mission Control: a Spaces bar on top and the windows of the current Space spread out, with no search entry and no dash. App Exposé shows one app's windows.</description>
+      </key>
+      <key name="mission-control-shortcut" type="as">
+        <default>['F3', 'XF86LaunchA', '&lt;Control&gt;Up']</default>
+        <summary>Mission Control shortcut</summary>
+        <description>Opens or closes Mission Control. F3 (and XF86LaunchA, the Mission Control key of Apple keyboards) and Control+Up, as on macOS.</description>
+      </key>
+      <key name="app-expose-shortcut" type="as">
+        <default>['&lt;Control&gt;Down']</default>
+        <summary>App Exposé shortcut</summary>
+        <description>Shows all windows of the front app, with its minimized windows along the bottom.</description>
+      </key>
+      <key name="mc-static-spaces" type="b">
+        <default>true</default>
+        <summary>Keep Spaces until you remove them</summary>
+        <description>Spaces stay as you made them, also when empty, and the Spaces bar has + and × buttons (macOS). GNOME's dynamic workspaces are off while this is on and come back after.</description>
+      </key>
+      <key name="mc-rearrange-spaces" type="b">
+        <default>false</default>
+        <summary>Automatically rearrange Spaces based on most recent use</summary>
+        <description>Mission Control puts the Spaces you used last first.</description>
+      </key>
+      <key name="mc-group-by-app" type="b">
+        <default>false</default>
+        <summary>Group windows by application</summary>
+        <description>Mission Control places the windows of one app next to each other.</description>
+      </key>
+      <key name="mc-switch-to-app-space" type="b">
+        <default>true</default>
+        <summary>When switching to an application, switch to a Space with open windows for the application</summary>
+        <description>Off: the app switcher only lists the windows of the current Space (GNOME's app-switcher current-workspace-only, given back when Guava stops).</description>
+      </key>
+      <key name="mc-start-on-desktop" type="b">
+        <default>true</default>
+        <summary>Start on the desktop</summary>
+        <description>At login GNOME opens the overview; Guava shows the desktop instead, as macOS does.</description>
+      </key>
+
+      <!-- Show Desktop (features/showDesktop) -->
+      <key name="show-desktop-button" type="b">
+        <default>true</default>
+        <summary>Show Desktop button in the top bar</summary>
+        <description>A small top bar button that slides every window to the screen edges to show the desktop. Click it again, or click a window, to bring them back.</description>
+      </key>
+      <key name="show-desktop-shortcut" type="as">
+        <default>['&lt;Super&gt;d']</default>
+        <summary>Show Desktop shortcut</summary>
+        <description>Shows the desktop or brings the windows back. Empty means no Guava shortcut; GNOME's own Show Desktop shortcut, if set, also plays this animation while Guava runs.</description>
+      </key>
+      <key name="click-wallpaper-reveals-desktop" type="s">
+        <choices>
+          <choice value="always"/>
+          <choice value="stage-manager"/>
+          <choice value="never"/>
+        </choices>
+        <default>'always'</default>
+        <summary>Click wallpaper to reveal desktop</summary>
+        <description>Clicking empty wallpaper slides the windows aside to show the desktop (Stage Manager, while on, sends the stage to the strip instead): always (macOS), only while Stage Manager is on, or never. With desktop icons (DING) only clicks that reach the wallpaper count.</description>
+      </key>
+      <key name="show-desktop-speed" type="s">
+        <choices>
+          <choice value="fast"/>
+          <choice value="normal"/>
+          <choice value="slow"/>
+        </choices>
+        <default>'normal'</default>
+        <summary>Show Desktop animation speed</summary>
+        <description>How fast the windows slide aside and back: fast, normal or slow.</description>
+      </key>
+
+      <!-- Desktop widgets (features/widgets, core/widgets) -->
+      <key name="widgets" type="b">
+        <default>true</default>
+        <summary>Desktop widgets</summary>
+        <description>Widgets on the desktop, above the wallpaper and below windows. None are placed until you add some with Edit Widgets… (right-click the desktop).</description>
+      </key>
+      <key name="widgets-layout" type="s">
+        <default>''</default>
+        <summary>Desktop widget layout</summary>
+        <description>The placed widgets as JSON (kind, size, options, monitor and grid position). Empty means no widgets. Written by Guava when you add, move, resize or remove a widget.</description>
+      </key>
+      <key name="widgets-style" type="s">
+        <choices>
+          <choice value="automatic"/>
+          <choice value="monochrome"/>
+          <choice value="full-color"/>
+        </choices>
+        <default>'automatic'</default>
+        <summary>Widget style</summary>
+        <description>automatic: monochrome and dimmed while an app window is in front, full colour when the desktop is. monochrome: always dimmed. full-color: never dimmed.</description>
+      </key>
+
+      <!-- Desktop icons (features/desktopIcons) -->
+      <key name="desktop-icons" type="b">
+        <default>true</default>
+        <summary>Desktop icons</summary>
+        <description>Show the files and folders of your Desktop folder on the desktop, from the top-right corner as Finder does. Guava steps aside while the Desktop Icons NG extension (DING) is enabled.</description>
+      </key>
+      <key name="desktop-icons-size" type="i">
+        <range min="32" max="128"/>
+        <default>64</default>
+        <summary>Desktop icon size</summary>
+        <description>The size of the desktop icons in pixels, from 32 to 128. 64 is the macOS default.</description>
+      </key>
+      <key name="desktop-icons-show-drives" type="b">
+        <default>true</default>
+        <summary>Show mounted drives on the desktop</summary>
+        <description>Show USB sticks, memory cards, discs and other drives you mounted as icons on the desktop. Eject them from their right-click menu.</description>
+      </key>
+      <key name="desktop-icons-sort" type="s">
+        <choices>
+          <choice value="none"/>
+          <choice value="name"/>
+          <choice value="kind"/>
+          <choice value="date-modified"/>
+          <choice value="date-created"/>
+          <choice value="size"/>
+        </choices>
+        <default>'none'</default>
+        <summary>Sort desktop icons by</summary>
+        <description>none: icons stay where you put them and new ones take the next free place. The others arrange every icon in that order, from the top-right corner down and then to the left. Dragging an icon sets it back to none.</description>
+      </key>
+      <key name="desktop-icons-layout" type="s">
+        <default>''</default>
+        <summary>Desktop icon arrangement</summary>
+        <description>Where each desktop icon sits, as JSON (the file name and its column and row from the top-right corner). Empty means no icon has been placed yet. Written by Guava when you drag icons or new files arrive.</description>
+      </key>
+
+      <!-- Screenshots (features/screenshots) -->
+      <key name="screenshots" type="b">
+        <default>true</default>
+        <summary>macOS screenshot shortcuts, toolbar and thumbnail</summary>
+        <description>Shift+Super+3 captures the screen, Shift+Super+4 an area or window, Shift+Super+5 opens the toolbar. They drive GNOME's own screenshot UI; Print and the other GNOME shortcuts stay as they are.</description>
+      </key>
+      <key name="screenshots-shortcut-screen" type="as">
+        <default>['&lt;Shift&gt;&lt;Super&gt;3']</default>
+        <summary>Capture Entire Screen shortcut</summary>
+        <description>Takes a screenshot of the whole screen at once. Empty means no shortcut.</description>
+      </key>
+      <key name="screenshots-shortcut-selection" type="as">
+        <default>['&lt;Shift&gt;&lt;Super&gt;4']</default>
+        <summary>Capture Selected Portion shortcut</summary>
+        <description>Drag an area to capture it; press Space to pick a window instead. Empty means no shortcut.</description>
+      </key>
+      <key name="screenshots-shortcut-toolbar" type="as">
+        <default>['&lt;Shift&gt;&lt;Super&gt;5']</default>
+        <summary>Screenshot toolbar shortcut</summary>
+        <description>Opens the toolbar with the capture and recording modes and Options. While a recording runs, it stops the recording. Empty means no shortcut.</description>
+      </key>
+      <key name="screenshots-save-to" type="s">
+        <choices>
+          <choice value="pictures"/>
+          <choice value="desktop"/>
+          <choice value="documents"/>
+          <choice value="clipboard"/>
+          <choice value="other"/>
+        </choices>
+        <default>'pictures'</default>
+        <summary>Save screenshots to</summary>
+        <description>Pictures/Screenshots (GNOME's own folder), the Desktop, Documents, only the clipboard, or another folder. macOS saves to the Desktop.</description>
+      </key>
+      <key name="screenshots-other-folder" type="s">
+        <default>''</default>
+        <summary>Other screenshot folder</summary>
+        <description>The folder used when Save to is Other Location.</description>
+      </key>
+      <key name="screenshots-timer" type="i">
+        <range min="0" max="10"/>
+        <default>0</default>
+        <summary>Screenshot timer in seconds</summary>
+        <description>Waits this long after you click Capture or Record in the toolbar. Guava uses 0 (none), 5 or 10.</description>
+      </key>
+      <key name="screenshots-thumbnail" type="b">
+        <default>true</default>
+        <summary>Show a floating thumbnail</summary>
+        <description>After a capture a small preview slides in at the bottom right. The file is saved to your chosen folder after 5 seconds, or at once when you swipe the preview to the right.</description>
+      </key>
+      <key name="screenshots-remember-selection" type="b">
+        <default>true</default>
+        <summary>Remember the last selection</summary>
+        <description>Starts the next area selection where the last one was.</description>
+      </key>
+      <key name="screenshots-show-pointer" type="b">
+        <default>false</default>
+        <summary>Show the mouse pointer in captures</summary>
+        <description>Includes the pointer in screenshots and recordings.</description>
+      </key>
+      <key name="screenshots-macos-names" type="b">
+        <default>true</default>
+        <summary>Name files like macOS</summary>
+        <description>Names screenshots "Screenshot 2026-03-09 at 08.05.07" instead of GNOME's "Screenshot From ...".</description>
+      </key>
+      <key name="screenshots-last-selection" type="ai">
+        <default>[]</default>
+        <summary>Last screenshot selection</summary>
+        <description>The x, y, width and height of the last selected area. Guava writes it.</description>
+      </key>
+
+      <!-- App switcher (features/switcher) -->
+      <key name="app-switcher" type="b">
+        <default>true</default>
+        <summary>macOS app switcher</summary>
+        <description>Super+Tab shows a panel of big app icons in most-recently-used order: Tab moves, Q quits, H hides, Down shows the app's windows, releasing Super switches. Replaces GNOME's app switcher while on; your shortcut is kept.</description>
+      </key>
+      <key name="switcher-cycle-windows" type="b">
+        <default>true</default>
+        <summary>Super+` cycles the windows of the front app</summary>
+        <description>Like Cmd-` on macOS: each press brings the next window of the current app forward, without a panel. Off gives Super+` back to GNOME's switcher.</description>
+      </key>
+      <key name="switcher-switch-to-space" type="b">
+        <default>true</default>
+        <summary>Switch to a Space with open windows for the application</summary>
+        <description>Choosing an app with no window on this workspace goes to a workspace that has one (macOS Mission Control setting). Off opens a new window here when the app can.</description>
+      </key>
+      <key name="switcher-restore-minimized" type="b">
+        <default>false</default>
+        <summary>Switching to an app restores its minimized windows</summary>
+        <description>macOS leaves minimized windows in the Dock unless Option (Alt) is held when Cmd (Super) is released. On restores the most recent one when the app has no other window to show.</description>
+      </key>
+
+      <!-- Trackpad gestures (features/gestures) -->
+      <key name="gestures" type="b">
+        <default>true</default>
+        <summary>Trackpad gestures</summary>
+        <description>macOS three- and four-finger touchpad gestures: App Exposé, Launchpad and Show Desktop, next to GNOME's own swipes for Mission Control and workspaces.</description>
+      </key>
+      <key name="gestures-mission-control" type="b">
+        <default>true</default>
+        <summary>Swipe up with three or four fingers for Mission Control</summary>
+        <description>GNOME's own overview swipe. Off: the swipe does nothing on the desktop.</description>
+      </key>
+      <key name="gestures-spaces" type="b">
+        <default>true</default>
+        <summary>Swipe left or right with three or four fingers to switch Spaces</summary>
+        <description>GNOME's own workspace swipe. Off: the swipe does nothing on the desktop.</description>
+      </key>
+      <key name="gestures-app-expose" type="b">
+        <default>true</default>
+        <summary>Swipe down with four fingers for App Exposé</summary>
+        <description>Shows every window of the front app.</description>
+      </key>
+      <key name="gestures-launchpad" type="b">
+        <default>true</default>
+        <summary>Pinch with thumb and three fingers for Launchpad</summary>
+        <description>Opens the Launchpad (the app grid).</description>
+      </key>
+      <key name="gestures-show-desktop" type="b">
+        <default>true</default>
+        <summary>Spread with thumb and three fingers to show the desktop</summary>
+        <description>Pushes the windows aside, like Show Desktop; pinch or click to bring them back.</description>
+      </key>
+
+      <!-- Hot corners (features/hotCorners) -->
+      <key name="hot-corner-top-left" type="s">
+        <choices>
+          <choice value="none"/>
+          <choice value="mission-control"/>
+          <choice value="app-expose"/>
+          <choice value="desktop"/>
+          <choice value="notification-center"/>
+          <choice value="launchpad"/>
+          <choice value="lock-screen"/>
+          <choice value="display-sleep"/>
+        </choices>
+        <default>'none'</default>
+        <summary>Hot corner action, top left</summary>
+        <description>What pushing the pointer into the top left corner does: none, mission-control, app-expose (Application Windows), desktop, notification-center, launchpad, lock-screen or display-sleep. macOS has every corner off.</description>
+      </key>
+      <key name="hot-corner-top-left-modifier" type="s">
+        <choices>
+          <choice value="none"/>
+          <choice value="shift"/>
+          <choice value="ctrl"/>
+          <choice value="alt"/>
+          <choice value="super"/>
+        </choices>
+        <default>'none'</default>
+        <summary>Modifier key the top left hot corner needs</summary>
+        <description>The corner fires only while this key is held (none, shift, ctrl, alt or super), which avoids accidental triggers.</description>
+      </key>
+      <key name="hot-corner-top-right" type="s">
+        <choices>
+          <choice value="none"/>
+          <choice value="mission-control"/>
+          <choice value="app-expose"/>
+          <choice value="desktop"/>
+          <choice value="notification-center"/>
+          <choice value="launchpad"/>
+          <choice value="lock-screen"/>
+          <choice value="display-sleep"/>
+        </choices>
+        <default>'none'</default>
+        <summary>Hot corner action, top right</summary>
+        <description>What pushing the pointer into the top right corner does: none, mission-control, app-expose (Application Windows), desktop, notification-center, launchpad, lock-screen or display-sleep. macOS has every corner off.</description>
+      </key>
+      <key name="hot-corner-top-right-modifier" type="s">
+        <choices>
+          <choice value="none"/>
+          <choice value="shift"/>
+          <choice value="ctrl"/>
+          <choice value="alt"/>
+          <choice value="super"/>
+        </choices>
+        <default>'none'</default>
+        <summary>Modifier key the top right hot corner needs</summary>
+        <description>The corner fires only while this key is held (none, shift, ctrl, alt or super), which avoids accidental triggers.</description>
+      </key>
+      <key name="hot-corner-bottom-left" type="s">
+        <choices>
+          <choice value="none"/>
+          <choice value="mission-control"/>
+          <choice value="app-expose"/>
+          <choice value="desktop"/>
+          <choice value="notification-center"/>
+          <choice value="launchpad"/>
+          <choice value="lock-screen"/>
+          <choice value="display-sleep"/>
+        </choices>
+        <default>'none'</default>
+        <summary>Hot corner action, bottom left</summary>
+        <description>What pushing the pointer into the bottom left corner does: none, mission-control, app-expose (Application Windows), desktop, notification-center, launchpad, lock-screen or display-sleep. macOS has every corner off.</description>
+      </key>
+      <key name="hot-corner-bottom-left-modifier" type="s">
+        <choices>
+          <choice value="none"/>
+          <choice value="shift"/>
+          <choice value="ctrl"/>
+          <choice value="alt"/>
+          <choice value="super"/>
+        </choices>
+        <default>'none'</default>
+        <summary>Modifier key the bottom left hot corner needs</summary>
+        <description>The corner fires only while this key is held (none, shift, ctrl, alt or super), which avoids accidental triggers.</description>
+      </key>
+      <key name="hot-corner-bottom-right" type="s">
+        <choices>
+          <choice value="none"/>
+          <choice value="mission-control"/>
+          <choice value="app-expose"/>
+          <choice value="desktop"/>
+          <choice value="notification-center"/>
+          <choice value="launchpad"/>
+          <choice value="lock-screen"/>
+          <choice value="display-sleep"/>
+        </choices>
+        <default>'none'</default>
+        <summary>Hot corner action, bottom right</summary>
+        <description>What pushing the pointer into the bottom right corner does: none, mission-control, app-expose (Application Windows), desktop, notification-center, launchpad, lock-screen or display-sleep. macOS has every corner off.</description>
+      </key>
+      <key name="hot-corner-bottom-right-modifier" type="s">
+        <choices>
+          <choice value="none"/>
+          <choice value="shift"/>
+          <choice value="ctrl"/>
+          <choice value="alt"/>
+          <choice value="super"/>
+        </choices>
+        <default>'none'</default>
+        <summary>Modifier key the bottom right hot corner needs</summary>
+        <description>The corner fires only while this key is held (none, shift, ctrl, alt or super), which avoids accidental triggers.</description>
+      </key>
+
+      <!-- Clipboard history (features/clipboard) -->
+      <key name="clipboard-history" type="b">
+        <default>true</default>
+        <summary>Clipboard history</summary>
+        <description>Keep a history of copied text, links, colours and images, with a top-bar popover and Quick Paste.</description>
+      </key>
+      <key name="clipboard-recording" type="b">
+        <default>true</default>
+        <summary>Record clipboard changes</summary>
+        <description>When off, nothing new is recorded and the existing history is kept.</description>
+      </key>
+      <key name="clipboard-shortcut" type="as">
+        <default>[]</default>
+        <summary>Quick Paste shortcut</summary>
+        <description>Opens Quick Paste. Empty means no shortcut; prefs has a button for Super+Shift+V.</description>
+      </key>
+      <key name="clipboard-panel-icon" type="b">
+        <default>true</default>
+        <summary>Clipboard icon in the top bar</summary>
+        <description>Show the clipboard history popover button in the top bar.</description>
+      </key>
+      <key name="clipboard-history-size" type="i">
+        <default>25</default>
+        <range min="1" max="500"/>
+        <summary>Clipboard history size</summary>
+        <description>How many unpinned entries are kept. Pinned entries never count and never expire.</description>
+      </key>
+      <key name="clipboard-images" type="b">
+        <default>true</default>
+        <summary>Keep copied images</summary>
+        <description>Record images in the clipboard history. Images over 5 MB are skipped.</description>
+      </key>
+      <key name="clipboard-persist" type="b">
+        <default>true</default>
+        <summary>Save clipboard history to disk</summary>
+        <description>Save history in ~/.local/share/guava/clipboard/ (readable only by you) so it survives screen lock and log out. Turning it off deletes the saved files.</description>
+      </key>
+      <key name="clipboard-ignore-sensitive" type="b">
+        <default>true</default>
+        <summary>Ignore passwords</summary>
+        <description>Do not record copies marked as secret (x-kde-passwordManagerHint) or copied from known password managers.</description>
+      </key>
+      <key name="clipboard-excluded-apps" type="as">
+        <default>[]</default>
+        <summary>Apps to ignore</summary>
+        <description>Extra window classes or application ids whose copies are never recorded.</description>
+      </key>
+
+      <!-- Spotlight (features/spotlight) -->
+      <key name="spotlight" type="b">
+        <default>true</default>
+        <summary>Spotlight</summary>
+        <description>A centred search bar for apps, settings, files, the clipboard, calculations and the web.</description>
+      </key>
+      <key name="spotlight-on-super" type="b">
+        <default>true</default>
+        <summary>Open Spotlight with a tap of Super</summary>
+        <description>A tap of the Super key opens Spotlight instead of the Activities overview. The overview stays on the hot corner, the touchpad gesture, Super+A and the Activities button. Off gives the key back to the overview.</description>
+      </key>
+      <key name="spotlight-shortcut" type="as">
+        <default>[]</default>
+        <summary>Extra Spotlight shortcut</summary>
+        <description>An optional extra shortcut that opens Spotlight, for example &lt;Super&gt;slash. Empty means none. Super+Space is left to GNOME's input-source switch.</description>
+      </key>
+      <key name="spotlight-files" type="b">
+        <default>true</default>
+        <summary>Spotlight: files and documents</summary>
+        <description>Show file results from GNOME's own search (Files). Guava does not index anything.</description>
+      </key>
+      <key name="spotlight-settings" type="b">
+        <default>true</default>
+        <summary>Spotlight: settings</summary>
+        <description>Show GNOME Settings panels and Guava switches in the results.</description>
+      </key>
+      <key name="spotlight-calculator" type="b">
+        <default>true</default>
+        <summary>Spotlight: calculator</summary>
+        <description>Evaluate arithmetic and unit conversions typed in the search field.</description>
+      </key>
+      <key name="spotlight-clipboard" type="b">
+        <default>true</default>
+        <summary>Spotlight: clipboard</summary>
+        <description>Show recent Clipboard history entries. Needs Clipboard history to be on.</description>
+      </key>
+      <key name="spotlight-recent-clipboard" type="b">
+        <default>false</default>
+        <summary>Spotlight: recent clipboard on an empty search</summary>
+        <description>Show the latest Clipboard history entries when the search field is empty. Off by default so copied text is not shown to anyone glancing at the screen. Typing still searches the clipboard when Spotlight: clipboard is on.</description>
+      </key>
+      <key name="spotlight-web" type="b">
+        <default>true</default>
+        <summary>Spotlight: web search</summary>
+        <description>Add a row that opens your search engine in the browser. Nothing is sent until you press Return.</description>
+      </key>
+      <key name="spotlight-engine" type="s">
+        <default>'duckduckgo'</default>
+        <summary>Spotlight: web search engine</summary>
+        <description>One of duckduckgo, google, bing, brave, startpage, ecosia, or an https address that contains %s for the search words.</description>
+      </key>
+      <key name="spotlight-views" type="b">
+        <default>true</default>
+        <summary>Spotlight: browse views</summary>
+        <description>Show the Applications, Files, Actions and Clipboard buttons next to the empty search field, as on macOS Tahoe. Super+1 to Super+4 open them while Spotlight is open.</description>
+      </key>
+      <key name="spotlight-actions" type="b">
+        <default>true</default>
+        <summary>Spotlight: actions</summary>
+        <description>Search and run actions: Guava's own (Show Desktop, Lock Screen, a timer, Do Not Disturb, Dark Mode, Empty Trash, Take Screenshot) and the actions apps list in their .desktop files, such as New Private Window.</description>
+      </key>
+      <key name="spotlight-quick-keys" type="as">
+        <default>[]</default>
+        <summary>Spotlight: Quick Keys</summary>
+        <description>Short aliases typed in Spotlight, as "alias=target". The alias is 1 to 12 lowercase letters or digits; the target is action:ID (show-desktop, lock, timer, dnd, dark-mode, empty-trash, screenshot) or app:DESKTOP-ID. Words after the alias are the action's parameter, as in "tm 5" for a 5-minute timer.</description>
+      </key>
+      <key name="spotlight-history" type="b">
+        <default>true</default>
+        <summary>Spotlight: search history</summary>
+        <description>Remember recent searches and opened results, shown when the field is empty and recalled with the Up arrow, as on macOS. Turning it off clears them.</description>
+      </key>
+      <key name="spotlight-history-queries" type="as">
+        <default>[]</default>
+        <summary>Spotlight: recent searches (internal)</summary>
+        <description>The last searches that opened a result, newest first. Written by Spotlight; cleared by "Clear History".</description>
+      </key>
+      <key name="spotlight-recent-results" type="as">
+        <default>[]</default>
+        <summary>Spotlight: recent results (internal)</summary>
+        <description>The last opened results (apps, files, actions, settings) as small JSON records, newest first. Written by Spotlight; cleared by "Clear History".</description>
+      </key>
+      <key name="spotlight-quick-look" type="b">
+        <default>true</default>
+        <summary>Spotlight: Quick Look</summary>
+        <description>Space on a selected file previews it with GNOME's previewer (Sushi), when it is installed.</description>
+      </key>
+      <key name="spotlight-menu-items" type="b">
+        <default>true</default>
+        <summary>Spotlight: menu items</summary>
+        <description>Search the menu items of the focused app (from Guava's menu bar), and Tab scopes the search to them.</description>
+      </key>
+
+      <!-- Notch (features/notch) -->
+      <key name="notch" type="b">
+        <default>true</default>
+        <summary>Notification notch</summary>
+        <description>Show notifications, live activities and volume or brightness changes in a pill at the top centre of the screen. Turning it off restores the standard banners and on-screen display. The notification history stays in the calendar menu.</description>
+      </key>
+      <key name="notch-notifications" type="b">
+        <default>true</default>
+        <summary>Notch shows notifications</summary>
+        <description>Show notification banners in the notch instead of the standard banner.</description>
+      </key>
+      <key name="notch-live-activities" type="b">
+        <default>true</default>
+        <summary>Notch shows live activities</summary>
+        <description>Show what is happening now, such as the playing song, in the notch.</description>
+      </key>
+      <key name="notch-timeout" type="i">
+        <default>5</default>
+        <range min="2" max="30"/>
+        <summary>Notification time (seconds)</summary>
+        <description>How long a notification stays in the notch. Hovering keeps it open and urgent ones stay until dismissed.</description>
+      </key>
+      <key name="notch-show-clipboard" type="b">
+        <default>false</default>
+        <summary>Show clipboard in the notch dashboard</summary>
+        <description>Show the latest clipboard entries in the notch dashboard, which opens when you click the notch. Turn it off to keep copied text off the screen while sharing it.</description>
+      </key>
+      <key name="notch-hover-expand" type="b">
+        <default>true</default>
+        <summary>Notch opens on hover</summary>
+        <description>Open the notch when the pointer rests on it, like the Dynamic Island apps on macOS. A click still opens it, and keeps it open.</description>
+      </key>
+      <key name="notch-hover-delay" type="i">
+        <default>300</default>
+        <range min="0" max="2000"/>
+        <summary>Notch hover delay (milliseconds)</summary>
+        <description>How long the pointer must rest on the notch before it opens.</description>
+      </key>
+      <key name="notch-activity-battery" type="b">
+        <default>true</default>
+        <summary>Notch: charging and battery</summary>
+        <description>Show charging, low battery and accessory battery in the notch.</description>
+      </key>
+      <key name="notch-activity-bluetooth" type="b">
+        <default>true</default>
+        <summary>Notch: headphones</summary>
+        <description>Show Bluetooth headphones when they connect, with their battery level.</description>
+      </key>
+      <key name="notch-activity-timers" type="b">
+        <default>true</default>
+        <summary>Notch: timers</summary>
+        <description>Show Guava timers counting down in the notch.</description>
+      </key>
+      <key name="notch-activity-recording" type="b">
+        <default>true</default>
+        <summary>Notch: screen recording</summary>
+        <description>Show a running screen recording in the notch, with a stop button.</description>
+      </key>
+      <key name="notch-activity-calendar" type="b">
+        <default>true</default>
+        <summary>Notch: next event</summary>
+        <description>Show the next calendar event in the notch from 15 minutes before it starts.</description>
+      </key>
+      <key name="notch-activity-downloads" type="b">
+        <default>true</default>
+        <summary>Notch: downloads</summary>
+        <description>Show download progress in the notch (app progress bars and partial files in Downloads).</description>
+      </key>
+      <key name="notch-copy-codes" type="b">
+        <default>true</default>
+        <summary>Notch: copy one-time codes</summary>
+        <description>When a notification carries a one-time code, offer a Copy button in the notch. Detection runs locally.</description>
+      </key>
+      <key name="notch-shelf-downloads" type="b">
+        <default>true</default>
+        <summary>Shelf: add finished downloads</summary>
+        <description>Put each finished download on the notch shelf.</description>
+      </key>
+      <key name="notch-shelf-screenshots" type="b">
+        <default>true</default>
+        <summary>Shelf: add screenshots</summary>
+        <description>Put each new screenshot on the notch shelf.</description>
+      </key>
+      <key name="notch-shelf" type="as">
+        <default>[]</default>
+        <summary>Notch shelf (internal)</summary>
+        <description>Internal. The file links on the notch shelf, newest first. Only links are kept; the files stay where they are.</description>
+      </key>
+      <key name="timers-state" type="s">
+        <default>'[]'</default>
+        <summary>Timers (internal)</summary>
+        <description>Internal. Guava's running and paused timers, so they survive the lock screen and a restart. Written by core/timers.js.</description>
+      </key>
+
+      <!-- Notification Center and Focus (features/notificationCenter, features/focus) -->
+      <key name="notification-center" type="b">
+        <default>true</default>
+        <summary>Notification Center</summary>
+        <description>Clicking the clock opens a column at the right of the screen with the date, the notifications grouped by app and the widgets, as on macOS. Off: the clock opens the calendar card.</description>
+      </key>
+      <key name="notification-center-widgets" type="b">
+        <default>true</default>
+        <summary>Widgets in the Notification Center</summary>
+        <description>Show the widgets area below the notifications.</description>
+      </key>
+      <key name="focus-modes" type="b">
+        <default>true</default>
+        <summary>Focus modes</summary>
+        <description>Do Not Disturb becomes one of several Focus modes (Do Not Disturb, Sleep, Work, Personal and custom ones), each with allowed apps, schedules and app triggers. The Control Center shows a Focus menu.</description>
+      </key>
+      <key name="focus-profiles" type="s">
+        <default>''</default>
+        <summary>Focus mode settings</summary>
+        <description>JSON list of the Focus modes and their allowed apps, schedules and app triggers. Empty: the built-in modes with nothing allowed and nothing automatic (the macOS default).</description>
+      </key>
+      <key name="focus-state" type="s">
+        <default>''</default>
+        <summary>Focus chosen by the user (internal)</summary>
+        <description>Written by Guava: the mode the user turned on, and until when, as JSON. Empty: the schedules and app triggers decide.</description>
+      </key>
+      <key name="focus-last" type="s">
+        <default>'dnd'</default>
+        <summary>Last Focus mode used (internal)</summary>
+        <description>Written by Guava: the mode a click on the Focus tile turns on.</description>
+      </key>
+      <key name="focus-menubar-icon" type="b">
+        <default>true</default>
+        <summary>Show the Focus icon in the menu bar</summary>
+        <description>Show the active Focus mode's icon in the top bar.</description>
+      </key>
+
+      <!-- On-screen display (core/osd.js, features/osd) -->
+      <key name="osd-location" type="s">
+        <choices>
+          <choice value="notch"/>
+          <choice value="menu-bar"/>
+          <choice value="system"/>
+        </choices>
+        <default>'notch'</default>
+        <summary>Show volume and brightness in</summary>
+        <description>'notch' shows them in the notch while it is on, and in a glass pill under the menu bar when it is off (macOS 26 style); 'menu-bar' always uses the pill; 'system' keeps GNOME's centred pop-up.</description>
+      </key>
+
+      <!-- Dialogs (features/dialogs) -->
+      <key name="dialogs-glass" type="b">
+        <default>true</default>
+        <summary>Glass system dialogs</summary>
+        <description>Restyle the Shell's modal dialogs (authentication, log out, restart and shut down, Run a Command) as macOS-style glass alerts: an icon on top, buttons at the right, the default one in the accent colour.</description>
+      </key>
+
+      <!-- Colour filters (features/colorFilters) -->
+      <key name="color-filter" type="b">
+        <default>false</default>
+        <summary>Colour filter</summary>
+        <description>Filter every colour on screen, like macOS Accessibility > Display > Colour Filters. Off by default.</description>
+      </key>
+      <key name="color-filter-kind" type="s">
+        <choices>
+          <choice value="greyscale"/>
+          <choice value="protanopia"/>
+          <choice value="deuteranopia"/>
+          <choice value="tritanopia"/>
+          <choice value="tint"/>
+        </choices>
+        <default>'greyscale'</default>
+        <summary>Colour filter type</summary>
+        <description>Greyscale, a correction for red/green (protanopia), green/red (deuteranopia) or blue/yellow (tritanopia) colour blindness, or a colour tint.</description>
+      </key>
+      <key name="color-filter-intensity" type="i">
+        <default>100</default>
+        <range min="0" max="100"/>
+        <summary>Colour filter intensity</summary>
+        <description>How strongly the filter applies, in percent.</description>
+      </key>
+      <key name="color-filter-hue" type="i">
+        <default>40</default>
+        <range min="0" max="359"/>
+        <summary>Colour tint hue</summary>
+        <description>The hue of the colour tint filter, in degrees.</description>
+      </key>
+
+    </schema>
+</schemalist>

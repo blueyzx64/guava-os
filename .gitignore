@@ -1,0 +1,12 @@
+*ns.md
+*JavaScript.md
+.vscode
+samples
+.c[a-z]*/
+*.log
+locale
+*.compiled
+# tests/ is tracked: gjs -m unit tests for pure modules
+# Project docs are tracked
+!docs/**
+dist/

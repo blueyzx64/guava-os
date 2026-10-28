@@ -1,0 +1,364 @@
+/* feature: desktop-widgets */
+/* Widget cards (core/widgets/view.js) are shared by the desktop layer, the Notification
+   Center and the notch, so their rules live here for every surface. lib/glass.js ('overlays')
+   gives the fill and rim; this is the solid look when glass is off. Radius and padding are
+   inline (view.js RADIUS / PADDING, scaled). */
+.guava-widget {
+  background-color: rgba(36, 36, 40, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+.guava-widget.guava-glass-light {
+  color: #1d1d1f;
+}
+
+/* Type follows macOS: 13 for names and body, 12 and 11 for captions, thin 44 for the big
+   number. Weights: 300 hero, 600 titles. Sizes are px; the card's own padding is inline. */
+.guava-widget-content {
+  spacing: 4px;
+}
+
+.guava-widget-row {
+  spacing: 10px;
+}
+
+.guava-widget-column {
+  spacing: 2px;
+}
+
+.guava-widget-hero {
+  font-size: 44px;
+  font-weight: 300;
+}
+
+.guava-widget-clock-digital {
+  font-size: 40px;
+  font-weight: 300;
+}
+
+.guava-widget-day {
+  font-size: 54px;
+  font-weight: 300;
+}
+
+.guava-widget-headline {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.guava-widget-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.guava-widget-body {
+  font-size: 13px;
+}
+
+.guava-widget-caption {
+  font-size: 12px;
+}
+
+.guava-widget-footnote {
+  font-size: 11px;
+}
+
+/* The weekday or month over the date: small, bold, capitals */
+.guava-widget-caps {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.guava-widget-strong {
+  font-weight: 700;
+}
+
+.guava-widget-dim {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.guava-glass-light .guava-widget-dim {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+/* The calendar's weekday and the clock's date: macOS red */
+.guava-widget-accent {
+  color: #ff453a;
+}
+
+.guava-glass-light .guava-widget-accent {
+  color: #d70015;
+}
+
+.guava-widget-icon {
+  color: inherit;
+}
+
+/* Calendar */
+.guava-widget-date {
+  min-width: 90px;
+}
+
+.guava-widget-medium .guava-widget-date {
+  min-width: 120px;
+}
+
+.guava-widget-events {
+  spacing: 6px;
+}
+
+.guava-widget-event {
+  spacing: 6px;
+}
+
+.guava-widget-event-bar {
+  width: 3px;
+  border-radius: 2px;
+  background-color: #ff453a;
+}
+
+.guava-widget-month {
+  spacing-rows: 2px;
+}
+
+.guava-widget-month-head {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.guava-widget-month-day {
+  font-size: 12px;
+  min-width: 26px;
+  padding: 3px 0;
+  border-radius: 13px;
+  text-align: center;
+}
+
+.guava-widget-month-day.guava-widget-today {
+  background-color: #ff453a;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Weather */
+.guava-widget-now {
+  spacing: 6px;
+}
+
+.guava-widget-forecast {
+  spacing: 4px;
+  padding-top: 8px;
+}
+
+.guava-widget-hour {
+  spacing: 4px;
+}
+
+/* Clocks, batteries, system */
+.guava-widget-clocks {
+  spacing: 10px;
+}
+
+.guava-widget-world {
+  spacing: 6px;
+}
+
+.guava-widget-batteries,
+.guava-widget-battery,
+.guava-widget-gauge {
+  spacing: 6px;
+}
+
+/* Now Playing: art concentric with the card (24 - 16 = 8 px) */
+.guava-widget-artwork {
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.guava-widget-art-icon {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.guava-widget-controls {
+  spacing: 6px;
+}
+
+.guava-widget-button {
+  border-radius: 999px;
+  padding: 6px;
+  background-color: rgba(255, 255, 255, 0.14);
+  color: inherit;
+}
+
+.guava-widget-button:hover {
+  background-color: rgba(255, 255, 255, 0.24);
+}
+
+.guava-widget-button:active {
+  background-color: rgba(255, 255, 255, 0.32);
+}
+
+.guava-widget-button:focus {
+  box-shadow: inset 0 0 0 2px -st-accent-color;
+}
+
+.guava-widget-button:insensitive {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.guava-glass-light .guava-widget-button {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.guava-glass-light .guava-widget-button:hover {
+  background-color: rgba(0, 0, 0, 0.14);
+}
+
+/* Desktop layer */
+.guava-widgets-layer {
+  background-color: transparent;
+}
+
+.guava-widget-dragging {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* The snap target while dragging */
+.guava-widget-outline {
+  border-radius: 24px;
+  border: 2px dashed rgba(255, 255, 255, 0.55);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.guava-widget-remove {
+  width: 22px;
+  height: 22px;
+  border-radius: 11px;
+  background-color: rgba(60, 60, 64, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.guava-widget-remove:hover {
+  background-color: rgba(90, 90, 96, 0.98);
+}
+
+/* Gallery */
+.guava-widgets-gallery {
+  border-radius: 26px;
+  padding: 14px 18px;
+  spacing: 10px;
+  background-color: rgba(36, 36, 40, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.guava-widgets-gallery-header {
+  spacing: 10px;
+}
+
+.guava-widgets-gallery-title {
+  font-size: 1.25em;
+  font-weight: 700;
+  padding-right: 6px;
+}
+
+.guava-widgets-gallery-search {
+  border-radius: 999px;
+  padding: 4px 10px;
+  max-width: 360px;
+}
+
+.guava-widgets-gallery-search-icon {
+  icon-size: 14px;
+  padding-right: 4px;
+}
+
+.guava-widgets-gallery-pill {
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+.guava-widgets-gallery-pill:hover {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+.guava-widgets-gallery-done {
+  background-color: -st-accent-color;
+  color: -st-accent-fg-color;
+}
+
+.guava-widgets-gallery-categories {
+  spacing: 6px;
+}
+
+.guava-widgets-gallery-chip {
+  border-radius: 8px;
+  padding: 3px 10px;
+  font-size: 0.9em;
+}
+
+.guava-widgets-gallery-chip:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.guava-widgets-gallery-chip:checked {
+  background-color: rgba(255, 255, 255, 0.2);
+  font-weight: 700;
+}
+
+.guava-widgets-gallery-row {
+  spacing: 18px;
+  padding: 4px 18px 12px 2px;
+}
+
+.guava-widgets-gallery-tile {
+  spacing: 6px;
+}
+
+.guava-widgets-gallery-preview {
+  border-radius: 14px;
+}
+
+.guava-widgets-gallery-preview:hover,
+.guava-widgets-gallery-preview:focus {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.guava-widgets-gallery-name {
+  font-weight: 600;
+}
+
+.guava-widgets-gallery-add {
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background-color: -st-accent-color;
+  color: -st-accent-fg-color;
+}
+
+.guava-widgets-gallery-sizes {
+  spacing: 4px;
+}
+
+.guava-widgets-gallery-size {
+  border-radius: 6px;
+  padding: 1px 8px;
+  font-size: 0.8em;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.guava-widgets-gallery-size:checked {
+  background-color: rgba(255, 255, 255, 0.28);
+}
+
+.guava-widgets-gallery-empty {
+  padding: 24px;
+  color: rgba(255, 255, 255, 0.62);
+}

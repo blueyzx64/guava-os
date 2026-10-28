@@ -1,0 +1,175 @@
+/* SPDX-License-Identifier: GPL-3.0-or-later */
+/* Guava OS: shared Shell styles. `make css` builds stylesheet.css from this file
+   followed by every features/<name>/style.css (in name order). Edit those, never
+   stylesheet.css. Rules here belong to lib/ services used by several features. */
+
+/* lib/glass.js: faux Liquid Glass (rules in lib/glassParams.js). No blur, no shader, no extra
+   actor. The fill colours are an inline style fragment on the surface itself (a vertical
+   gradient: sheen at the top, shade at the bottom, the wallpaper tint mixed in); these classes
+   give it the edge and the rim, and its shadow host the drop shadow. Never give a glass surface a background on a
+   parent or sibling: a rectangle shows behind the rounded corners.
+     .guava-glass               on every glass surface
+     .guava-glass-dark|-light   dark or light glass (the theme's text colour decides)
+     .guava-glass-<surface>     panel | menus | dock | overlays
+     .guava-glass-content|-bar  text on it (menus, Spotlight) or icons (dock, menu bar, floor)
+     .guava-glass-shadow        on the shadow host (same rounded rect, right behind): the
+                               drop shadow
+     .guava-glass-borders       Show Borders: a 35 % contrast edge
+     .guava-glass-contrast      Increase Contrast / High Contrast: a 60 % edge, no rim
+     .guava-glass-solid         opaque (Reduce Transparency or contrast)
+     .guava-glass-noise         the frosted grain
+     .guava-glass-static        reduced motion: no transitions */
+
+/* The edge (a lensing ring on dark glass, the darkened edge of macOS 27 on light glass) and
+   the specular rim: 1px of light along the top, following the corners. The surface never has
+   an outer shadow: St would draw it from the gradient texture with hard edges. The theme gives
+   menus and Quick Settings one (.popup-menu-content), so these rules carry a type selector to
+   outrank it: they replace its box-shadow instead of losing to it (the dark square behind a
+   menu). */
+StWidget.guava-glass.guava-glass-dark {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.22);
+}
+
+StWidget.guava-glass.guava-glass-light {
+  border: 1px solid rgba(0, 0, 0, 0.13);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.95);
+}
+
+/* The drop shadow, on the shadow host behind the surface. St cuts the blur off at one blur
+   radius, which leaves about 13% of the alpha as a visible edge on bright content: the alpha
+   stays low enough that the edge is under 5/255. */
+.guava-glass-shadow {
+  background-color: transparent;
+  border-width: 0;
+}
+
+.guava-glass-shadow.guava-glass-dark {
+  box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.14);
+}
+
+.guava-glass-shadow.guava-glass-light {
+  box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.09);
+}
+
+/* The menu bar runs edge to edge: no ring, no shadow; Show Borders draws a bottom line */
+#panel.guava-glass {
+  border-width: 0;
+  box-shadow: none;
+}
+
+#panel.guava-glass.guava-glass-borders,
+#panel.guava-glass.guava-glass-contrast {
+  border-bottom-width: 1px;
+}
+
+/* Show Borders (macOS 27) */
+.guava-glass.guava-glass-borders.guava-glass-dark {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.guava-glass.guava-glass-borders.guava-glass-light {
+  border-color: rgba(0, 0, 0, 0.35);
+}
+
+/* Increase Contrast: strong edge, no specular */
+.guava-glass.guava-glass-contrast.guava-glass-dark {
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.guava-glass.guava-glass-contrast.guava-glass-light {
+  border-color: rgba(0, 0, 0, 0.6);
+}
+
+StWidget.guava-glass.guava-glass-contrast {
+  box-shadow: none;
+}
+
+/* Frosted grain over a flat fill (St draws an image or a gradient, not both) */
+.guava-glass.guava-glass-noise {
+  background-image: url("icons/glass/noise.svg");
+  background-repeat: repeat;
+}
+
+/* Reduced motion: no fades on the glass */
+.guava-glass-static {
+  transition-duration: 0ms;
+}
+
+/* Highlight colour (features/appearance): text selection in Guava's glass search fields. The
+   selected text keeps its colour, as on macOS. */
+.guava-highlight .guava-glass-dark StEntry { selected-color: #ffffff; }
+.guava-highlight .guava-glass-light StEntry { selected-color: #1d1d1f; }
+.guava-highlight-blue .guava-glass StEntry { selection-background-color: rgba(0, 122, 255, 0.45); }
+.guava-highlight-purple .guava-glass StEntry { selection-background-color: rgba(149, 61, 150, 0.5); }
+.guava-highlight-pink .guava-glass StEntry { selection-background-color: rgba(247, 79, 158, 0.45); }
+.guava-highlight-red .guava-glass StEntry { selection-background-color: rgba(224, 56, 62, 0.45); }
+.guava-highlight-orange .guava-glass StEntry { selection-background-color: rgba(247, 130, 27, 0.45); }
+.guava-highlight-yellow .guava-glass StEntry { selection-background-color: rgba(255, 199, 38, 0.5); }
+.guava-highlight-green .guava-glass StEntry { selection-background-color: rgba(98, 186, 70, 0.45); }
+.guava-highlight-graphite .guava-glass StEntry { selection-background-color: rgba(140, 140, 140, 0.45); }
+
+
+/* lib/modalSurface.js: Spotlight and Quick Paste share these frames */
+
+/* Subtle dim behind any Guava modal */
+.guava-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
+.guava-modal {
+  border-radius: 24px;
+}
+
+.guava-modal-dark {
+  background-color: rgba(32, 32, 36, 0.93);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.40);
+  color: #f5f5f7;
+}
+
+.guava-modal-light {
+  background-color: rgba(240, 240, 244, 0.94);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.24);
+  color: #1d1d1f;
+}
+
+/* High contrast: no see-through, a firmer rim */
+.guava-modal-dark.guava-modal-opaque {
+  background-color: #1e1e22;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.guava-modal-light.guava-modal-opaque {
+  background-color: #fafafa;
+  border: 1px solid rgba(0, 0, 0, 0.55);
+}
+
+/* Keyboard focus ring, shared: every control below takes the key focus (Tab, arrow keys) and
+   shows the same 2 px accent ring the dock and the notch use. A feature that wants another
+   look for its own control writes its own :focus rule after this one. */
+.guava-emoji-tab:focus,
+.guava-menubar-search:focus,
+.guava-about-button:focus,
+.guava-force-quit-button:focus,
+.guava-mc-space-close:focus,
+.guava-mc-space-label:focus,
+.guava-clip-filter:focus,
+.guava-clip-recording:focus,
+.guava-stage-card:focus,
+.guava-launchpad-search:focus,
+.guava-launchpad-delete:focus,
+.guava-cc-editor-text-button:focus,
+.guava-cc-editor-search:focus,
+.guava-cc-np-button:focus,
+.window-control-button:focus,
+.guava-widgets-gallery-search:focus,
+.guava-widgets-gallery-pill:focus,
+.guava-widgets-gallery-chip:focus,
+.guava-widgets-gallery-add:focus,
+.guava-widgets-gallery-size:focus,
+.guava-widget-remove:focus,
+.guava-notch-scrub-hit:focus {
+  box-shadow: inset 0 0 0 2px -st-accent-color;
+}

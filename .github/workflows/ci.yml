@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, schema, tests, pack
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+            gnome-shell gjs libglib2.0-bin gettext zip
+
+      - name: Install eslint
+        run: npm install --global eslint@9
+
+      - name: Lint
+        run: make lint
+
+      - name: Schema (strict)
+        run: make schema-check
+
+      - name: Generated stylesheet is up to date
+        run: make css-check
+
+      - name: Unit tests
+        run: make test
+
+      - name: Pack extension and check its contents
+        run: make pack-check
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: guava-shell-extension
+          path: dist/*.shell-extension.zip
+          if-no-files-found: error

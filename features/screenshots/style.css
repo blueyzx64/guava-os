@@ -1,0 +1,158 @@
+/* feature: screenshots */
+/* The Shift+Super+5 toolbar, its Options popover, the timer pill and the floating thumbnail.
+   lib/glass.js gives the bar, popover and pill their fill ('overlays' / 'menus'); these are
+   the shapes, and the solid look when glass is off. */
+.guava-screenshot-toolbar {
+    margin-bottom: 12px;
+    padding: 6px 8px;
+    spacing: 2px;
+    border-radius: 18px;
+    background-color: rgba(36, 36, 40, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #f5f5f7;
+}
+
+.guava-screenshot-separator {
+    width: 1px;
+    margin: 8px 6px;
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+.guava-screenshot-close {
+    width: 24px;
+    height: 24px;
+    margin: 0 4px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.14);
+    color: inherit;
+}
+
+.guava-screenshot-close:hover {
+    background-color: rgba(255, 255, 255, 0.26);
+}
+
+.guava-screenshot-mode {
+    min-width: 72px;
+    padding: 6px 6px 4px;
+    border-radius: 10px;
+    color: inherit;
+    background-color: transparent;
+}
+
+.guava-screenshot-mode:hover {
+    background-color: rgba(255, 255, 255, 0.10);
+}
+
+.guava-screenshot-mode:checked {
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+.guava-screenshot-mode:focus,
+.guava-screenshot-options-row:focus,
+.guava-screenshot-capture:focus {
+    box-shadow: inset 0 0 0 2px -st-accent-color;
+}
+
+.guava-screenshot-mode-label {
+    margin-top: 3px;
+    font-size: 8.5pt;
+    text-align: center;
+}
+
+.guava-screenshot-record-dot {
+    color: #ff453a;
+}
+
+.guava-screenshot-options-button {
+    padding: 6px 10px;
+    border-radius: 10px;
+    spacing: 4px;
+    color: inherit;
+    font-size: 10pt;
+}
+
+.guava-screenshot-options-button:hover,
+.guava-screenshot-options-button:checked {
+    background-color: rgba(255, 255, 255, 0.14);
+}
+
+.guava-screenshot-capture {
+    margin-left: 6px;
+    padding: 6px 16px;
+    border-radius: 10px;
+    background-color: -st-accent-color;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 10pt;
+}
+
+.guava-screenshot-capture:hover {
+    background-color: lighten(-st-accent-color, 6%);
+}
+
+/* Options popover, above the Options button */
+.guava-screenshot-options {
+    min-width: 230px;
+    padding: 6px;
+    border-radius: 12px;
+    background-color: rgba(36, 36, 40, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #f5f5f7;
+}
+
+.guava-screenshot-options-header {
+    padding: 6px 10px 2px;
+    font-size: 8.5pt;
+    font-weight: 600;
+    color: rgba(245, 245, 247, 0.6);
+}
+
+.guava-screenshot-options-row {
+    padding: 4px 10px 4px 6px;
+    border-radius: 6px;
+    color: inherit;
+    font-size: 10pt;
+}
+
+.guava-screenshot-options-row:hover {
+    background-color: -st-accent-color;
+    color: #ffffff;
+}
+
+.guava-screenshot-check {
+    margin-right: 6px;
+}
+
+.guava-screenshot-options-separator {
+    height: 1px;
+    margin: 4px 8px;
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+/* Timer countdown */
+.guava-screenshot-countdown {
+    min-width: 120px;
+    min-height: 120px;
+    border-radius: 28px;
+    background-color: rgba(36, 36, 40, 0.86);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #f5f5f7;
+}
+
+.guava-screenshot-countdown-number {
+    font-size: 48pt;
+    font-weight: 300;
+    text-align: center;
+}
+
+/* Floating thumbnail: the picture with a light rim and a soft shadow */
+.guava-screenshot-thumbnail {
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    background-color: rgba(0, 0, 0, 0.25);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.guava-screenshot-thumbnail-picture {
+    border-radius: 9px;
+}

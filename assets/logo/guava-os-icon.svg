@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <title>Guava OS</title>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1f4"/><stop offset="1" stop-color="#ffd0dc"/></linearGradient>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bg)"/>
+  <g transform="translate(76 70) scale(.703)">
+  <defs>
+    <radialGradient id="skin" cx="62%" cy="34%" r="74%">
+      <stop offset="0" stop-color="#d6ee8c"/><stop offset=".55" stop-color="#8fc04a"/><stop offset="1" stop-color="#4c8628"/>
+    </radialGradient>
+    <radialGradient id="flesh" cx="30%" cy="45%" r="45%">
+      <stop offset="0" stop-color="#ff9ab4"/><stop offset="1" stop-color="#ee5a7c"/>
+    </radialGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7cc242"/><stop offset="1" stop-color="#3f7d20"/>
+    </linearGradient>
+    <mask id="skinMask"><rect width="512" height="512" fill="#fff"/><g fill="#000"><circle cx="112" cy="214" r="86"/>
+<circle cx="126" cy="298" r="72"/>
+<circle cx="122" cy="146" r="66"/></g></mask>
+    <mask id="fleshMask"><rect width="512" height="512" fill="#000"/><g fill="#fff"><circle cx="112" cy="214" r="86"/>
+<circle cx="126" cy="298" r="72"/>
+<circle cx="122" cy="146" r="66"/></g><g fill="#000"><circle cx="112" cy="214" r="64"/>
+<circle cx="126" cy="298" r="50"/>
+<circle cx="122" cy="146" r="44"/></g></mask>
+    <clipPath id="body"><path d="M256 112 C 324 112 394 170 402 268 C 412 380 340 446 256 446 C 172 446 100 380 110 268 C 118 170 188 112 256 112 Z"/></clipPath>
+  </defs>
+  <path d="M262 120 C 264 100 258 84 248 70" fill="none" stroke="#5d4037" stroke-width="10" stroke-linecap="round"/>
+  <g fill="url(#leaf)"><path d="M254 84 C 278 50 330 40 360 56 C 338 92 290 104 254 84 Z"/><path d="M254 90 C 236 64 208 56 190 66 C 204 90 232 98 254 90 Z"/></g>
+  <path d="M254 84 C 290 72 320 62 350 58" fill="none" stroke="#2e5d1a" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+  <g clip-path="url(#body)">
+    <rect width="512" height="512" fill="url(#skin)" mask="url(#skinMask)"/>
+    <g mask="url(#fleshMask)">
+      <rect width="512" height="512" fill="#fff1d6"/>
+      <g fill="url(#flesh)"><circle cx="112" cy="214" r="81"/>
+<circle cx="126" cy="298" r="67"/>
+<circle cx="122" cy="146" r="61"/></g>
+      <g fill="#fff1d6"><circle cx="186" cy="188" r="5"/><circle cx="182" cy="236" r="5.5"/><circle cx="188" cy="290" r="5"/><circle cx="172" cy="330" r="4.5"/><circle cx="176" cy="150" r="4.5"/></g>
+    </g>
+    <ellipse cx="318" cy="200" rx="46" ry="26" fill="#fff" opacity=".22" transform="rotate(30 318 200)"/>
+  </g>
+  <g fill="#4e7a26"><path d="M256 424 l-15 32 l15 -10 l15 10 z"/><path d="M236 428 l-24 20 l18 -2 z"/><path d="M276 428 l24 20 l-18 -2 z"/></g>
+  </g>
+</svg>

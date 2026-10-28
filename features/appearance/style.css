@@ -1,0 +1,22 @@
+/* feature: popup-menu-styling */
+/* These reach every shell menu, not just Guava's, so they hang off
+   .guava-popup-styled, which index.js puts on the UI group when the
+   "Popup Menu Styling" option is on. */
+
+.guava-popup-styled .popup-menu .popup-menu-item {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+/* !important: Blur my Shell sets its own menu item hover with !important. */
+.guava-popup-styled .popup-menu .popup-menu-item:hover,
+.guava-popup-styled .popup-menu .popup-menu-item:active,
+.guava-popup-styled .popup-menu .popup-menu-item.selected {
+  background-color: -st-accent-color !important;
+  color: -st-accent-fg-color !important;
+}
+
+.guava-popup-styled .popup-menu .popup-menu-item:checked {
+  background-color: -st-accent-color !important;
+  color: -st-accent-fg-color !important;
+}

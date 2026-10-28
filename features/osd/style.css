@@ -1,0 +1,44 @@
+/* feature: osd */
+/* The Tahoe volume / brightness pill. Its fill comes from lib/glass.js (surface 'overlays');
+   with glass off it keeps the solid look below. The root behind it is the shadow host. */
+.guava-osd-shadow {
+  background-color: transparent;
+  border-radius: 18px;
+}
+
+.guava-osd-pill {
+  border-radius: 18px;
+  padding: 0 14px;
+  spacing: 12px;
+  background-color: rgba(36, 36, 40, 0.94);
+}
+
+.guava-osd-column {
+  spacing: 6px;
+}
+
+.guava-osd-caption {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.guava-osd-track {
+  height: 6px;
+  border-radius: 3px;
+  background-color: rgba(128, 128, 128, 0.35);
+}
+
+.guava-osd-fill {
+  height: 6px;
+  border-radius: 3px;
+  background-color: #ffffff;
+}
+
+.guava-glass-light .guava-osd-fill {
+  background-color: #1d1d1f;
+}
+
+.guava-osd-muted .guava-osd-caption,
+.guava-osd-muted .guava-osd-icon {
+  color: rgba(128, 128, 128, 1);
+}

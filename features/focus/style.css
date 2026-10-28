@@ -1,0 +1,6 @@
+/* feature: focus (features/focus)
+   The active Focus mode's icon in the top bar (indicator.js). */
+
+.guava-focus-indicator {
+  opacity: 0.95;
+}

@@ -1,0 +1,186 @@
+/* feature: launchpad */
+/* macOS 11–15 Launchpad: the wallpaper stretched from a tiny copy (a faux blur) under a dim
+   layer, white labels with a soft shadow, a glass search pill and glass folders. Sizes are
+   inline from model.gridMetrics(); lib/glass.js gives the search field and the folder panel
+   their fill (this is their look with glass off). */
+.guava-launchpad {
+    background-color: transparent;
+}
+
+.guava-launchpad-dim {
+    background-color: rgba(18, 20, 28, 0.42);
+}
+
+.guava-launchpad-search {
+    min-height: 28px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.26);
+    background-color: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.96);
+    caret-color: rgba(255, 255, 255, 0.96);
+    selection-background-color: -st-accent-color;
+    font-size: 10.5pt;
+}
+
+.guava-launchpad-search StLabel.hint-text {
+    color: rgba(255, 255, 255, 0.62);
+}
+
+.guava-launchpad-search-icon {
+    icon-size: 14px;
+    color: rgba(255, 255, 255, 0.72);
+    padding-right: 6px;
+}
+
+.guava-launchpad-tile {
+    padding: 0;
+    border: none;
+    border-radius: 18px;
+    background-color: transparent;
+}
+
+/* Keyboard selection (macOS draws a soft rounded highlight; no hover highlight) */
+.guava-launchpad-tile:selected {
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+/* An icon is held over this one: it will make (or join) a folder */
+.guava-launchpad-tile:drop .guava-launchpad-folder,
+.guava-launchpad-tile:drop {
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+.guava-launchpad-label {
+    color: rgba(255, 255, 255, 0.98);
+    font-size: 10pt;
+    font-weight: 500;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
+}
+
+.guava-launchpad-folder {
+    background-color: rgba(255, 255, 255, 0.24);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.guava-launchpad-folder-layer {
+    background-color: rgba(0, 0, 0, 0.18);
+}
+
+.guava-launchpad-folder-panel {
+    padding: 16px 16px 8px;
+    border-radius: 32px;
+    background-color: rgba(60, 62, 70, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    spacing: 12px;
+}
+
+.guava-launchpad-folder-name {
+    min-width: 200px;
+    padding: 4px 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.98);
+    caret-color: rgba(255, 255, 255, 0.98);
+    font-size: 17pt;
+    font-weight: 600;
+    text-align: center;
+}
+
+.guava-launchpad-folder-name:focus {
+    background-color: rgba(255, 255, 255, 0.14);
+}
+
+.guava-launchpad-dots {
+    spacing: 10px;
+    padding: 8px 12px;
+}
+
+.guava-launchpad-dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.38);
+}
+
+.guava-launchpad-dot:checked {
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* The ⓧ of jiggle mode (macOS: a small grey disc with a dark cross) */
+.guava-launchpad-delete {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border-radius: 11px;
+    background-color: rgba(232, 232, 236, 0.96);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.guava-launchpad-delete-icon {
+    icon-size: 12px;
+    color: rgba(30, 30, 34, 0.92);
+}
+
+.guava-launchpad-delete:hover {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+/* The delete alert (macOS: icon, bold title, small text, two equal buttons) */
+.guava-launchpad-alert-layer {
+    background-color: rgba(0, 0, 0, 0.22);
+}
+
+.guava-launchpad-alert {
+    padding: 20px 16px 16px;
+    spacing: 10px;
+    border-radius: 18px;
+    background-color: rgba(52, 54, 60, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.guava-launchpad-alert-title {
+    color: rgba(255, 255, 255, 0.98);
+    font-size: 11pt;
+    font-weight: 700;
+    text-align: center;
+}
+
+.guava-launchpad-alert-body {
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 9.5pt;
+    text-align: center;
+}
+
+.guava-launchpad-alert-buttons {
+    spacing: 8px;
+    padding-top: 6px;
+}
+
+.guava-launchpad-alert-button {
+    min-height: 28px;
+    border-radius: 8px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.96);
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.guava-launchpad-alert-button:hover {
+    background-color: rgba(255, 255, 255, 0.24);
+}
+
+.guava-launchpad-alert-button.default {
+    background-color: -st-accent-color;
+}
+
+.guava-launchpad-alert-button.default:hover {
+    background-color: -st-accent-color;
+    box-shadow: inset 0 0 0 100px rgba(255, 255, 255, 0.12);
+}
+
+.guava-launchpad-alert-button:focus {
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
