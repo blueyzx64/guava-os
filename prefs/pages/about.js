@@ -64,7 +64,7 @@ export function build({ settings, extension, window, _, breakpoints, title: exte
     versionButton.add_css_class('pill');
     versionButton.add_css_class('guava-version-button');
     versionButton.connect('clicked', () => {
-        Gtk.show_uri(null, `https://github.com/blueyzx64/guava-is-not-apple/releases/tag/v${encodeURIComponent(versionName)}`, Gdk.CURRENT_TIME);
+        Gtk.show_uri(null, `https://github.com/blueyzx64/guava-os/releases/tag/v${encodeURIComponent(versionName)}`, Gdk.CURRENT_TIME);
     });
     headerBox.append(versionButton);
 
@@ -95,16 +95,16 @@ export function build({ settings, extension, window, _, breakpoints, title: exte
 
     // Separate cards: Website and Report an Issue
     const websiteCard = new Adw.PreferencesGroup();
-    websiteCard.add(linkRow(_('Website'), 'https://github.com/blueyzx64/guava-is-not-apple'));
+    websiteCard.add(linkRow(_('Website'), 'https://github.com/blueyzx64/guava-os'));
     leftColumn.append(websiteCard);
 
     const issueCard = new Adw.PreferencesGroup();
-    issueCard.add(linkRow(_('Report an Issue'), 'https://github.com/blueyzx64/guava-is-not-apple/issues'));
+    issueCard.add(linkRow(_('Report an Issue'), 'https://github.com/blueyzx64/guava-os/issues'));
     leftColumn.append(issueCard);
 
     // Combined Credits & Legal group
     const infoGroup = new Adw.PreferencesGroup();
-    infoGroup.add(linkRow(_('Credits'), 'https://github.com/blueyzx64/guava-is-not-apple#credits'));
+    infoGroup.add(linkRow(_('Credits'), 'https://github.com/blueyzx64/guava-os#credits'));
 
     const legalRow = new Adw.ActionRow({
         title: _('Legal'),
@@ -137,7 +137,7 @@ export function build({ settings, extension, window, _, breakpoints, title: exte
         // GPL License link
         licenseGroup.add(linkRow(
             _('GNU General Public License v3.0'),
-            'https://github.com/blueyzx64/guava-is-not-apple/blob/main/LICENSE',
+            'https://github.com/blueyzx64/guava-os/blob/main/LICENSE',
             _('View the full license text on GitHub')
         ));
 

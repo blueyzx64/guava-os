@@ -6,7 +6,7 @@
 
 <p align="center">
   <img alt="GNOME Shell 50" src="https://img.shields.io/badge/GNOME_Shell-50-informational?logo=gnome">
-  <img alt="License: GPL-3.0" src="https://img.shields.io/github/license/blueyzx64/guava-is-not-apple">
+  <img alt="License: GPL-3.0" src="https://img.shields.io/github/license/blueyzx64/guava-os">
 </p>
 
 ## What is Guava OS?
@@ -28,6 +28,28 @@ much more, all in one design language.
 
 Guava OS is unofficial and not affiliated with Apple. It grew out of the
 [Kiwi (is not Apple)](#credits) extension.
+
+## Showcase
+
+<p align="center">
+  <img src="assets/screenshots/desktop.png" alt="The Guava OS desktop: the menu bar with app menus, the notch playing music, desktop widgets for weather, music, calendar, system load and a clock, and the dock">
+  <br><sub>The desktop: the menu bar with the focused app's menus, the notch, desktop widgets and the dock</sub>
+</p>
+
+<table>
+  <tr>
+    <td width="50%"><img src="assets/screenshots/spotlight.png" alt="Spotlight search with recent apps, recent searches and suggestions"><br><sub><b>Spotlight</b>: tap Super to search apps, files, settings and more</sub></td>
+    <td width="50%"><img src="assets/screenshots/mission-control.png" alt="Mission Control with the Spaces bar on top and the open windows spread out"><br><sub><b>Mission Control</b>: every window at a glance, Spaces along the top</sub></td>
+  </tr>
+  <tr>
+    <td><img src="assets/screenshots/notch-now.png" alt="The notch open on its Now tab with the media player, a download and the charging status"><br><sub><b>Notch, Now</b>: media controls and live activities</sub></td>
+    <td><img src="assets/screenshots/notch-tray.png" alt="The notch open on its Tray tab with a shelf of files"><br><sub><b>Notch, Tray</b>: a shelf for the files you are working with</sub></td>
+  </tr>
+  <tr>
+    <td><img src="assets/screenshots/notch-volume.png" alt="The notch showing the volume level"><br><sub><b>Volume</b> and brightness show in the notch</sub></td>
+    <td><img src="assets/screenshots/notch-charging.png" alt="The notch showing that charging started"><br><sub><b>Live activities</b> such as charging</sub></td>
+  </tr>
+</table>
 
 ## What you get
 
@@ -75,7 +97,7 @@ Guava OS supports **GNOME Shell 50**.
 
 ### From a release
 
-Download from the [releases page](https://github.com/blueyzx64/guava-is-not-apple/releases):
+Download from the [releases page](https://github.com/blueyzx64/guava-os/releases):
 
 - `guava-os@blueyzx64.shell-extension-<version>.zip`: the extension.
 - `guava-shelf-helper-<version>.noarch.rpm` (optional): lets you drag files out of the notch's shelf into other apps. Without it the shelf keeps its Open and Copy actions.
@@ -97,8 +119,8 @@ You can also use the Extensions app. Preferences: `gnome-extensions prefs guava-
 
 ```sh
 sudo dnf install git make gettext
-git clone https://github.com/blueyzx64/guava-is-not-apple.git
-cd guava-is-not-apple
+git clone https://github.com/blueyzx64/guava-os.git
+cd guava-os
 make install       # builds the zip in dist/ and installs it for your user
 make helper-rpm    # optional: builds the shelf helper RPM (needs rpm-build)
 ```
@@ -125,7 +147,7 @@ Everything starts the macOS way, and you can change each part in Preferences.
 ## Update and uninstall
 
 ```sh
-cd guava-is-not-apple && git pull && make install      # update from source, then log out and back in
+cd guava-os && git pull && make install      # update from source, then log out and back in
 ```
 
 ```sh
@@ -153,7 +175,7 @@ To back up your settings: `dconf dump /org/gnome/shell/extensions/guava-os/ > gu
 - A two-finger swipe from the trackpad edge cannot open the Notification Center (GNOME gives the Shell only three- and four-finger gestures). Click the clock or use a hot corner.
 
 Found a bug? Watch the log while it happens and include any `[Guava]` lines in your
-[issue](https://github.com/blueyzx64/guava-is-not-apple/issues):
+[issue](https://github.com/blueyzx64/guava-os/issues):
 
 ```sh
 journalctl -f -o cat /usr/bin/gnome-shell | grep -i guava

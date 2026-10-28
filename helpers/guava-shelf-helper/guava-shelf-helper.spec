@@ -5,7 +5,7 @@ Version:        3.0.0
 Release:        1%{?dist}
 Summary:        Drag files out of the Guava notch shelf
 License:        GPL-3.0-or-later
-URL:            https://github.com/blueyzx64/guava-is-not-apple
+URL:            https://github.com/blueyzx64/guava-os
 Source0:        %{name}-%{version}.tar.gz
 BuildArch:      noarch
 Requires:       gjs

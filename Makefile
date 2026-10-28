@@ -38,7 +38,7 @@ pot:
 		-k_ -kN_ -kgettext -kgettextFunc -k_gettext --add-comments=TRANSLATORS \
 		--package-name="Guava OS" --package-version=1.0.0 \
 		--copyright-holder="Arnis Kemlers, blueyzx64" \
-		--msgid-bugs-address=https://github.com/blueyzx64/guava-is-not-apple/issues \
+		--msgid-bugs-address=https://github.com/blueyzx64/guava-os/issues \
 		-o $(POT) $$srcs && \
 	grep '^\#: ' $(POT) | sed 's/^\#: //' | tr ' ' '\n' | sed 's/:.*//' | sort -u > po/POTFILES
 
