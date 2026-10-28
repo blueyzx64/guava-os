@@ -1,0 +1,39 @@
+/* feature: window-tiling */
+
+/* The drag outline. lib/glass.js gives it Guava's faux glass (overlays surface); this is the
+ * plain translucent outline it keeps when glass is off. No box-shadow: St draws the blurred
+ * shadow of a resizing actor as a rectangle. It sits just below the dragged window. */
+.guava-tile-preview {
+  border-radius: 12px;
+  background-color: rgba(240, 240, 244, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+/* The snap bar of the drag (snapBar.js, Windows 11 Snap Layouts). lib/glass.js gives the bar its
+ * glass; the corner radius morphs inline between the handle's and this one. No box-shadow: St
+ * draws it as a rectangle on a rounded actor. */
+.guava-snap-bar {
+  border-radius: 18px;
+}
+
+.guava-snap-grab {
+  border-radius: 2px;
+  background-color: rgba(128, 128, 128, 0.75);
+}
+
+.guava-snap-thumb {
+  border: 1px solid rgba(128, 128, 128, 0.45);
+  border-radius: 7px;
+  background-color: rgba(128, 128, 128, 0.12);
+}
+
+.guava-snap-zone {
+  border-radius: 4px;
+  background-color: rgba(128, 128, 128, 0.38);
+}
+
+/* Faded in over the zone by a spring, not by :hover (no hover reaches it during a drag) */
+.guava-snap-zone-lit {
+  border-radius: 4px;
+  background-color: -st-accent-color;
+}

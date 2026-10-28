@@ -1,0 +1,315 @@
+/* feature: clipboard
+   Only guava- classes; no backdrop-filter (the glass
+   comes from lib/glass.js behind the frame). Corners are concentric: frame 26, row 12. */
+
+/* ---- shared rows ---- */
+.guava-clip-section {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(128, 128, 128, 1);
+  padding: 8px 10px 2px 10px;
+}
+
+.guava-clip-row {
+  border-radius: 10px;
+  padding: 0;
+  margin: 1px 0;
+}
+
+.guava-clip-row:hover,
+.guava-clip-row:focus {
+  background-color: rgba(128, 128, 128, 0.16);
+}
+
+.guava-clip-row:selected,
+.guava-clip-row:selected:hover {
+  background-color: -st-accent-color;
+  color: -st-accent-fg-color;
+}
+
+.guava-clip-row-box {
+  spacing: 10px;
+  padding: 6px 8px;
+}
+
+.guava-clip-text {
+  spacing: 1px;
+}
+
+.guava-clip-title {
+  font-size: 14px;
+}
+
+.guava-clip-sub,
+.guava-clip-time {
+  font-size: 12px;
+  color: rgba(128, 128, 128, 1);
+}
+
+.guava-clip-row:selected .guava-clip-sub,
+.guava-clip-row:selected .guava-clip-time {
+  color: -st-accent-fg-color;
+}
+
+.guava-clip-tile {
+  border-radius: 8px;
+  background-color: rgba(128, 128, 128, 0.22);
+}
+
+.guava-clip-tile-image {
+  background-color: rgba(128, 128, 128, 0.12);
+}
+
+.guava-clip-tile-color {
+  border: 1px solid rgba(128, 128, 128, 0.4);
+}
+
+.guava-clip-actions {
+  spacing: 2px;
+}
+
+.guava-clip-action {
+  border-radius: 99px;
+  padding: 4px;
+}
+
+.guava-clip-action:hover,
+.guava-clip-action:focus {
+  background-color: rgba(128, 128, 128, 0.3);
+}
+
+.guava-clip-empty {
+  padding: 28px 12px;
+  color: rgba(128, 128, 128, 1);
+}
+
+/* ---- panel popover: minimal, one line per entry ---- */
+.guava-clip-popover-item {
+  padding: 0;
+}
+
+.guava-clip-popover {
+  padding: 6px;
+  spacing: 6px;
+}
+
+.guava-clip-search {
+  border-radius: 8px;
+  padding: 5px 8px;
+  min-height: 0;
+  font-size: 14px;
+  background-color: rgba(128, 128, 128, 0.16);
+  border: none;
+  box-shadow: none;
+}
+
+.guava-qp-search {
+  border-radius: 10px;
+  padding: 6px 10px;
+  background-color: rgba(128, 128, 128, 0.18);
+  border: none;
+  box-shadow: none;
+}
+
+.guava-clip-search:focus,
+.guava-qp-search:focus {
+  box-shadow: inset 0 0 0 2px st-transparentize(-st-accent-color, 0.4);
+}
+
+.guava-clip-search-icon {
+  icon-size: 14px;
+  padding-right: 6px;
+  color: rgba(128, 128, 128, 1);
+}
+
+.guava-clip-filters {
+  spacing: 2px;
+  padding: 0 2px;
+}
+
+.guava-clip-filter {
+  border-radius: 6px;
+  padding: 1px 8px;
+  font-size: 12px;
+  color: rgba(128, 128, 128, 1);
+  background-color: transparent;
+}
+
+.guava-clip-filter:hover {
+  background-color: rgba(128, 128, 128, 0.12);
+}
+
+.guava-clip-filter:checked {
+  font-weight: 600;
+  color: inherit;
+  background-color: rgba(128, 128, 128, 0.2);
+}
+
+.guava-clip-scroll {
+  max-height: 340px;
+}
+
+.guava-clip-row-compact .guava-clip-row-box {
+  spacing: 8px;
+  padding: 5px 8px;
+}
+
+.guava-clip-row-compact .guava-clip-tile {
+  border-radius: 6px;
+}
+
+.guava-clip-time {
+  padding-left: 6px;
+}
+
+.guava-clip-empty {
+  spacing: 4px;
+  padding: 32px 12px 30px 12px;
+}
+
+.guava-clip-empty-icon {
+  icon-size: 28px;
+  padding-bottom: 6px;
+  color: rgba(128, 128, 128, 0.8);
+}
+
+.guava-clip-empty-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.guava-clip-empty-hint {
+  font-size: 12px;
+  color: rgba(128, 128, 128, 1);
+}
+
+.guava-clip-foot {
+  spacing: 8px;
+  padding: 6px 4px 0 6px;
+  border-top: 1px solid rgba(128, 128, 128, 0.18);
+}
+
+.guava-clip-recording .toggle-switch {
+  width: 36px;
+  height: 20px;
+}
+
+.guava-clip-recording-label,
+.guava-clip-hint {
+  font-size: 12px;
+  color: rgba(128, 128, 128, 1);
+}
+
+.guava-clip-clear {
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 12px;
+  background-color: transparent;
+}
+
+.guava-clip-clear:hover,
+.guava-clip-clear:focus {
+  background-color: rgba(128, 128, 128, 0.18);
+}
+
+/* Secondary text: a fixed shade per style for contrast (4.5:1 on the popover fill) */
+.guava-clip-popover .guava-clip-time,
+.guava-clip-popover .guava-clip-section,
+.guava-clip-popover .guava-clip-filter,
+.guava-clip-popover .guava-clip-empty-hint,
+.guava-clip-popover .guava-clip-recording-label,
+.guava-clip-popover .guava-clip-search-icon {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.guava-clip-popover.guava-clip-light .guava-clip-time,
+.guava-clip-popover.guava-clip-light .guava-clip-section,
+.guava-clip-popover.guava-clip-light .guava-clip-filter,
+.guava-clip-popover.guava-clip-light .guava-clip-empty-hint,
+.guava-clip-popover.guava-clip-light .guava-clip-recording-label,
+.guava-clip-popover.guava-clip-light .guava-clip-search-icon {
+  color: rgba(0, 0, 0, 0.56);
+}
+
+.guava-clip-popover .guava-clip-filter:checked {
+  color: #ffffff;
+}
+
+.guava-clip-popover.guava-clip-light .guava-clip-filter:checked {
+  color: #1d1d1f;
+}
+
+.guava-clip-popover .guava-clip-row:selected .guava-clip-time {
+  color: -st-accent-fg-color;
+}
+
+/* ---- Quick Paste ---- */
+.guava-quick-paste {
+  padding: 14px;
+  spacing: 10px;
+  border-radius: 26px;
+}
+
+.guava-qp-body {
+  spacing: 12px;
+}
+
+.guava-qp-list {
+  padding-right: 4px;
+}
+
+.guava-qp-side {
+  spacing: 8px;
+}
+
+.guava-qp-preview {
+  border-radius: 14px;
+  padding: 12px;
+  background-color: rgba(128, 128, 128, 0.14);
+}
+
+.guava-qp-text {
+  font-size: 14px;
+}
+
+.guava-qp-swatch {
+  border-radius: 10px;
+  min-height: 120px;
+}
+
+.guava-qp-color-text {
+  padding-top: 8px;
+  font-family: monospace;
+}
+
+.guava-qp-meta,
+.guava-qp-hints {
+  font-size: 12px;
+  color: rgba(128, 128, 128, 0.95);
+}
+
+.guava-qp-hints {
+  padding: 0 4px;
+}
+
+.guava-qp-buttons {
+  spacing: 8px;
+}
+
+.guava-qp-button {
+  border-radius: 99px;
+  padding: 5px 16px;
+  background-color: rgba(128, 128, 128, 0.22);
+}
+
+.guava-qp-button:hover,
+.guava-qp-button:focus {
+  background-color: rgba(128, 128, 128, 0.36);
+}
+
+.guava-qp-primary,
+.guava-qp-primary:hover,
+.guava-qp-primary:focus {
+  background-color: -st-accent-color;
+  color: -st-accent-fg-color;
+}

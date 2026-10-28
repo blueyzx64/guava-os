@@ -1,0 +1,825 @@
+/* feature: control-center */
+/* Every rule is scoped by .guava-control-center, a class the feature adds to the Quick
+   Settings menu box while it is on. Removing the class restores the stock look.
+   macOS layout: one compact 330px panel, 12px padding, modules are rounded squares
+   (radius 14px, concentric with the 26px panel). The accent is only the small circle
+   behind an active icon. Type: 14px semibold titles, 12px secondary text (the floor).
+   Rows are spaced by item margins, not the grid's row spacing, so a module made of several
+   grid items (the connectivity stack, Display, Sound) can join without a gap:
+     .guava-cc-item       every planned item, 8px under it
+     .guava-cc-join-next  the item below belongs to the same module: no gap, square bottom
+     .guava-cc-join-prev  continues the module above: square top
+   Colours live under .guava-cc-calm (off under high contrast, where the stock solid tiles
+   stay) and .guava-cc-light (light style). */
+
+.quick-settings.guava-control-center {
+    padding: 12px;
+    border-radius: 26px;
+}
+
+.quick-settings.guava-control-center .quick-settings-grid {
+    width: 306px;
+    spacing-rows: 0;
+    spacing-columns: 8px;
+}
+
+.quick-settings.guava-control-center .guava-cc-item {
+    margin-bottom: 8px;
+}
+
+.quick-settings.guava-control-center .guava-cc-item.guava-cc-join-next,
+.quick-settings.guava-control-center .quick-settings-system-item.guava-cc-item {
+    margin-bottom: 0;
+}
+
+/* ---- tiles: one shape for every toggle ---- */
+.quick-settings.guava-control-center .quick-toggle,
+.quick-settings.guava-control-center .quick-toggle-has-menu {
+    min-width: 0;
+    max-width: 306px;
+    min-height: 48px;
+    border-radius: 14px;
+}
+
+.quick-settings.guava-control-center .quick-toggle-has-menu .quick-toggle,
+.quick-settings.guava-control-center .quick-toggle-has-menu .quick-toggle-menu-button {
+    min-height: 0;
+    border-radius: 12px;
+}
+
+.quick-settings.guava-control-center .quick-toggle-has-menu .quick-toggle-menu-button {
+    padding: 6px 4px;
+}
+
+.quick-settings.guava-control-center .quick-toggle-has-menu .quick-toggle-menu-button StIcon {
+    icon-size: 12px;
+}
+
+.quick-settings.guava-control-center .quick-toggle-has-menu .quick-toggle-separator {
+    width: 0;
+}
+
+/* A module made of several items: square where they meet. .guava-cc-item raises these
+   above the per-kind radii below (.quick-slider, .guava-cc-caption), whatever their order. */
+.quick-settings.guava-control-center .guava-cc-item.guava-cc-join-next,
+.quick-settings.guava-control-center .guava-cc-item.guava-cc-join-next .quick-toggle {
+    border-radius: 14px 14px 0 0;
+}
+
+.quick-settings.guava-control-center .guava-cc-item.guava-cc-join-prev,
+.quick-settings.guava-control-center .guava-cc-item.guava-cc-join-prev .quick-toggle {
+    border-radius: 0 0 14px 14px;
+}
+
+.quick-settings.guava-control-center .guava-cc-item.guava-cc-join-prev.guava-cc-join-next,
+.quick-settings.guava-control-center .guava-cc-item.guava-cc-join-prev.guava-cc-join-next .quick-toggle {
+    border-radius: 0;
+}
+
+/* A joined toggle shares its grid row with a right-hand item that has an 8px margin under
+   it; the row is that much taller, so the toggle keeps the extra 8px as padding instead of
+   growing: its icon then lines up with its neighbour's, and every row of the stack is the
+   same height. */
+.quick-settings.guava-control-center .quick-toggle.guava-cc-item.guava-cc-join-next,
+.quick-settings.guava-control-center .quick-toggle-has-menu.guava-cc-item.guava-cc-join-next {
+    padding-bottom: 8px;
+}
+
+.quick-settings.guava-control-center .quick-toggle > StBoxLayout {
+    spacing: 8px;
+}
+
+.quick-settings.guava-control-center .quick-toggle:ltr > StBoxLayout {
+    padding-left: 8px;
+    padding-right: 2px;
+}
+
+.quick-settings.guava-control-center .quick-toggle:rtl > StBoxLayout {
+    padding-right: 8px;
+    padding-left: 2px;
+}
+
+/* The icon sits in a 28px circle; the circle, not the tile, shows "on" */
+.quick-settings.guava-control-center .quick-toggle .quick-toggle-icon {
+    icon-size: 16px;
+    padding: 6px;
+    border-radius: 999px;
+}
+
+.quick-settings.guava-control-center .quick-toggle .quick-toggle-title {
+    font-size: 10.5pt;
+    font-weight: 600;
+}
+
+.quick-settings.guava-control-center .quick-toggle .quick-toggle-subtitle {
+    font-size: 9pt;
+    font-weight: normal;
+}
+
+/* Secondary toggles made icon-only by the feature (1x1): the circle alone, centred */
+.quick-settings.guava-control-center .quick-toggle.guava-cc-compact > StBoxLayout {
+    padding: 0;
+}
+
+/* ---- captions and sections ---- */
+.quick-settings.guava-control-center .guava-cc-caption {
+    font-size: 10.5pt;
+    font-weight: 600;
+    padding: 10px 14px 0 14px;
+    border-radius: 14px 14px 0 0;
+}
+
+.quick-settings.guava-control-center .guava-cc-section-title {
+    font-size: 9pt;
+    font-weight: 600;
+    padding: 4px 6px 0 6px;
+}
+
+/* ---- sliders: a thick rounded track, like the Display and Sound modules ---- */
+.quick-settings.guava-control-center .quick-slider {
+    padding: 6px 12px 12px 8px;
+    border-radius: 14px;
+}
+
+.quick-settings.guava-control-center .quick-slider > StBoxLayout {
+    spacing: 4px;
+}
+
+.quick-settings.guava-control-center .quick-slider .icon-button {
+    padding: 4px;
+    border-radius: 999px;
+}
+
+.quick-settings.guava-control-center .quick-slider .icon-button StIcon {
+    icon-size: 16px;
+}
+
+.quick-settings.guava-control-center .quick-slider .slider-bin {
+    padding: 0;
+    border-radius: 999px;
+}
+
+.quick-settings.guava-control-center .quick-slider .slider {
+    -barlevel-height: 20px;
+    -slider-handle-radius: 10px;
+    -barlevel-overdrive-separator-width: 0;
+}
+
+/* ---- modules: Now Playing and the Guava row ---- */
+.quick-settings.guava-control-center .guava-cc-module {
+    border-radius: 14px;
+    padding: 10px 12px 12px 12px;
+}
+
+.quick-settings.guava-control-center .guava-cc-guava-head {
+    padding-bottom: 8px;
+    spacing: 8px;
+}
+
+.quick-settings.guava-control-center .guava-cc-module-title {
+    font-size: 10.5pt;
+    font-weight: 600;
+}
+
+.quick-settings.guava-control-center .guava-cc-guava-hint {
+    font-size: 9pt;
+}
+
+.quick-settings.guava-control-center .guava-cc-guava-tile {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: 999px;
+}
+
+.quick-settings.guava-control-center .guava-cc-guava-tile:focus {
+    box-shadow: inset 0 0 0 2px st-transparentize(-st-accent-color, 0.2);
+}
+
+/* max-width keeps a long title from widening the whole menu */
+.quick-settings.guava-control-center .guava-cc-now-playing {
+    min-width: 0;
+    max-width: 306px;
+    min-height: 0;
+    padding: 8px 8px 8px 8px;
+    spacing: 10px;
+    border-radius: 14px;
+}
+
+.quick-settings.guava-control-center .guava-cc-np-art {
+    border-radius: 8px;
+}
+
+/* No cover and no app icon: a small note in a 36px rounded square */
+.quick-settings.guava-control-center .guava-cc-np-art-symbolic {
+    padding: 8px;
+}
+
+.quick-settings.guava-control-center .guava-cc-np-title {
+    font-size: 10.5pt;
+    font-weight: 600;
+}
+
+.quick-settings.guava-control-center .guava-cc-np-artist {
+    font-size: 9pt;
+}
+
+.quick-settings.guava-control-center .guava-cc-np-button {
+    padding: 7px;
+    border-radius: 999px;
+    background-color: transparent;
+}
+
+.quick-settings.guava-control-center .guava-cc-np-button StIcon {
+    icon-size: 16px;
+}
+
+/* ---- footer: one quiet line of small icons ---- */
+.quick-settings.guava-control-center .quick-settings-system-item {
+    padding-top: 2px;
+}
+
+.quick-settings.guava-control-center .quick-settings-system-item > StBoxLayout {
+    spacing: 2px;
+}
+
+.quick-settings.guava-control-center .quick-settings-system-item .icon-button {
+    padding: 7px;
+    border-radius: 999px;
+    background-color: transparent;
+}
+
+.quick-settings.guava-control-center .quick-settings-system-item .icon-button StIcon {
+    icon-size: 16px;
+}
+
+.quick-settings.guava-control-center .quick-settings-system-item .power-item {
+    min-width: 0;
+    max-width: 9em;
+    min-height: 0;
+    border-radius: 999px;
+    background-color: transparent;
+}
+
+.quick-settings.guava-control-center .quick-settings-system-item .power-item .quick-toggle-icon {
+    padding: 0;
+    background-color: transparent;
+}
+
+.quick-settings.guava-control-center .quick-settings-system-item .power-item > StBoxLayout {
+    padding-left: 6px;
+}
+
+.quick-settings.guava-control-center .guava-cc-user {
+    padding: 0 4px;
+}
+
+.quick-settings.guava-control-center .guava-cc-user .user-icon {
+    icon-size: 24px;
+}
+
+/* Top bar: battery percentage that stays on */
+.guava-cc-battery-label {
+    padding-left: 2px;
+}
+
+/* ---- calm palette, dark style ---- */
+.quick-settings.guava-cc-calm .quick-toggle,
+.quick-settings.guava-cc-calm .quick-toggle:checked,
+.quick-settings.guava-cc-calm .quick-toggle-has-menu,
+.quick-settings.guava-cc-calm .quick-slider,
+.quick-settings.guava-cc-calm .guava-cc-caption,
+.quick-settings.guava-cc-calm .guava-cc-module,
+.quick-settings.guava-cc-calm .guava-cc-now-playing {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+}
+
+.quick-settings.guava-cc-calm .quick-toggle:hover,
+.quick-settings.guava-cc-calm .quick-toggle:checked:hover {
+    background-color: rgba(255, 255, 255, 0.13);
+}
+
+.quick-settings.guava-cc-calm .quick-toggle:active,
+.quick-settings.guava-cc-calm .quick-toggle:checked:active {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.quick-settings.guava-cc-calm .quick-toggle:focus,
+.quick-settings.guava-cc-calm .quick-toggle-has-menu .quick-toggle-menu-button:focus {
+    box-shadow: inset 0 0 0 2px st-transparentize(-st-accent-color, 0.3);
+}
+
+/* Inside a menu toggle the outer box is the tile: its halves stay flat until hovered */
+.quick-settings.guava-cc-calm .quick-toggle-has-menu .quick-toggle,
+.quick-settings.guava-cc-calm .quick-toggle-has-menu .quick-toggle:checked,
+.quick-settings.guava-cc-calm .quick-toggle-has-menu .quick-toggle-menu-button,
+.quick-settings.guava-cc-calm .quick-toggle-has-menu .quick-toggle-menu-button:checked {
+    color: #ffffff;
+    background-color: transparent;
+}
+
+.quick-settings.guava-cc-calm .quick-toggle-has-menu .quick-toggle:hover,
+.quick-settings.guava-cc-calm .quick-toggle-has-menu .quick-toggle-menu-button:hover,
+.quick-settings.guava-cc-calm .quick-toggle-has-menu .quick-toggle-menu-button:checked:hover {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.quick-settings.guava-cc-calm .quick-toggle-has-menu .quick-toggle-separator {
+    background-color: transparent;
+}
+
+.quick-settings.guava-cc-calm .quick-toggle .quick-toggle-icon,
+.quick-settings.guava-cc-calm .guava-cc-guava-tile {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* On: the accent, on the circle only */
+.quick-settings.guava-cc-calm .quick-toggle:checked .quick-toggle-icon,
+.quick-settings.guava-cc-calm .guava-cc-guava-tile:checked {
+    color: -st-accent-fg-color;
+    background-color: -st-accent-color;
+}
+
+.quick-settings.guava-cc-calm .guava-cc-guava-tile:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.quick-settings.guava-cc-calm .guava-cc-guava-tile:checked:hover {
+    background-color: st-lighten(-st-accent-color, 6%);
+}
+
+.quick-settings.guava-cc-calm .quick-toggle .quick-toggle-subtitle,
+.quick-settings.guava-cc-calm .guava-cc-guava-hint,
+.quick-settings.guava-cc-calm .guava-cc-np-artist,
+.quick-settings.guava-cc-calm .guava-cc-section-title {
+    color: rgba(255, 255, 255, 0.62);
+}
+
+.quick-settings.guava-cc-calm .guava-cc-np-art-symbolic {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.quick-settings.guava-cc-calm .guava-cc-np-button,
+.quick-settings.guava-cc-calm .quick-settings-system-item .icon-button,
+.quick-settings.guava-cc-calm .quick-settings-system-item .power-item {
+    color: rgba(255, 255, 255, 0.85);
+    background-color: transparent;
+}
+
+.quick-settings.guava-cc-calm .guava-cc-np-button:hover,
+.quick-settings.guava-cc-calm .quick-settings-system-item .icon-button:hover,
+.quick-settings.guava-cc-calm .quick-settings-system-item .power-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Sliders: white fill on a faint track, white knob (the macOS look) */
+.quick-settings.guava-cc-calm .quick-slider .slider-bin,
+.quick-settings.guava-cc-calm .quick-slider .icon-button {
+    color: rgba(255, 255, 255, 0.85);
+    background-color: transparent;
+}
+
+.quick-settings.guava-cc-calm .quick-slider .slider {
+    color: #ffffff;
+    -barlevel-background-color: rgba(255, 255, 255, 0.14);
+    -barlevel-active-background-color: rgba(255, 255, 255, 0.92);
+}
+
+/* ---- calm palette, light style ---- */
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle:checked,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle-has-menu,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-slider,
+.quick-settings.guava-cc-calm.guava-cc-light .guava-cc-caption,
+.quick-settings.guava-cc-calm.guava-cc-light .guava-cc-module,
+.quick-settings.guava-cc-calm.guava-cc-light .guava-cc-now-playing {
+    color: #1d1d1f;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle:hover,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle:checked:hover {
+    background-color: rgba(0, 0, 0, 0.09);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle:active,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle:checked:active {
+    background-color: rgba(0, 0, 0, 0.13);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle-has-menu .quick-toggle,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle-has-menu .quick-toggle:checked,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle-has-menu .quick-toggle-menu-button,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle-has-menu .quick-toggle-menu-button:checked {
+    color: #1d1d1f;
+    background-color: transparent;
+}
+
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle-has-menu .quick-toggle:hover,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle-has-menu .quick-toggle-menu-button:hover,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle-has-menu .quick-toggle-menu-button:checked:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle .quick-toggle-icon,
+.quick-settings.guava-cc-calm.guava-cc-light .guava-cc-guava-tile {
+    color: #1d1d1f;
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle:checked .quick-toggle-icon,
+.quick-settings.guava-cc-calm.guava-cc-light .guava-cc-guava-tile:checked {
+    color: -st-accent-fg-color;
+    background-color: -st-accent-color;
+}
+
+.quick-settings.guava-cc-calm.guava-cc-light .guava-cc-guava-tile:hover {
+    background-color: rgba(0, 0, 0, 0.14);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-light .guava-cc-guava-tile:checked:hover {
+    background-color: st-darken(-st-accent-color, 6%);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-light .quick-toggle .quick-toggle-subtitle,
+.quick-settings.guava-cc-calm.guava-cc-light .guava-cc-guava-hint,
+.quick-settings.guava-cc-calm.guava-cc-light .guava-cc-np-artist,
+.quick-settings.guava-cc-calm.guava-cc-light .guava-cc-section-title {
+    color: rgba(0, 0, 0, 0.58);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-light .guava-cc-np-art-symbolic {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-light .guava-cc-np-button,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-settings-system-item .icon-button,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-settings-system-item .power-item,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-slider .slider-bin,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-slider .icon-button {
+    color: rgba(0, 0, 0, 0.75);
+    background-color: transparent;
+}
+
+/* The footer battery is a quick toggle too: no tile and no icon circle in light style
+   either (the light tile rules above would otherwise reach it) */
+.quick-settings.guava-cc-calm.guava-cc-light .quick-settings-system-item .power-item .quick-toggle-icon {
+    color: rgba(0, 0, 0, 0.75);
+    background-color: transparent;
+}
+
+.quick-settings.guava-cc-calm.guava-cc-light .guava-cc-np-button:hover,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-settings-system-item .icon-button:hover,
+.quick-settings.guava-cc-calm.guava-cc-light .quick-settings-system-item .power-item:hover {
+    background-color: rgba(0, 0, 0, 0.07);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-light .quick-slider .slider {
+    color: #ffffff;
+    -barlevel-background-color: rgba(0, 0, 0, 0.12);
+    -barlevel-active-background-color: #ffffff;
+}
+
+/* ---- glass (.guava-cc-glass while Liquid Glass styles the menus) ----
+   The panel itself is Guava glass (lib/glass.js on the menu box). Modules are lighter glass
+   platters on it, with the same 1px top rim as every glass surface; the classes lib/glass.js
+   puts on the box (.guava-glass-borders, .guava-glass-contrast) outline them too. */
+.quick-settings.guava-cc-calm.guava-cc-glass .quick-toggle,
+.quick-settings.guava-cc-calm.guava-cc-glass .quick-toggle:checked,
+.quick-settings.guava-cc-calm.guava-cc-glass .quick-toggle-has-menu,
+.quick-settings.guava-cc-calm.guava-cc-glass .quick-slider,
+.quick-settings.guava-cc-calm.guava-cc-glass .guava-cc-caption,
+.quick-settings.guava-cc-calm.guava-cc-glass .guava-cc-module,
+.quick-settings.guava-cc-calm.guava-cc-glass .guava-cc-now-playing {
+    background-color: rgba(255, 255, 255, 0.09);
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.07);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-toggle,
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-toggle:checked,
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-toggle-has-menu,
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-slider,
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .guava-cc-caption,
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .guava-cc-module,
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .guava-cc-now-playing {
+    background-color: rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.7);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-glass .quick-toggle:hover,
+.quick-settings.guava-cc-calm.guava-cc-glass .quick-toggle:checked:hover {
+    background-color: rgba(255, 255, 255, 0.14);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-glass .quick-toggle:active,
+.quick-settings.guava-cc-calm.guava-cc-glass .quick-toggle:checked:active {
+    background-color: rgba(255, 255, 255, 0.19);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-toggle:hover,
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-toggle:checked:hover {
+    background-color: rgba(0, 0, 0, 0.09);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-toggle:active,
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-toggle:checked:active {
+    background-color: rgba(0, 0, 0, 0.13);
+}
+
+/* Inside a menu toggle the outer box is the platter: its halves stay flat */
+.quick-settings.guava-cc-calm.guava-cc-glass .quick-toggle-has-menu .quick-toggle,
+.quick-settings.guava-cc-calm.guava-cc-glass .quick-toggle-has-menu .quick-toggle:checked,
+.quick-settings.guava-cc-calm.guava-cc-glass .quick-toggle-has-menu .quick-toggle-menu-button {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.quick-settings.guava-cc-calm.guava-cc-glass .quick-toggle-has-menu .quick-toggle:hover,
+.quick-settings.guava-cc-calm.guava-cc-glass .quick-toggle-has-menu .quick-toggle-menu-button:hover {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-toggle-has-menu .quick-toggle:hover,
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-toggle-has-menu .quick-toggle-menu-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Increase Contrast, light: the white slider fill would vanish on the white panel */
+.quick-settings.guava-cc-calm.guava-cc-light.guava-glass-contrast .quick-slider .slider {
+    -barlevel-background-color: rgba(0, 0, 0, 0.2);
+    -barlevel-active-background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Show Borders and Increase Contrast: every platter outlined, joined modules keep one line */
+.quick-settings.guava-cc-calm.guava-glass-borders .quick-toggle,
+.quick-settings.guava-cc-calm.guava-glass-borders .quick-toggle-has-menu,
+.quick-settings.guava-cc-calm.guava-glass-borders .quick-slider,
+.quick-settings.guava-cc-calm.guava-glass-borders .guava-cc-caption,
+.quick-settings.guava-cc-calm.guava-glass-borders .guava-cc-module,
+.quick-settings.guava-cc-calm.guava-glass-borders .guava-cc-now-playing {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.quick-settings.guava-cc-calm.guava-glass-contrast .quick-toggle,
+.quick-settings.guava-cc-calm.guava-glass-contrast .quick-toggle-has-menu,
+.quick-settings.guava-cc-calm.guava-glass-contrast .quick-slider,
+.quick-settings.guava-cc-calm.guava-glass-contrast .guava-cc-caption,
+.quick-settings.guava-cc-calm.guava-glass-contrast .guava-cc-module,
+.quick-settings.guava-cc-calm.guava-glass-contrast .guava-cc-now-playing {
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: none;
+}
+
+.quick-settings.guava-cc-calm.guava-cc-light.guava-glass-borders .quick-toggle,
+.quick-settings.guava-cc-calm.guava-cc-light.guava-glass-borders .quick-toggle-has-menu,
+.quick-settings.guava-cc-calm.guava-cc-light.guava-glass-borders .quick-slider,
+.quick-settings.guava-cc-calm.guava-cc-light.guava-glass-borders .guava-cc-caption,
+.quick-settings.guava-cc-calm.guava-cc-light.guava-glass-borders .guava-cc-module,
+.quick-settings.guava-cc-calm.guava-cc-light.guava-glass-borders .guava-cc-now-playing {
+    border-color: rgba(0, 0, 0, 0.3);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-light.guava-glass-contrast .quick-toggle,
+.quick-settings.guava-cc-calm.guava-cc-light.guava-glass-contrast .quick-toggle-has-menu,
+.quick-settings.guava-cc-calm.guava-cc-light.guava-glass-contrast .quick-slider,
+.quick-settings.guava-cc-calm.guava-cc-light.guava-glass-contrast .guava-cc-caption,
+.quick-settings.guava-cc-calm.guava-cc-light.guava-glass-contrast .guava-cc-module,
+.quick-settings.guava-cc-calm.guava-cc-light.guava-glass-contrast .guava-cc-now-playing {
+    border-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Inside a menu toggle only the outer box is outlined */
+.quick-settings.guava-cc-calm.guava-glass-borders .quick-toggle-has-menu .quick-toggle,
+.quick-settings.guava-cc-calm.guava-glass-contrast .quick-toggle-has-menu .quick-toggle {
+    border-width: 0;
+}
+
+.quick-settings.guava-cc-calm.guava-glass-borders .guava-cc-item.guava-cc-join-next,
+.quick-settings.guava-cc-calm.guava-glass-contrast .guava-cc-item.guava-cc-join-next {
+    border-bottom-width: 0;
+}
+
+/* Light glass: off glyphs and the slider track need more weight over the pale panel */
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-toggle .quick-toggle-icon,
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .guava-cc-guava-tile {
+    color: #1d1d1f;
+    background-color: rgba(0, 0, 0, 0.11);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-toggle:checked .quick-toggle-icon,
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .guava-cc-guava-tile:checked {
+    color: -st-accent-fg-color;
+    background-color: -st-accent-color;
+}
+
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .guava-cc-np-button,
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-settings-system-item .icon-button,
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-settings-system-item .power-item,
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-slider .icon-button {
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light .quick-slider .slider {
+    -barlevel-background-color: rgba(0, 0, 0, 0.2);
+}
+
+.quick-settings.guava-cc-calm.guava-cc-glass.guava-cc-light.guava-glass-contrast .quick-slider .slider {
+    -barlevel-background-color: rgba(0, 0, 0, 0.2);
+    -barlevel-active-background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* ---- Edit Controls (editor.js) and Guava's own controls ---- */
+.quick-settings.guava-control-center .guava-cc-edit-controls {
+    margin-top: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 9.5pt;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.78);
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.quick-settings.guava-control-center .guava-cc-edit-controls:hover,
+.quick-settings.guava-control-center .guava-cc-edit-controls:focus {
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.quick-settings.guava-control-center .guava-cc-editor {
+    width: 306px;
+    spacing: 10px;
+}
+
+.quick-settings.guava-control-center .guava-cc-editor-head {
+    spacing: 6px;
+}
+
+.quick-settings.guava-control-center .guava-cc-editor-title {
+    font-size: 11pt;
+    font-weight: 700;
+}
+
+.quick-settings.guava-control-center .guava-cc-editor-text-button {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 9.5pt;
+    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.quick-settings.guava-control-center .guava-cc-editor-done {
+    color: #ffffff;
+    background-color: -st-accent-color;
+}
+
+.quick-settings.guava-control-center .guava-cc-editor-text-button:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.quick-settings.guava-control-center .guava-cc-editor-done:hover {
+    background-color: st-lighten(-st-accent-color, 6%);
+}
+
+.quick-settings.guava-control-center .guava-cc-edit-tile {
+    min-height: 58px;
+    padding: 4px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px dashed rgba(255, 255, 255, 0.22);
+}
+
+.quick-settings.guava-control-center .guava-cc-edit-body {
+    spacing: 6px;
+    padding: 2px 0;
+}
+
+.quick-settings.guava-control-center .guava-cc-edit-label {
+    font-size: 9pt;
+    font-weight: 600;
+}
+
+.quick-settings.guava-control-center .guava-cc-edit-button {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.85);
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.quick-settings.guava-control-center .guava-cc-edit-button:hover,
+.quick-settings.guava-control-center .guava-cc-edit-button:focus {
+    background-color: rgba(255, 255, 255, 0.24);
+}
+
+.quick-settings.guava-control-center .guava-cc-edit-button:checked {
+    color: #ffffff;
+    background-color: -st-accent-color;
+}
+
+.quick-settings.guava-control-center .guava-cc-edit-button:insensitive {
+    color: rgba(255, 255, 255, 0.3);
+    background-color: transparent;
+}
+
+.quick-settings.guava-control-center .guava-cc-edit-empty {
+    padding: 8px;
+    font-size: 9pt;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.quick-settings.guava-control-center .guava-cc-editor-search {
+    padding: 4px 8px;
+    border-radius: 10px;
+    font-size: 9.5pt;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: none;
+    box-shadow: none;
+}
+
+.quick-settings.guava-control-center .guava-cc-editor-preview-scroll {
+    max-height: 290px;
+}
+
+.quick-settings.guava-control-center .guava-cc-gallery-scroll {
+    max-height: 200px;
+}
+
+.quick-settings.guava-control-center .guava-cc-gallery {
+    spacing: 8px;
+}
+
+.quick-settings.guava-control-center .guava-cc-gallery-title {
+    padding: 0 4px 2px 4px;
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.quick-settings.guava-control-center .guava-cc-gallery-item {
+    padding: 5px 8px;
+    border-radius: 10px;
+}
+
+.quick-settings.guava-control-center .guava-cc-gallery-item > StBoxLayout {
+    spacing: 8px;
+}
+
+.quick-settings.guava-control-center .guava-cc-gallery-item:hover,
+.quick-settings.guava-control-center .guava-cc-gallery-item:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.quick-settings.guava-control-center .guava-cc-gallery-label {
+    font-size: 9.5pt;
+}
+
+.quick-settings.guava-control-center .guava-cc-gallery-add {
+    color: #30d158;
+}
+
+.quick-settings.guava-control-center .guava-cc-gallery-added {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* light style */
+.quick-settings.guava-control-center.guava-cc-light .guava-cc-edit-controls,
+.quick-settings.guava-control-center.guava-cc-light .guava-cc-edit-tile,
+.quick-settings.guava-control-center.guava-cc-light .guava-cc-editor-search,
+.quick-settings.guava-control-center.guava-cc-light .guava-cc-editor-text-button {
+    color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.quick-settings.guava-control-center.guava-cc-light .guava-cc-editor-done {
+    color: #ffffff;
+    background-color: -st-accent-color;
+}
+
+.quick-settings.guava-control-center.guava-cc-light .guava-cc-edit-button {
+    color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+.quick-settings.guava-control-center.guava-cc-light .guava-cc-edit-button:checked {
+    color: #ffffff;
+    background-color: -st-accent-color;
+}
+
+.quick-settings.guava-control-center.guava-cc-light .guava-cc-gallery-title,
+.quick-settings.guava-control-center.guava-cc-light .guava-cc-edit-empty,
+.quick-settings.guava-control-center.guava-cc-light .guava-cc-gallery-added {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.quick-settings.guava-control-center.guava-cc-light .guava-cc-gallery-item:hover,
+.quick-settings.guava-control-center.guava-cc-light .guava-cc-gallery-item:focus {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+.quick-settings.guava-control-center.guava-cc-light .guava-cc-gallery-add {
+    color: #28a745;
+}

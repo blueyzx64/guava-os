@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="16" height="16">
+  <!-- Guava OS logo: a bitten guava (assets/logo/guava-os-symbolic.svg) -->
+  <defs><mask id="m"><rect width="512" height="512" fill="#fff"/><g fill="#000"><circle cx="112" cy="214" r="74"/>
+<circle cx="126" cy="298" r="60"/>
+<circle cx="122" cy="146" r="54"/></g></mask></defs>
+  <path d="M262 120 C 264 100 258 84 248 70" fill="none" stroke="currentColor" color="#888" stroke-width="18" stroke-linecap="round"/>
+  <g fill="currentColor" color="#888"><path d="M254 84 C 278 50 330 40 360 56 C 338 92 290 104 254 84 Z"/><path d="M254 90 C 236 64 208 56 190 66 C 204 90 232 98 254 90 Z"/><path d="M256 112 C 324 112 394 170 402 268 C 412 380 340 446 256 446 C 172 446 100 380 110 268 C 118 170 188 112 256 112 Z" mask="url(#m)"/><path d="M256 424 l-15 32 l15 -10 l15 10 z"/><path d="M236 428 l-24 20 l18 -2 z"/><path d="M276 428 l24 20 l-18 -2 z"/></g>
+</svg>

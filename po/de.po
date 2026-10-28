@@ -1,0 +1,956 @@
+# German translation for Kiwi Menu
+# Copyright (C) 2025 Arnis Kemlers
+# This file is distributed under the same license as the guavamenu package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Guava OS\n"
+"Report-Msgid-Bugs-To: https://github.com/kem-a/kiwi-kemma/issues\n"
+"POT-Creation-Date: 2026-10-01 09:56+0300\n"
+"PO-Revision-Date: 2026-08-21 20:00+0300\n"
+"Last-Translator: \n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: apps/downloadsStack.js:449
+msgid "Open in Files"
+msgstr "In Dateien öffnen"
+
+#: apps/downloadsStack.js:451
+#, javascript-format
+msgid "%d More in Files"
+msgstr "%d weitere in Dateien"
+
+#: apps/downloadsStack.js:453
+msgid "Empty"
+msgstr "Leer"
+
+#: apps/downloadsStack.js:833
+msgid "Downloads"
+msgstr "Downloads"
+
+#: apps/launchpadApp.js:84
+msgid "Launchpad"
+msgstr "Launchpad"
+
+#: apps/launchpadApp.js:85
+msgid "Open Application Overview"
+msgstr "Anwendungsübersicht öffnen"
+
+#: apps/panelMedia.js:142
+msgid "Media"
+msgstr "Medien"
+
+#: apps/mediaPlayback.js:608
+msgid "Unknown artist"
+msgstr "Unbekannter Künstler"
+
+#: apps/mediaPlayback.js:613
+msgid "Unknown title"
+msgstr "Unbekannter Titel"
+
+#: apps/quickSettingsNotifications.js:97
+msgid "Disable Do Not Disturb"
+msgstr "Nicht stören deaktivieren"
+
+#: apps/quickSettingsNotifications.js:97 apps/quickSettingsNotifications.js:152
+msgid "Enable Do Not Disturb"
+msgstr "Nicht stören aktivieren"
+
+#: apps/quickSettingsNotifications.js:148
+msgid "Do Not Disturb"
+msgstr "Nicht stören"
+
+#: apps/quickSettingsNotifications.js:548
+msgid "Notifications"
+msgstr "Benachrichtigungen"
+
+#: apps/quickSettingsNotifications.js:558
+msgid "Clear"
+msgstr "Leeren"
+
+#: apps/quickSettingsNotifications.js:563
+msgid "Clear all notifications"
+msgstr "Alle Benachrichtigungen löschen"
+
+#: apps/quickSettingsNotifications.js:770
+msgid "Do Not Disturb Indicator"
+msgstr "Nicht-stören-Indikator"
+
+#: apps/windowTiling.js:324
+msgid "Move & Resize"
+msgstr "Verschieben und Größe ändern"
+
+#: apps/windowTiling.js:325
+msgid "Left"
+msgstr "Links"
+
+#: apps/windowTiling.js:326
+msgid "Right"
+msgstr "Rechts"
+
+#: apps/windowTiling.js:327
+msgid "Top"
+msgstr "Oben"
+
+#: apps/windowTiling.js:328
+msgid "Bottom"
+msgstr "Unten"
+
+#: apps/windowTiling.js:330
+msgid "Fill & Arrange"
+msgstr "Füllen und anordnen"
+
+#: apps/windowTiling.js:331
+msgid "Fill"
+msgstr "Füllen"
+
+#: apps/windowTiling.js:338
+msgid "Left & Right"
+msgstr "Links und rechts"
+
+#: apps/windowTiling.js:341
+msgid "Right & Left"
+msgstr "Rechts und links"
+
+#: apps/windowTiling.js:344
+msgid "Quarters"
+msgstr "Viertel"
+
+#: apps/windowTitle.js:337
+msgid "Leave Fullscreen"
+msgstr "Vollbild verlassen"
+
+#: apps/windowTitle.js:337
+msgid "Fullscreen"
+msgstr "Vollbild"
+
+#: apps/windowTitle.js:345
+msgid "Restore Window"
+msgstr "Fenster wiederherstellen"
+
+#: apps/windowTitle.js:351
+msgid "Always on Top"
+msgstr "Immer im Vordergrund"
+
+#: prefs.js:118
+msgid "Guava OS"
+msgstr "Guava OS"
+
+#: prefs.js:145
+msgid "About"
+msgstr "Über"
+
+#: prefs.js:204 prefs.js:218
+msgid "Unknown"
+msgstr "Unbekannt"
+
+#: prefs.js:211
+msgid "Change log"
+msgstr "Änderungsprotokoll"
+
+#: prefs.js:252
+msgid "Website"
+msgstr "Webseite"
+
+#: prefs.js:256
+msgid "Report an Issue"
+msgstr "Problem melden"
+
+#: prefs.js:261
+msgid "Credits"
+msgstr "Danksagungen"
+
+#: prefs.js:264 prefs.js:279
+msgid "Legal"
+msgstr "Rechtliches"
+
+#: prefs.js:287
+msgid "License"
+msgstr "Lizenz"
+
+#: prefs.js:288
+msgid "Guava is free and open source software"
+msgstr "Guava ist freie und quelloffene Software"
+
+#: prefs.js:293
+msgid "GNU General Public License v3.0"
+msgstr "GNU General Public License v3.0"
+
+#: prefs.js:295
+msgid "View the full license text on GitHub"
+msgstr "Den vollständigen Lizenztext auf GitHub anzeigen"
+
+#: prefs.js:302 prefs.js:303
+msgid "Copyright"
+msgstr "Urheberrecht"
+
+#: prefs.js:303
+msgid ""
+"This program is free software: you can redistribute it and/or modify it under"
+" the terms of the GNU General Public License as published by the Free "
+"Software Foundation, either version 3 of the License, or (at your option) any"
+" later version."
+msgstr ""
+"Dieses Programm ist freie Software: Sie können es gemäß den Bedingungen der "
+"GNU General Public License weiterverbreiten und/oder verändern, wie sie von "
+"der Free Software Foundation veröffentlicht wurde; entweder Version 3 der "
+"Lizenz oder (nach Ihrer Wahl) jede spätere Version."
+
+#: prefs.js:357
+msgid "Become a sponsor on GitHub"
+msgstr "Sponsor auf GitHub werden"
+
+#: prefs.js:370
+msgid "Support Me ♡"
+msgstr "Unterstütze mich ♡"
+
+#: prefs.js:396
+msgid "Panel"
+msgstr "Panel"
+
+#: prefs.js:402 prefs.js:415
+msgid "Panel Transparency"
+msgstr "Panel-Transparenz"
+
+#: prefs.js:403
+msgid "Configure panel transparency and appearance"
+msgstr "Transparenz und Erscheinungsbild des Panels konfigurieren"
+
+#: prefs.js:416
+msgid "Make the top panel transparent"
+msgstr "Das obere Panel transparent machen"
+
+#: prefs.js:423
+msgid "Transparency Level"
+msgstr "Transparenzstufe"
+
+#: prefs.js:424
+msgid "Set panel transparency (0-100)"
+msgstr "Panel-Transparenz festlegen (0–100)"
+
+#: prefs.js:438
+msgid "Opaque When Window Maximized"
+msgstr "Undurchsichtig bei maximiertem Fenster"
+
+#: prefs.js:439
+msgid "Make panel opaque when a maximized window touches it"
+msgstr "Panel undurchsichtig machen, wenn ein maximiertes Fenster es berührt"
+
+#: prefs.js:447
+msgid "Panel Blur"
+msgstr "Panel weichzeichnen"
+
+#: prefs.js:448
+msgid "Blur the background behind the panel"
+msgstr "Hintergrund hinter dem Panel weichzeichnen"
+
+#: prefs.js:456
+msgid "Panel Color Fix"
+msgstr "Panel-Farbkorrektur"
+
+#: prefs.js:457
+msgid "Fix white panel on some themes (e.g., Ubuntu Yaru)"
+msgstr "Weißes Panel bei einigen Themes beheben (z. B. Ubuntu Yaru)"
+
+#: prefs.js:464
+msgid "Invert Tray Icons on Light Wallpapers"
+msgstr "Symbole im Systembereich bei hellen Hintergrundbildern invertieren"
+
+#: prefs.js:465
+msgid ""
+"Darken white monochrome tray icons when the panel adapts to a light "
+"wallpaper. Colored icons are left untouched"
+msgstr ""
+"Weiße einfarbige Symbole im Systembereich abdunkeln, wenn sich das Panel an "
+"ein helles Hintergrundbild anpasst. Farbige Symbole bleiben unverändert"
+
+#: prefs.js:498
+msgid "Panel Items"
+msgstr "Panel-Elemente"
+
+#: prefs.js:499
+msgid "Choose what the top panel and its menus show"
+msgstr "Wählen, was die obere Leiste und ihre Menüs anzeigen"
+
+#: prefs.js:504
+msgid "Show Panel in Fullscreen on Hover"
+msgstr "Panel im Vollbild bei Mausbewegung anzeigen"
+
+#: prefs.js:504
+msgid ""
+"Show panel when mouse is near top edge in fullscreen. Bugged for GTK4 apps."
+msgstr ""
+"Panel anzeigen, wenn sich der Mauszeiger im Vollbildmodus nahe der oberen "
+"Kante befindet. Für GTK4-Apps fehlerhaft."
+
+#: prefs.js:510
+msgid "Show Window Title"
+msgstr "Fenstertitel anzeigen"
+
+#: prefs.js:511
+msgid "Display current window title in the top panel"
+msgstr "Aktuellen Fenstertitel im oberen Panel anzeigen"
+
+#: prefs.js:520
+msgid "Hide App Icon"
+msgstr "App-Symbol ausblenden"
+
+#: prefs.js:521
+msgid "Do not show the application icon next to the window title"
+msgstr "Das Anwendungssymbol nicht neben dem Fenstertitel anzeigen"
+
+#: prefs.js:528
+msgid "Hide Window Subtitle"
+msgstr "Fensteruntertitel ausblenden"
+
+#: prefs.js:529
+msgid "Show only the application name, without the window's own title"
+msgstr "Nur den Anwendungsnamen anzeigen, ohne den eigenen Titel des Fensters"
+
+#: prefs.js:536
+msgid "Disable Window Tiling"
+msgstr "Fensterkacheln deaktivieren"
+
+#: prefs.js:537
+msgid ""
+"Drop the tiling layouts from the window title menu, and stop restoring tiled "
+"windows when their titlebar is dragged"
+msgstr ""
+"Die Kachel-Layouts aus dem Fenstertitelmenü entfernen und gekachelte Fenster "
+"beim Ziehen der Titelleiste nicht wiederherstellen"
+
+#: prefs.js:563
+msgid "Move Calendar to Right"
+msgstr "Kalender nach rechts verschieben"
+
+#: prefs.js:564
+msgid "Move calendar to right side and hide notifications"
+msgstr "Kalender nach rechts verschieben und Benachrichtigungen ausblenden"
+
+#: prefs.js:573
+msgid "Keep GNOME Notification Panel"
+msgstr "GNOME-Benachrichtigungsbereich beibehalten"
+
+#: prefs.js:574
+msgid "Don't split notification and calendar layout"
+msgstr "Benachrichtigungen und Kalender nicht trennen"
+
+#: prefs.js:581
+msgid "Indicator Style"
+msgstr "Indikator-Stil"
+
+#: prefs.js:582
+msgid "Notification dot recolor"
+msgstr "Farbe des Benachrichtigungspunkts"
+
+#: prefs.js:585 prefs.js:899
+msgid "Default"
+msgstr "Standard"
+
+#: prefs.js:585
+msgid "Accent"
+msgstr "Akzent"
+
+#: prefs.js:585
+msgid "Symbolic"
+msgstr "Symbolisch"
+
+#: prefs.js:592
+msgid "Battery Percentage"
+msgstr "Batterieprozentsatz"
+
+#: prefs.js:604
+msgid ""
+"Unavailable while GNOME Settings shows the battery percentage in the top bar"
+msgstr ""
+"Nicht verfügbar, solange die GNOME-Einstellungen den Akkuladestand in der "
+"oberen Leiste anzeigen"
+
+#: prefs.js:605
+msgid "Show battery percentage in the top bar when below 20%"
+msgstr "Batteriestand in der oberen Leiste anzeigen, wenn er unter 20 % fällt"
+
+#: prefs.js:611
+msgid "Caps Lock and Num Lock"
+msgstr "Feststelltaste und Num-Taste"
+
+#: prefs.js:611
+msgid "Show Caps Lock and Num Lock icon"
+msgstr "Symbol für Feststell- und Num-Taste anzeigen"
+
+#: prefs.js:612
+msgid "Custom Do Not Disturb Button"
+msgstr "Benutzerdefinierter Nicht-stören-Button"
+
+#: prefs.js:612
+msgid ""
+"Replace the system Do Not Disturb button with Guava's custom implementation"
+msgstr ""
+"Ersetzt den System-Nicht-stören-Button durch Guavas eigene Implementierung"
+
+#: prefs.js:613
+msgid "Hide Activities Button"
+msgstr "Aktivitäten-Schaltfläche ausblenden"
+
+#: prefs.js:613
+msgid "Hide the Activities button in the top panel"
+msgstr "Aktivitäten-Schaltfläche im oberen Panel ausblenden"
+
+#: prefs.js:614
+msgid "Add Username"
+msgstr "Benutzernamen hinzufügen"
+
+#: prefs.js:614
+msgid "Add username to the quick menu"
+msgstr "Benutzernamen dem Schnellmenü hinzufügen"
+
+#: prefs.js:618 prefs.js:828
+msgid "Styling"
+msgstr "Gestaltung"
+
+#: prefs.js:619
+msgid ""
+"Restyle stock GNOME Shell elements and GTK apps. Log out and back in for "
+"changes to take effect"
+msgstr ""
+"GNOME-Shell-Elemente und GTK-Anwendungen umgestalten. Zum Übernehmen ab- und "
+"wieder anmelden"
+
+#: prefs.js:624
+msgid "Panel Styling"
+msgstr "Panel-Gestaltung"
+
+#: prefs.js:624
+msgid ""
+"Tighter button spacing, smaller status icons, no dropdown arrows and a "
+"transparent panel in the overview"
+msgstr ""
+"Engere Abstände der Schaltflächen, kleinere Statussymbole, keine "
+"Auswahlpfeile und ein transparentes Panel in der Übersicht"
+
+#: prefs.js:625
+msgid "Menu and App Styling"
+msgstr "Menü- und App-Gestaltung"
+
+#: prefs.js:625
+msgid ""
+"Narrower shell menu items with accent-colored hover and selection, plus the "
+"GTK app fixes"
+msgstr ""
+"Schmalere Shell-Menüeinträge mit Akzentfarbe bei Hover und Auswahl, "
+"zusätzlich die GTK-Anpassungen"
+
+#: prefs.js:631
+msgid "Style Keyboard Indicator"
+msgstr "Tastaturindikator gestalten"
+
+#: prefs.js:632
+msgid ""
+"Slightly style keyboard/input source indicator by converting to uppercase and"
+" adding border"
+msgstr ""
+"Tastatur-/Eingabequellenindikator dezent gestalten, indem er in "
+"Großbuchstaben angezeigt und mit einem Rahmen versehen wird"
+
+#: prefs.js:639
+msgid "Hide keyboard indicator"
+msgstr "Tastaturindikator ausblenden"
+
+#: prefs.js:640
+msgid "Completely hide the indicator from the panel"
+msgstr "Indikator vollständig aus dem Panel ausblenden"
+
+#: prefs.js:668
+msgid "Dock"
+msgstr "Dock"
+
+#: prefs.js:677
+msgid "These options need the Dash to Dock extension installed and enabled"
+msgstr ""
+"Diese Optionen erfordern die installierte und aktivierte Erweiterung Dash to "
+"Dock"
+
+#: prefs.js:685
+msgid "Dock Items"
+msgstr "Dock-Elemente"
+
+#: prefs.js:686
+msgid "Add extra items to Dash-to-Dock"
+msgstr "Zusätzliche Elemente zu Dash-to-Dock hinzufügen"
+
+#: prefs.js:691
+msgid "Minimize Windows to Dock"
+msgstr "Fenster ins Dock minimieren"
+
+#: prefs.js:691
+msgid ""
+"Park minimized windows as thumbnails in Dash-to-Dock, after the apps and "
+"before the trash"
+msgstr ""
+"Minimierte Fenster als Miniaturansichten im Dash-to-Dock ablegen, nach den "
+"Apps und vor dem Papierkorb"
+
+#: prefs.js:695
+msgid "Downloads Folder in Dock"
+msgstr "Download-Ordner im Dock"
+
+#: prefs.js:696
+msgid ""
+"Add a Downloads folder before the trash that fans its newest files out over "
+"the desktop"
+msgstr ""
+"Einen Download-Ordner vor dem Papierkorb hinzufügen, der seine neuesten "
+"Dateien über den Bildschirm auffächert"
+
+#: prefs.js:705
+msgid "Stack Behind Folder"
+msgstr "Hinter dem Ordner stapeln"
+
+#: prefs.js:706
+msgid ""
+"Show the newest files sticking out of the folder icon instead of piled on top"
+" of it"
+msgstr ""
+"Die neuesten Dateien hinter dem Ordnersymbol hervorschauen lassen, statt sie "
+"darauf zu stapeln"
+
+#: prefs.js:724
+msgid "Launchpad Application"
+msgstr "Launchpad-Anwendung"
+
+#: prefs.js:725
+msgid ""
+"Add custom Launchpad icon to dock that opens application overview. "
+"Recommended to hide default app launcher."
+msgstr ""
+"Eigenes Launchpad-Symbol zum Dock hinzufügen, das die Anwendungsübersicht "
+"öffnet. Es wird empfohlen, den Standard-App-Starter auszublenden."
+
+#: prefs.js:735
+msgid "Custom Icon"
+msgstr "Benutzerdefiniertes Symbol"
+
+#: prefs.js:738 prefs.js:823
+msgid "Using default icon"
+msgstr "Standardsymbol wird verwendet"
+
+#: prefs.js:746
+msgid "Reset to default icon"
+msgstr "Auf Standardsymbol zurücksetzen"
+
+#: prefs.js:757
+msgid "Browse for icon"
+msgstr "Symbol auswählen"
+
+#: prefs.js:762
+msgid "Select Launchpad Icon"
+msgstr "Launchpad-Symbol auswählen"
+
+#: prefs.js:766
+msgid "Images (PNG, SVG)"
+msgstr "Bilder (PNG, SVG)"
+
+#: prefs.js:794
+msgid "Icon Too Large"
+msgstr "Symbol zu groß"
+
+#: prefs.js:795
+msgid ""
+"The selected image exceeds 512×512 pixels. Please choose a smaller image."
+msgstr ""
+"Das ausgewählte Bild überschreitet 512×512 Pixel. Bitte ein kleineres Bild "
+"wählen."
+
+#: prefs.js:797
+msgid "OK"
+msgstr "OK"
+
+#: prefs.js:833
+msgid "Dock Styling"
+msgstr "Dock-Gestaltung"
+
+#: prefs.js:833
+msgid ""
+"Tighten icon spacing, drop the icon highlight and darken icons while pressed"
+msgstr ""
+"Symbolabstände verringern, Symbolhervorhebung entfernen und Symbole beim "
+"Drücken abdunkeln"
+
+#: prefs.js:834
+msgid "Dock Blur"
+msgstr "Dock weichzeichnen"
+
+#: prefs.js:834
+msgid ""
+"Blur the background behind Dash-to-Dock. Recommended fixed dock opacity 10% -"
+" 30%, min 1%."
+msgstr ""
+"Hintergrund hinter Dash-to-Dock weichzeichnen. Empfohlene feste Dock-"
+"Deckkraft 10 % – 30 %, mindestens 1 %."
+
+#: prefs.js:835
+msgid "Adaptive Dock Colors"
+msgstr "Adaptive Dock-Farben"
+
+#: prefs.js:835
+msgid ""
+"Flip the running indicators and separators to suit whatever is behind the "
+"dock, wallpaper or window"
+msgstr ""
+"Laufanzeigen und Trennlinien an das anpassen, was sich hinter dem Dock "
+"befindet – Hintergrundbild oder Fenster"
+
+#: prefs.js:858
+msgid "Buttons"
+msgstr "Schaltflächen"
+
+#: prefs.js:864
+msgid "Window Control Button Style"
+msgstr "Fenstersteuerungs-Schaltflächenstil"
+
+#: prefs.js:865
+msgid ""
+"Choose the window control button style. Log out to apply it across all apps."
+msgstr ""
+"Stil der Fenstersteuerungsschaltflächen wählen. Abmelden, um ihn in allen "
+"Apps anzuwenden."
+
+#: prefs.js:873
+msgid "Enable macOS Window Buttons"
+msgstr "macOS-Fensterschaltflächen aktivieren"
+
+#: prefs.js:874
+msgid "Replace window control buttons in application windows with macOS style"
+msgstr ""
+"Fenstersteuerungs-Schaltflächen in Anwendungen durch macOS-Stil ersetzen"
+
+#: prefs.js:895
+msgid "Button Type"
+msgstr "Schaltflächentyp"
+
+#: prefs.js:896
+msgid "Choose the button icon set"
+msgstr "Symbolsatz für Schaltflächen wählen"
+
+#: prefs.js:899
+msgid "Alternative"
+msgstr "Alternativ"
+
+#: prefs.js:899
+msgid "Glass"
+msgstr "Glas"
+
+#: prefs.js:905
+msgid "Button Size"
+msgstr "Schaltflächengröße"
+
+#: prefs.js:906
+msgid "Choose button size"
+msgstr "Schaltflächengröße wählen"
+
+#: prefs.js:909
+msgid "Small"
+msgstr "Klein"
+
+#: prefs.js:909
+msgid "Normal"
+msgstr "Normal"
+
+#: prefs.js:915
+msgid "Firefox Styling"
+msgstr "Firefox-Stil"
+
+#: prefs.js:916
+msgid ""
+"Apply macOS window control styling for Firefox. Recommended to use with "
+"vertical tabs."
+msgstr ""
+"macOS-Fenstersteuerungsstil für Firefox anwenden. Empfohlen in Kombination "
+"mit vertikalen Tabs."
+
+#: prefs.js:924
+msgid "Thunderbird Styling"
+msgstr "Thunderbird-Stil"
+
+#: prefs.js:925
+msgid "Apply macOS window control styling for Thunderbird."
+msgstr "macOS-Fenstersteuerungs-Stil auf Thunderbird anwenden."
+
+#: prefs.js:949
+msgid "Show Window Controls on Panel"
+msgstr "Fenstersteuerungen im Panel anzeigen"
+
+#: prefs.js:950
+msgid ""
+"Display close, minimize, maximize buttons in the top panel when window is "
+"maximized"
+msgstr ""
+"Schaltflächen zum Schließen, Minimieren und Maximieren im oberen Panel "
+"anzeigen, wenn das Fenster maximiert ist"
+
+#: prefs.js:964
+msgid "Only when Fullscreen"
+msgstr "Nur im Vollbild"
+
+#: prefs.js:965
+msgid ""
+"Hide titlebars and show panel controls only for fullscreen windows, not "
+"maximized"
+msgstr ""
+"Titelleisten ausblenden und Panel-Steuerelemente nur bei Fenstern im Vollbild"
+" anzeigen, nicht bei maximierten"
+
+#: prefs.js:974
+msgid "Options"
+msgstr "Optionen"
+
+#: prefs.js:980
+msgid "Guava"
+msgstr "Guava"
+
+#: prefs.js:981
+msgid ""
+"Guava is not like Apple, it's free open source project that brings macOS-like "
+"feel for GNOME"
+msgstr ""
+"Guava ist nicht wie Apple; es ist ein freies Open-Source-Projekt, das GNOME "
+"ein macOS-ähnliches Gefühl verleiht."
+
+#: prefs.js:986
+msgid "Overview Wallpaper Blur"
+msgstr "Übersichtshintergrund weichzeichnen"
+
+#: prefs.js:986
+msgid "Use blurred current wallpaper as overview background"
+msgstr ""
+"Unscharfes aktuelles Hintergrundbild als Übersichtshintergrund verwenden"
+
+#: prefs.js:987
+msgid "Seamless Overview Zoom"
+msgstr "Nahtloser Übersichtszoom"
+
+#: prefs.js:987
+msgid ""
+"Zoom the whole desktop, including the strip behind the panel, in and out of "
+"the overview"
+msgstr ""
+"Den gesamten Desktop, einschließlich des Streifens hinter dem Panel, beim "
+"Öffnen und Schließen der Übersicht zoomen"
+
+#: prefs.js:988
+msgid "Focus on Overview Exit"
+msgstr "Fokus beim Verlassen der Übersicht"
+
+#: prefs.js:988
+msgid ""
+"Focus the window under the cursor instead of the previously focused one when "
+"leaving the overview"
+msgstr ""
+"Beim Verlassen der Übersicht das Fenster unter dem Mauszeiger statt des zuvor"
+" fokussierten Fensters fokussieren"
+
+#: prefs.js:989
+msgid "Skip to Desktop"
+msgstr "Direkt zum Desktop"
+
+#: prefs.js:989
+msgid "Do not show the overview when logging in. Animation is still visible"
+msgstr "Übersicht beim Anmelden nicht anzeigen. Animation bleibt sichtbar."
+
+#: prefs.js:990
+msgid "Hide Minimized Windows"
+msgstr "Minimierte Fenster ausblenden"
+
+#: prefs.js:990
+msgid "Hide minimized windows in the overview"
+msgstr "Minimierte Fenster in der Übersicht ausblenden"
+
+#: prefs.js:991
+msgid "Move Window to New Workspace"
+msgstr "Fenster in neuen Arbeitsbereich verschieben"
+
+#: prefs.js:991
+msgid "Move fullscreen window to a new workspace"
+msgstr "Vollbildfenster in einen neuen Arbeitsbereich verschieben"
+
+#: prefs.js:992
+msgid "Reduce App Animations"
+msgstr "App-Animationen reduzieren"
+
+#: prefs.js:992
+msgid "Mimic macOS window opening and closing with a subtle scale and fade"
+msgstr ""
+"Das Öffnen und Schließen von Fenstern wie unter macOS mit dezentem Skalieren "
+"und Ausblenden nachahmen"
+
+#: prefs.js:993
+msgid "Focus New Windows"
+msgstr "Neue Fenster fokussieren"
+
+#: prefs.js:993
+msgid ""
+"Automatically focus new windows instead of showing window-ready alerts. "
+"Requires extension reload"
+msgstr ""
+"Neue Fenster automatisch fokussieren, statt „Fenster bereit“-Hinweise "
+"anzuzeigen. Erfordert Neuladen der Erweiterung"
+
+#: prefs.js:994
+msgid "Transparent Move"
+msgstr "Transparente Bewegung"
+
+#: prefs.js:994
+msgid "Move window with transparency"
+msgstr "Fenster mit Transparenz verschieben"
+
+#: prefs.js:1001
+msgid "Advanced"
+msgstr "Erweitert"
+
+#: prefs.js:1031
+msgid "Titlebuttons Hover Effect for GTK3 apps"
+msgstr "Schaltflächen-Schwebeeffekt für GTK3-Apps"
+
+#: prefs.js:1044
+msgid ""
+"The titlebuttons hover module provides macOS-like hover effects for window controls in GTK3 applications. GTK3 apps cannot natively show hover effects on all three window controls simultaneously, requiring this custom library to achieve the desired behavior.\n"
+"\n"
+"This binary code cannot be distributed through the GNOME Extensions platform due to security policies regarding native libraries, but manual installation is possible."
+msgstr ""
+"Das Titelknopf-Schwebemodul bietet macOS-ähnliche Hover-Effekte für Fenstersteuerungen in GTK3-Anwendungen. GTK3-Apps können nicht von sich aus auf allen drei Fenstersteuerungen gleichzeitig Hover-Effekte anzeigen, weshalb diese Bibliothek erforderlich ist, um das gewünschte Verhalten zu erreichen.\n"
+"\n"
+"Dieser Binärcode kann aufgrund der Sicherheitsrichtlinien für native Bibliotheken nicht über die GNOME-Extensions-Plattform verteilt werden; eine manuelle Installation ist jedoch möglich."
+
+#: prefs.js:1060
+msgid "Installation Guide on GitHub"
+msgstr "Installationsanleitung auf GitHub"
+
+#: prefs.js:1062
+msgid "Open the advanced module build instructions"
+msgstr "Anleitungen zum Erstellen des erweiterten Moduls öffnen"
+
+#: prefs.js:1068
+msgid "More of my work..."
+msgstr "Mehr von mir …"
+
+#: prefs.js:1072
+msgid "Kiwi Menu"
+msgstr "Kiwi Menu"
+
+#: prefs.js:1072
+msgid "MacOS style menu for GNOME"
+msgstr "Menü im macOS-Stil für GNOME"
+
+#: prefs.js:1073
+msgid "AppManager"
+msgstr "AppManager"
+
+#: prefs.js:1073
+msgid "MacOS style AppImage installer and management application"
+msgstr "Installations- und Verwaltungsanwendung für AppImages im MacOS-Stil"
+
+#: prefs.js:1074
+msgid "Catalina Reloaded Icon Pack"
+msgstr "Catalina Reloaded Icon Pack"
+
+#: prefs.js:1074
+msgid "macOS Tahoe icon theme for Linux"
+msgstr "macOS-Tahoe-Icon-Theme für Linux"
+
+#: prefs.js:1075
+msgid "GDM Wallpaper"
+msgstr "GDM Wallpaper"
+
+#: prefs.js:1075
+msgid "Set custom GDM login screen wallpaper"
+msgstr ""
+"Benutzerdefiniertes Hintergrundbild für den GDM-Anmeldebildschirm festlegen"
+
+#: prefs.js:1087
+msgid "Other Recommended Extensions"
+msgstr "Weitere empfohlene Erweiterungen"
+
+#: prefs.js:1088
+msgid "Extensions that are compatible with Guava"
+msgstr "Erweiterungen, die mit Guava kompatibel sind"
+
+#: prefs.js:1112 prefs.js:1126
+msgid "Restore Defaults"
+msgstr "Standardwerte wiederherstellen"
+
+#: prefs.js:1116
+msgid "Reset every Guava setting to its default value"
+msgstr "Jede Guava-Einstellung auf ihren Standardwert zurücksetzen"
+
+#: prefs.js:1122
+msgid "Restore Default Settings?"
+msgstr "Standardeinstellungen wiederherstellen?"
+
+#: prefs.js:1123
+msgid ""
+"Every Guava setting will be reset to its default value. This cannot be undone."
+msgstr ""
+"Jede Guava-Einstellung wird auf ihren Standardwert zurückgesetzt. Dies kann "
+"nicht widerrufen werden."
+
+#: prefs.js:1125
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#~ msgid "ImageMagick not installed (install package \"imagemagick\" to enable)"
+#~ msgstr ""
+#~ "ImageMagick nicht installiert (Paket „imagemagick“ installieren, um zu "
+#~ "aktivieren)"
+
+
+#~ msgid "Guava OS is free and open source software"
+#~ msgstr "Guava OS ist freie und quelloffene Software"
+
+#~ msgid "Sponsor Me ♡"
+#~ msgstr "Unterstütze mich ♡"
+
+#~ msgid ""
+#~ "Use blurred current wallpaper as overview background (requires ImageMagick)"
+#~ msgstr ""
+#~ "Aktuelles Hintergrundbild unscharf als Übersichts-Hintergrund verwenden "
+#~ "(benötigt ImageMagick)"
+
+#~ msgid "Extras"
+#~ msgstr "Extras"
+
+#~ msgid "Extra Features"
+#~ msgstr "Zusatzfunktionen"
+
+#~ msgid "Additional customization options and utilities"
+#~ msgstr "Weitere Anpassungsoptionen und Hilfsprogramme"
+
+#~ msgid "Even more..."
+#~ msgstr "Noch mehr …"
+
+#~ msgid ""
+#~ "Copyright © 2025 Arnis Kemlers\n"
+#~ "\n"
+#~ "This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version."
+#~ msgstr ""
+#~ "Copyright © 2025 Arnis Kemlers\n"
+#~ "\n"
+#~ "Dieses Programm ist freie Software: Sie können es gemäß den Bedingungen der GNU General Public License weiterverbreiten und/oder verändern, wie sie von der Free Software Foundation veröffentlicht wurde; entweder Version 3 der Lizenz oder (nach Ihrer Wahl) jede spätere Version."
+
+#~ msgid "Support the project"
+#~ msgstr "Das Projekt unterstützen"
+
+#~ msgid "Buy Me a Coffee"
+#~ msgstr "Spendier mir einen Kaffee"
+
+#~ msgid "Show window control buttons in application windows"
+#~ msgstr "Fenstersteuerungsschaltflächen in Anwendungsfenstern anzeigen"
+
+#~ msgid ""
+#~ "Display window control buttons in the top panel when window is maximized"
+#~ msgstr ""
+#~ "Fenstersteuerungsschaltflächen im oberen Panel anzeigen, wenn ein Fenster "
+#~ "maximiert ist"

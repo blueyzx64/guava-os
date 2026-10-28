@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Guava Shelf Helper
+Comment=Lets files be dragged out of the Guava notch shelf
+Exec=guava-shelf-helper
+Icon=folder-download-symbolic
+NoDisplay=true
+StartupNotify=false
+Categories=Utility;

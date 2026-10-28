@@ -1,0 +1,80 @@
+/* feature: desktop-icons */
+/* Sizes that depend on the icon size and the UI scale (the cell, the picture, the label's width
+   and line count) are set inline by tile.js from model.js metricsFor. */
+.guava-di-layer {
+  background-color: transparent;
+}
+
+.guava-di-picture {
+  padding: 0;
+}
+
+.guava-di-icon {
+  color: #ffffff;
+  icon-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.guava-di-label-box {
+  padding-top: 2px;
+}
+
+/* The name: white with a soft dark shadow, readable on any wallpaper */
+.guava-di-label {
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+  padding: 1px 6px;
+  border-radius: 6px;
+}
+
+/* Selected: a soft square behind the picture, a rounded highlight behind the name. Grey while
+   a window has the focus, the accent colour while the desktop does */
+.guava-di-selected .guava-di-picture {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+.guava-di-selected .guava-di-label {
+  background-color: rgba(120, 120, 128, 0.7);
+  text-shadow: none;
+}
+
+.guava-di-selected.guava-di-active .guava-di-label {
+  background-color: -st-accent-color;
+  color: -st-accent-fg-color;
+}
+
+/* The keyboard's place, shown only after a key was used */
+.guava-di-focused .guava-di-picture {
+  box-shadow: inset 0 0 0 2px -st-accent-color;
+}
+
+.guava-di-dragging .guava-di-icon {
+  icon-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+.guava-di-band {
+  background-color: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 2px;
+}
+
+/* Rename: the name becomes a field in place */
+.guava-di-rename {
+  background-color: rgba(255, 255, 255, 0.96);
+  color: #1d1d1f;
+  caret-color: #1d1d1f;
+  selection-background-color: -st-accent-color;
+  selected-color: -st-accent-fg-color;
+  font-size: 12px;
+  text-align: center;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 0 2px -st-accent-color;
+}
+
+.guava-di-rename:error {
+  box-shadow: 0 0 0 2px #ff453a;
+}

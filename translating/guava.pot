@@ -1,0 +1,4786 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Arnis Kemlers
+# This file is distributed under the same license as the Guava OS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#: features/emoji/view.js:162 features/spotlight/view.js:273
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Guava OS 3.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/kem-a/kiwi-kemma/issues\n"
+"POT-Creation-Date: 2026-10-28 06:53+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: prefs.js:37
+msgid "Guava OS"
+msgstr ""
+
+#: core/appMenus/model.js:208
+#, javascript-format
+msgid "About %s"
+msgstr ""
+
+#: core/appMenus/model.js:211 features/dock/appMenu.js:81
+msgid "New Window"
+msgstr ""
+
+#: core/appMenus/model.js:214
+msgid "Close Window"
+msgstr ""
+
+#: core/appMenus/model.js:220
+msgid "Settings…"
+msgstr ""
+
+#: core/appMenus/model.js:221
+#, javascript-format
+msgid "Hide %s"
+msgstr ""
+
+#: core/appMenus/model.js:222
+msgid "Hide Others"
+msgstr ""
+
+#: core/appMenus/model.js:223
+msgid "Show All"
+msgstr ""
+
+#: core/appMenus/model.js:224
+#, javascript-format
+msgid "Quit %s"
+msgstr ""
+
+#: core/appMenus/model.js:229
+msgid "New Tab"
+msgstr ""
+
+#: core/appMenus/model.js:230
+msgid "Open…"
+msgstr ""
+
+#: core/appMenus/model.js:232
+msgid "Save"
+msgstr ""
+
+#: core/appMenus/model.js:233
+msgid "Save As…"
+msgstr ""
+
+#: core/appMenus/model.js:234
+msgid "Print…"
+msgstr ""
+
+#: core/appMenus/model.js:238
+msgid "Undo"
+msgstr ""
+
+#: core/appMenus/model.js:239
+msgid "Redo"
+msgstr ""
+
+#: core/appMenus/model.js:240
+msgid "Cut"
+msgstr ""
+
+#: core/appMenus/model.js:241 features/notch/pills.js:87
+#: features/notch/tabs.js:305
+msgid "Copy"
+msgstr ""
+
+#: core/appMenus/model.js:242 features/clipboard/quickPaste.js:97
+msgid "Paste"
+msgstr ""
+
+#: core/appMenus/model.js:243
+msgid "Select All"
+msgstr ""
+
+#: core/appMenus/model.js:244
+msgid "Find…"
+msgstr ""
+
+#: core/appMenus/model.js:248
+msgid "Zoom In"
+msgstr ""
+
+#: core/appMenus/model.js:249
+msgid "Zoom Out"
+msgstr ""
+
+#: core/appMenus/model.js:250
+msgid "Actual Size"
+msgstr ""
+
+#: core/appMenus/model.js:251
+msgid "Reload"
+msgstr ""
+
+#: core/appMenus/model.js:252
+msgid "Toggle Full Screen"
+msgstr ""
+
+#: core/appMenus/model.js:256
+msgid "Minimize"
+msgstr ""
+
+#: core/appMenus/model.js:257
+msgid "Unzoom"
+msgstr ""
+
+#: core/appMenus/model.js:257
+msgid "Zoom"
+msgstr ""
+
+#: core/appMenus/model.js:258
+msgid "Exit Full Screen"
+msgstr ""
+
+#: core/appMenus/model.js:258
+msgid "Enter Full Screen"
+msgstr ""
+
+#: core/appMenus/model.js:259
+msgid "Tile Window to Left of Screen"
+msgstr ""
+
+#: core/appMenus/model.js:260
+msgid "Tile Window to Right of Screen"
+msgstr ""
+
+#: core/appMenus/model.js:262
+msgid "Always on Top"
+msgstr ""
+
+#: core/appMenus/model.js:263
+msgid "Bring All to Front"
+msgstr ""
+
+#: core/appMenus/model.js:277 features/clipboard/popover.js:64
+#: features/clipboard/popover.js:189 features/emoji/view.js:49
+#: features/launchpad/view.js:337 features/menuBar/appMenuBar.js:554
+#: features/spotlight/providers/settingsCatalog.js:23
+#: features/spotlight/view.js:116 features/spotlight/view.js:117
+#: prefs/window.js:128
+msgid "Search"
+msgstr ""
+
+#: core/appMenus/model.js:278
+#, javascript-format
+msgid "%s Help"
+msgstr ""
+
+#: core/appMenus/model.js:279
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: core/appMenus/model.js:284
+msgid "File"
+msgstr ""
+
+#: core/appMenus/model.js:285
+msgid "Edit"
+msgstr ""
+
+#: core/appMenus/model.js:286
+msgid "View"
+msgstr ""
+
+#: core/appMenus/model.js:287 features/splitView/index.js:134
+#: features/stageManager/view.js:433
+msgid "Window"
+msgstr ""
+
+#: core/appMenus/model.js:288
+msgid "Help"
+msgstr ""
+
+#: core/appMenus/model.js:300
+#, javascript-format
+msgid "Workspace %d"
+msgstr ""
+
+#: core/appMenus/model.js:306
+msgid "New Workspace"
+msgstr ""
+
+#: core/appMenus/model.js:310
+msgid "Move to Workspace"
+msgstr ""
+
+#: core/tileActions.js:77
+msgid "Move & Resize"
+msgstr ""
+
+#: core/tileActions.js:79 features/appButtons/prefs.js:27
+#: features/dock/prefs.js:105 features/onboarding/model.js:75
+#: features/onboarding/model.js:98 features/stageManager/prefs.js:65
+#: features/windows/prefs.js:14
+msgid "Left"
+msgstr ""
+
+#: core/tileActions.js:79 features/appButtons/prefs.js:27
+#: features/dock/prefs.js:105 features/onboarding/model.js:75
+#: features/onboarding/model.js:98 features/stageManager/prefs.js:65
+#: features/windows/prefs.js:15
+msgid "Right"
+msgstr ""
+
+#: core/tileActions.js:79 features/windows/prefs.js:16
+msgid "Top"
+msgstr ""
+
+#: core/tileActions.js:79 features/dock/prefs.js:105
+#: features/onboarding/model.js:75 features/windows/prefs.js:17
+msgid "Bottom"
+msgstr ""
+
+#: core/tileActions.js:80 features/hotCorners/prefs.js:26
+msgid "Top Left"
+msgstr ""
+
+#: core/tileActions.js:80 features/hotCorners/prefs.js:26
+msgid "Top Right"
+msgstr ""
+
+#: core/tileActions.js:81 features/hotCorners/prefs.js:27
+msgid "Bottom Left"
+msgstr ""
+
+#: core/tileActions.js:81 features/hotCorners/prefs.js:27
+msgid "Bottom Right"
+msgstr ""
+
+#: core/tileActions.js:85
+msgid "Fill & Arrange"
+msgstr ""
+
+#: core/tileActions.js:87 features/windows/prefs.js:18
+msgid "Fill"
+msgstr ""
+
+#: core/tileActions.js:87 features/windows/prefs.js:23
+msgid "Left & Right"
+msgstr ""
+
+#: core/tileActions.js:88 features/windows/prefs.js:24
+msgid "Right & Left"
+msgstr ""
+
+#: core/tileActions.js:88 features/windows/prefs.js:25
+msgid "Top & Bottom"
+msgstr ""
+
+#: core/tileActions.js:89
+msgid "Quarters"
+msgstr ""
+
+#: core/widgets/data.js:28
+msgid "Same time"
+msgstr ""
+
+#: core/widgets/data.js:50
+msgid "Tomorrow"
+msgstr ""
+
+#: core/widgets/data.js:50 features/notificationCenter/view.js:71
+msgid "Yesterday"
+msgstr ""
+
+#: core/widgets/data.js:50 core/widgets/kinds/clock.js:72
+msgid "Today"
+msgstr ""
+
+#: core/widgets/data.js:171
+msgid "This Computer"
+msgstr ""
+
+#: core/widgets/data.js:171
+msgid "Device"
+msgstr ""
+
+#: core/widgets/kinds/batteries.js:14 core/widgets/kinds/batteries.js:15
+msgid "Batteries"
+msgstr ""
+
+#: core/widgets/kinds/batteries.js:33
+msgid "No batteries"
+msgstr ""
+
+#: core/widgets/kinds/calendar.js:17
+msgid "Untitled"
+msgstr ""
+
+#: core/widgets/kinds/calendar.js:18 features/notch/tabs.js:401
+msgid "All day"
+msgstr ""
+
+#: core/widgets/kinds/calendar.js:27 core/widgets/kinds/calendar.js:28
+#: features/notch/tabs.js:407
+msgid "Calendar"
+msgstr ""
+
+#: core/widgets/kinds/calendar.js:103
+msgid "No calendars"
+msgstr ""
+
+#: core/widgets/kinds/calendar.js:103 features/notch/tabs.js:395
+msgid "No more events today"
+msgstr ""
+
+#: core/widgets/kinds/clock.js:70
+msgid "Local"
+msgstr ""
+
+#: core/widgets/kinds/clock.js:83 core/widgets/kinds/clock.js:84
+#: core/widgets/kinds/clock.js:122 features/notificationCenter/view.js:232
+msgid "Clock"
+msgstr ""
+
+#: core/widgets/kinds/clock.js:183
+msgid "Digital"
+msgstr ""
+
+#: core/widgets/kinds/nowPlaying.js:25 features/controlCenter/customModel.js:98
+#: lib/menuBarPins.js:20
+msgid "Now Playing"
+msgstr ""
+
+#: core/widgets/kinds/nowPlaying.js:26 features/spotlight/queryModel.js:51
+msgid "Music"
+msgstr ""
+
+#: core/widgets/kinds/nowPlaying.js:63 features/menuBarItems/pinned.js:425
+#: features/notch/tabs.js:138
+msgid "Previous"
+msgstr ""
+
+#: core/widgets/kinds/nowPlaying.js:64 core/widgets/kinds/nowPlaying.js:105
+#: features/controlCenter/nowPlaying.js:46
+#: features/controlCenter/nowPlaying.js:106 features/notch/tabs.js:139
+msgid "Play"
+msgstr ""
+
+#: core/widgets/kinds/nowPlaying.js:65 features/menuBarItems/pinned.js:427
+#: features/notch/tabs.js:142
+msgid "Next"
+msgstr ""
+
+#: core/widgets/kinds/nowPlaying.js:101 features/menuBarItems/pinned.js:417
+#: features/notch/tabs.js:44 lib/mpris.js:260
+msgid "Unknown title"
+msgstr ""
+
+#: core/widgets/kinds/nowPlaying.js:101
+msgid "Not Playing"
+msgstr ""
+
+#: core/widgets/kinds/nowPlaying.js:105
+#: features/controlCenter/nowPlaying.js:106 features/notch/pills.js:39
+#: features/notch/tabs.js:139
+msgid "Pause"
+msgstr ""
+
+#: core/widgets/kinds/system.js:28 core/widgets/kinds/system.js:29
+#: features/controlCenter/customModel.js:26 features/menuBar/aboutDialog.js:65
+#: features/spotlight/providers/settingsCatalog.js:36
+msgid "System"
+msgstr ""
+
+#: core/widgets/kinds/system.js:49
+msgid "CPU"
+msgstr ""
+
+#: core/widgets/kinds/system.js:50 features/menuBar/aboutDialog.js:64
+msgid "Memory"
+msgstr ""
+
+#: core/widgets/kinds/system.js:59
+msgid "CPU history"
+msgstr ""
+
+#: core/widgets/kinds/weather.js:14
+msgid "Install Weather to see the weather"
+msgstr ""
+
+#: core/widgets/kinds/weather.js:15
+msgid "Choose a location in Weather"
+msgstr ""
+
+#: core/widgets/kinds/weather.js:16 features/emoji/view.js:151
+#: features/notch/tabs.js:424
+msgid "Loading…"
+msgstr ""
+
+#: core/widgets/kinds/weather.js:17
+msgid "Weather is not available"
+msgstr ""
+
+#: core/widgets/kinds/weather.js:22 core/widgets/kinds/weather.js:23
+#: core/widgets/kinds/weather.js:93 features/notch/tabs.js:422
+#: features/notch/tabs.js:426 features/notificationCenter/view.js:232
+msgid "Weather"
+msgstr ""
+
+#: features/appButtons/prefs.js:17 features/onboarding/model.js:93
+msgid "Window Buttons"
+msgstr ""
+
+#: features/appButtons/prefs.js:18
+msgid ""
+"Close, minimize and maximize stay in each app's own titlebar. Guava sets the "
+"GNOME button layout and restores yours when Guava is turned off. Log out to "
+"apply a new look across all apps."
+msgstr ""
+
+#: features/appButtons/prefs.js:23 features/onboarding/model.js:97
+#: features/stageManager/prefs.js:63
+msgid "Side"
+msgstr ""
+
+#: features/appButtons/prefs.js:24
+msgid "Right is the GNOME side. Left is the macOS side"
+msgstr ""
+
+#: features/appButtons/prefs.js:31
+msgid "Buttons"
+msgstr ""
+
+#: features/appButtons/prefs.js:32
+msgid "Close only is the stock Fedora layout"
+msgstr ""
+
+#: features/appButtons/prefs.js:35
+msgid "Close, minimize and maximize"
+msgstr ""
+
+#: features/appButtons/prefs.js:35
+msgid "Close only"
+msgstr ""
+
+#: features/appButtons/prefs.js:39 prefs/pages/index.js:60
+msgid "Look"
+msgstr ""
+
+#: features/appButtons/prefs.js:40
+msgid ""
+"macOS shows the traffic lights; GNOME keeps the stock look. Open apps pick "
+"up a new look when restarted"
+msgstr ""
+
+#: features/appButtons/prefs.js:43
+msgid "macOS"
+msgstr ""
+
+#: features/appButtons/prefs.js:43 features/menuBar/aboutDialog.js:65
+msgid "GNOME"
+msgstr ""
+
+#: features/appButtons/prefs.js:48
+msgid "Traffic light size"
+msgstr ""
+
+#: features/appButtons/prefs.js:49
+msgid "Size of the macOS traffic lights"
+msgstr ""
+
+#: features/appButtons/prefs.js:52 features/dock/prefs.js:99
+#: features/widgets/gallery.js:231 prefs/setupAssistant.js:115
+msgid "Small"
+msgstr ""
+
+#: features/appButtons/prefs.js:52 features/menuBarItems/pinned.js:396
+#: features/showDesktop/prefs.js:39
+msgid "Normal"
+msgstr ""
+
+#: features/appearance/prefs.js:13 features/onboarding/model.js:39
+msgid "Blue"
+msgstr ""
+
+#: features/appearance/prefs.js:13 features/onboarding/model.js:39
+msgid "Purple"
+msgstr ""
+
+#: features/appearance/prefs.js:13 features/onboarding/model.js:39
+msgid "Pink"
+msgstr ""
+
+#: features/appearance/prefs.js:13 features/onboarding/model.js:40
+#: prefs/pages/menuBar.js:42
+msgid "Red"
+msgstr ""
+
+#: features/appearance/prefs.js:14 features/onboarding/model.js:40
+msgid "Orange"
+msgstr ""
+
+#: features/appearance/prefs.js:14 features/onboarding/model.js:40
+msgid "Yellow"
+msgstr ""
+
+#: features/appearance/prefs.js:14 features/onboarding/model.js:40
+msgid "Green"
+msgstr ""
+
+#: features/appearance/prefs.js:14 features/onboarding/model.js:41
+msgid "Graphite"
+msgstr ""
+
+#: features/appearance/prefs.js:33
+msgid "hours"
+msgstr ""
+
+#: features/appearance/prefs.js:34
+msgid "minutes"
+msgstr ""
+
+#: features/appearance/prefs.js:71
+#: features/spotlight/providers/settingsCatalog.js:21
+#: prefs/pages/appearance.js:16
+msgid "Appearance"
+msgstr ""
+
+#: features/appearance/prefs.js:72
+msgid ""
+"Choose Light or Dark in GNOME Settings, or let Guava switch for you like "
+"macOS Auto."
+msgstr ""
+
+#: features/appearance/prefs.js:74
+msgid "Auto Light and Dark"
+msgstr ""
+
+#: features/appearance/prefs.js:75
+msgid ""
+"Light by day, Dark by night. Switches only while you are idle. Choosing a "
+"style yourself turns this off."
+msgstr ""
+
+#: features/appearance/prefs.js:78
+msgid "Schedule"
+msgstr ""
+
+#: features/appearance/prefs.js:79
+msgid ""
+"Sunset to Sunrise uses the location Night Light last saw, else your time zone"
+msgstr ""
+
+#: features/appearance/prefs.js:82
+msgid "Sunset to Sunrise"
+msgstr ""
+
+#: features/appearance/prefs.js:82 features/spotlight/prefs.js:28
+msgid "Custom"
+msgstr ""
+
+#: features/appearance/prefs.js:85
+msgid "Light from"
+msgstr ""
+
+#: features/appearance/prefs.js:86
+msgid "Dark from"
+msgstr ""
+
+#: features/appearance/prefs.js:100
+msgid "Colours"
+msgstr ""
+
+#: features/appearance/prefs.js:102 features/appearance/prefs.js:113
+#: features/onboarding/model.js:65
+msgid "Accent Colour"
+msgstr ""
+
+#: features/appearance/prefs.js:103
+msgid ""
+"Multicolor follows GNOME's accent colour. A colour here sets GNOME's while "
+"Guava runs."
+msgstr ""
+
+#: features/appearance/prefs.js:106 features/onboarding/model.js:39
+msgid "Multicolor"
+msgstr ""
+
+#: features/appearance/prefs.js:109
+msgid "Highlight Colour"
+msgstr ""
+
+#: features/appearance/prefs.js:110
+msgid "Text selection in Spotlight and the clipboard"
+msgstr ""
+
+#: features/appearance/prefs.js:116
+msgid "Icons"
+msgstr ""
+
+#: features/appearance/prefs.js:118
+msgid "Icon Style"
+msgstr ""
+
+#: features/appearance/prefs.js:119
+msgid "App icons in the dock and Spotlight. Tinted uses the accent colour."
+msgstr ""
+
+#: features/appearance/prefs.js:122
+msgid "Default"
+msgstr ""
+
+#: features/appearance/prefs.js:122 prefs/setupAssistant.js:41
+msgid "Dark"
+msgstr ""
+
+#: features/appearance/prefs.js:122 features/calendar/notificationList.js:64
+#: features/clipboard/popover.js:113 features/liquidGlass/prefs.js:42
+#: features/notch/tabs.js:318 features/notificationCenter/view.js:105
+msgid "Clear"
+msgstr ""
+
+#: features/appearance/prefs.js:122 features/liquidGlass/prefs.js:43
+msgid "Tinted"
+msgstr ""
+
+#: features/calendar/dndButton.js:57 features/controlCenter/tiles.js:134
+#: features/menuBarItems/pinned.js:172
+msgid "Do Not Disturb"
+msgstr ""
+
+#: features/calendar/dndButton.js:71
+msgid "Do Not Disturb Indicator"
+msgstr ""
+
+#: features/calendar/notificationList.js:56 features/notch/prefs.js:34
+#: features/notificationCenter/index.js:263
+#: features/notificationCenter/view.js:179
+#: features/spotlight/providers/settingsCatalog.js:22
+msgid "Notifications"
+msgstr ""
+
+#: features/calendar/notificationList.js:65
+msgid "Clear all notifications"
+msgstr ""
+
+#: features/clipboard/index.js:565 features/clipboard/prefs.js:55
+#: features/clipboard/quickPaste.js:32 features/onboarding/model.js:115
+msgid "Clipboard History"
+msgstr ""
+
+#: features/clipboard/popover.js:64 features/clipboard/quickPaste.js:64
+msgid "Search Clipboard"
+msgstr ""
+
+#: features/clipboard/popover.js:76
+msgid "All"
+msgstr ""
+
+#: features/clipboard/popover.js:76 features/clipboard/quickPaste.js:205
+msgid "Text"
+msgstr ""
+
+#: features/clipboard/popover.js:76
+msgid "Links"
+msgstr ""
+
+#: features/clipboard/popover.js:76 features/spotlight/queryModel.js:50
+msgid "Images"
+msgstr ""
+
+#: features/clipboard/popover.js:103 features/clipboard/popover.js:186
+#: features/clipboard/prefs.js:60 features/notch/pills.js:48
+msgid "Recording"
+msgstr ""
+
+#: features/clipboard/popover.js:113
+msgid "Clear Clipboard History"
+msgstr ""
+
+#: features/clipboard/popover.js:186
+msgid "Paused"
+msgstr ""
+
+#: features/clipboard/popover.js:188
+#, javascript-format
+msgid "Search %d items"
+msgstr ""
+
+#: features/clipboard/popover.js:206 features/clipboard/quickPaste.js:138
+msgid "Pinned"
+msgstr ""
+
+#: features/clipboard/popover.js:210 features/clipboard/quickPaste.js:142
+msgid "Recent"
+msgstr ""
+
+#: features/clipboard/popover.js:231 features/clipboard/quickPaste.js:147
+msgid "No matches"
+msgstr ""
+
+#: features/clipboard/popover.js:231 features/clipboard/quickPaste.js:147
+#: features/notch/tabs.js:234 features/spotlight/results.js:261
+msgid "Nothing copied yet"
+msgstr ""
+
+#: features/clipboard/popover.js:235
+msgid "Try another word or filter."
+msgstr ""
+
+#: features/clipboard/popover.js:235
+msgid "Text, links and images you copy appear here."
+msgstr ""
+
+#: features/clipboard/prefs.js:18
+msgid "History size"
+msgstr ""
+
+#: features/clipboard/prefs.js:19
+msgid "Entries kept. Pinned items do not count and never expire."
+msgstr ""
+
+#: features/clipboard/prefs.js:28
+msgid "Also ignore copies from these apps"
+msgstr ""
+
+#: features/clipboard/prefs.js:56
+msgid ""
+"Keeps what you copy so you can paste it again. Open it from the top bar or "
+"with the shortcut."
+msgstr ""
+
+#: features/clipboard/prefs.js:58
+msgid "Clipboard history"
+msgstr ""
+
+#: features/clipboard/prefs.js:59
+msgid "Record text, links, colours and images that you copy."
+msgstr ""
+
+#: features/clipboard/prefs.js:61
+msgid "Turn off to pause without losing the history."
+msgstr ""
+
+#: features/clipboard/prefs.js:62
+msgid "Show in the top bar"
+msgstr ""
+
+#: features/clipboard/prefs.js:63
+msgid "Keep images"
+msgstr ""
+
+#: features/clipboard/prefs.js:64
+msgid "Images over 5 MB are never kept."
+msgstr ""
+
+#: features/clipboard/prefs.js:67
+msgid "Quick Paste shortcut"
+msgstr ""
+
+#: features/clipboard/prefs.js:68
+msgid "Use Super+Shift+V"
+msgstr ""
+
+#: features/clipboard/prefs.js:72 features/menuBar/privacyDots.js:72
+#: features/onboarding/model.js:112
+msgid "Privacy"
+msgstr ""
+
+#: features/clipboard/prefs.js:73
+msgid "Nothing is recorded while the screen is locked."
+msgstr ""
+
+#: features/clipboard/prefs.js:75
+msgid "Save history to disk"
+msgstr ""
+
+#: features/clipboard/prefs.js:76
+msgid ""
+"Kept in ~/.local/share/guava/clipboard/, readable only by you. Needed to keep "
+"history across lock and log out."
+msgstr ""
+
+#: features/clipboard/prefs.js:78
+msgid "Ignore passwords"
+msgstr ""
+
+#: features/clipboard/prefs.js:79
+msgid "Skip copies marked as secret and copies from password managers."
+msgstr ""
+
+#: features/clipboard/quickPaste.js:99 features/clipboard/quickPaste.js:173
+#: features/clipboard/quickPaste.js:176 features/clipboard/view.js:116
+#: features/clipboard/view.js:168
+msgid "Pin"
+msgstr ""
+
+#: features/clipboard/quickPaste.js:107
+msgid "↑↓ Select    ↵ Paste    Ctrl+P Pin    Ctrl+D Remove    Esc Close"
+msgstr ""
+
+#: features/clipboard/quickPaste.js:176 features/clipboard/view.js:116
+#: features/clipboard/view.js:168
+msgid "Unpin"
+msgstr ""
+
+#: features/clipboard/quickPaste.js:205
+msgid "Link"
+msgstr ""
+
+#: features/clipboard/quickPaste.js:205
+msgid "Colour"
+msgstr ""
+
+#: features/clipboard/quickPaste.js:205 features/clipboard/view.js:49
+#: features/notch/index.js:619 features/spotlight/providers/clipboard.js:17
+msgid "Image"
+msgstr ""
+
+#: features/clipboard/view.js:27
+msgid "Just now"
+msgstr ""
+
+#: features/clipboard/view.js:28
+#, javascript-format
+msgid "%d min ago"
+msgstr ""
+
+#: features/clipboard/view.js:29
+#, javascript-format
+msgid "%d h ago"
+msgstr ""
+
+#: features/clipboard/view.js:30
+#, javascript-format
+msgid "%d d ago"
+msgstr ""
+
+#: features/clipboard/view.js:117 features/clipboard/view.js:169
+#: features/dock/view.js:359 features/focus/prefs.js:76
+#: features/roundedCorners/prefs.js:56 features/spotlight/prefs.js:123
+#: features/spotlight/prefs.js:125 features/widgets/layer.js:88
+msgid "Remove"
+msgstr ""
+
+#: features/colorFilters/prefs.js:32
+msgid "Colour Filters"
+msgstr ""
+
+#: features/colorFilters/prefs.js:33
+msgid "Tell colours apart, or reduce colour on the whole screen"
+msgstr ""
+
+#: features/colorFilters/prefs.js:38
+msgid "Filter Type"
+msgstr ""
+
+#: features/colorFilters/prefs.js:40
+msgid "Greyscale"
+msgstr ""
+
+#: features/colorFilters/prefs.js:40
+msgid "Red/Green Filter (Protanopia)"
+msgstr ""
+
+#: features/colorFilters/prefs.js:40
+msgid "Green/Red Filter (Deuteranopia)"
+msgstr ""
+
+#: features/colorFilters/prefs.js:41
+msgid "Blue/Yellow Filter (Tritanopia)"
+msgstr ""
+
+#: features/colorFilters/prefs.js:41
+msgid "Colour Tint"
+msgstr ""
+
+#: features/colorFilters/prefs.js:44
+msgid "Intensity"
+msgstr ""
+
+#: features/colorFilters/prefs.js:44
+msgid "Colour filter intensity"
+msgstr ""
+
+#: features/colorFilters/prefs.js:47
+msgid "Hue"
+msgstr ""
+
+#: features/colorFilters/prefs.js:47
+msgid "Colour tint hue"
+msgstr ""
+
+#: features/controlCenter/controls.js:150 features/controlCenter/tiles.js:101
+#: features/focus/indicator.js:63
+msgid "Off"
+msgstr ""
+
+#: features/controlCenter/controls.js:160 features/controlCenter/userRow.js:30
+#, javascript-format
+msgid "%d min"
+msgstr ""
+
+#: features/controlCenter/controls.js:167
+#: features/controlCenter/controls.js:168
+#: features/controlCenter/controls.js:177
+#: features/controlCenter/controls.js:187
+#: features/controlCenter/customModel.js:87 features/notch/index.js:122
+#: features/notch/pills.js:34 features/notch/pills.js:45
+#: features/notch/sources/timers.js:38 features/notch/sources/timers.js:49
+#: features/screenshots/prefs.js:44 features/screenshots/toolbar.js:255
+#: features/spotlight/providers/actions.js:130
+msgid "Timer"
+msgstr ""
+
+#: features/controlCenter/controls.js:167
+msgid "Time is up."
+msgstr ""
+
+#: features/controlCenter/controls.js:189
+msgid "1 hour"
+msgstr ""
+
+#: features/controlCenter/controls.js:189
+#, javascript-format
+msgid "%d minutes"
+msgstr ""
+
+#: features/controlCenter/controls.js:227
+#: features/controlCenter/customModel.js:88
+msgid "Keep Awake"
+msgstr ""
+
+#: features/controlCenter/controls.js:255
+msgid "On battery"
+msgstr ""
+
+#: features/controlCenter/controls.js:255
+msgid "On power adapter"
+msgstr ""
+
+#: features/controlCenter/controls.js:256 features/menuBarItems/pinned.js:369
+#: features/notch/tabs.js:424
+msgid "Not available"
+msgstr ""
+
+#: features/controlCenter/customModel.js:24
+msgid "Connectivity"
+msgstr ""
+
+#: features/controlCenter/customModel.js:25
+msgid "Display and Sound"
+msgstr ""
+
+#: features/controlCenter/customModel.js:27 features/liquidGlass/prefs.js:102
+#: features/spotlight/providers/settingsCatalog.js:33
+msgid "Accessibility"
+msgstr ""
+
+#: features/controlCenter/customModel.js:28 features/spotlight/prefs.js:193
+#: features/spotlight/queryModel.js:20 features/spotlight/queryModel.js:53
+#: features/spotlight/view.js:38
+msgid "Actions"
+msgstr ""
+
+#: features/controlCenter/customModel.js:29 features/onboarding/model.js:87
+#: features/spotlight/providers/settingsCatalog.js:76
+#: features/spotlight/view.js:45 prefs/pages/index.js:61
+msgid "Guava"
+msgstr ""
+
+#: features/controlCenter/customModel.js:43 features/menuBarItems/pinned.js:141
+#: features/spotlight/providers/settingsCatalog.js:12 lib/menuBarPins.js:15
+msgid "Wi-Fi"
+msgstr ""
+
+#: features/controlCenter/customModel.js:44
+msgid "Wired"
+msgstr ""
+
+#: features/controlCenter/customModel.js:45 features/menuBarItems/pinned.js:151
+#: features/spotlight/providers/settingsCatalog.js:14 lib/menuBarPins.js:16
+msgid "Bluetooth"
+msgstr ""
+
+#: features/controlCenter/customModel.js:46
+msgid "VPN"
+msgstr ""
+
+#: features/controlCenter/customModel.js:47
+msgid "Mobile Broadband"
+msgstr ""
+
+#: features/controlCenter/customModel.js:48
+msgid "Bluetooth Tethering"
+msgstr ""
+
+#: features/controlCenter/customModel.js:49
+msgid "Airplane Mode"
+msgstr ""
+
+#: features/controlCenter/customModel.js:50 features/focus/indicator.js:19
+#: features/focus/indicator.js:21 features/focus/indicator.js:61
+#: features/focus/indicator.js:62 features/focus/indicator.js:63
+#: features/focus/indicator.js:66 features/focus/prefs.js:40
+#: features/notch/tabs.js:445 lib/menuBarPins.js:19
+msgid "Focus"
+msgstr ""
+
+#: features/controlCenter/customModel.js:51 features/controlCenter/index.js:245
+#: features/osd/model.js:53
+msgid "Display"
+msgstr ""
+
+#: features/controlCenter/customModel.js:52 features/controlCenter/index.js:246
+#: features/menuBarItems/pinned.js:160
+#: features/spotlight/providers/settingsCatalog.js:16 lib/menuBarPins.js:17
+msgid "Sound"
+msgstr ""
+
+#: features/controlCenter/customModel.js:53 features/menuBar/privacyDots.js:145
+#: features/menuBar/privacyDots.js:156
+msgid "Microphone"
+msgstr ""
+
+#: features/controlCenter/customModel.js:54
+msgid "Dark Mode"
+msgstr ""
+
+#: features/controlCenter/customModel.js:55
+msgid "Night Shift"
+msgstr ""
+
+#: features/controlCenter/customModel.js:56 features/menuBarItems/pinned.js:178
+#: lib/menuBarPins.js:21
+msgid "Keyboard Brightness"
+msgstr ""
+
+#: features/controlCenter/customModel.js:57
+msgid "Auto Rotate"
+msgstr ""
+
+#: features/controlCenter/customModel.js:58
+msgid "Power Mode"
+msgstr ""
+
+#: features/controlCenter/customModel.js:59
+msgid "Location"
+msgstr ""
+
+#: features/controlCenter/customModel.js:60 features/menuBar/privacyDots.js:145
+#: features/menuBar/privacyDots.js:162
+msgid "Camera"
+msgstr ""
+
+#: features/controlCenter/customModel.js:61
+msgid "Screen Sharing"
+msgstr ""
+
+#: features/controlCenter/customModel.js:62
+msgid "Thunderbolt"
+msgstr ""
+
+#: features/controlCenter/customModel.js:63
+msgid "Unsafe Mode"
+msgstr ""
+
+#: features/controlCenter/customModel.js:64
+msgid "Background Apps"
+msgstr ""
+
+#: features/controlCenter/customModel.js:68
+msgid "Text Size"
+msgstr ""
+
+#: features/controlCenter/customModel.js:70 features/liquidGlass/prefs.js:108
+msgid "Increase Contrast"
+msgstr ""
+
+#: features/controlCenter/customModel.js:72
+msgid "Reduce Motion"
+msgstr ""
+
+#: features/controlCenter/customModel.js:74
+msgid "VoiceOver"
+msgstr ""
+
+#: features/controlCenter/customModel.js:76
+msgid "Accessibility Keyboard"
+msgstr ""
+
+#: features/controlCenter/customModel.js:78
+msgid "Sticky Keys"
+msgstr ""
+
+#: features/controlCenter/customModel.js:80
+msgid "Flash Screen for Alerts"
+msgstr ""
+
+#: features/controlCenter/customModel.js:85
+#: features/screenshots/thumbnail.js:93 features/screenshots/toolbar.js:66
+msgid "Screenshot"
+msgstr ""
+
+#: features/controlCenter/customModel.js:86 features/menuBar/privacyDots.js:145
+#: lib/menuBarPins.js:22
+msgid "Screen Recording"
+msgstr ""
+
+#: features/controlCenter/customModel.js:89 features/lowPower/prefs.js:14
+#: features/menuBarItems/pinned.js:388
+msgid "Low Power Mode"
+msgstr ""
+
+#: features/controlCenter/customModel.js:99
+msgid "Guava Features"
+msgstr ""
+
+#: features/controlCenter/editor.js:78
+msgid "Edit Controls"
+msgstr ""
+
+#: features/controlCenter/editor.js:81 features/controlCenter/prefs.js:38
+msgid "Reset"
+msgstr ""
+
+#: features/controlCenter/editor.js:83 features/notch/pills.js:45
+#: features/widgets/gallery.js:90
+msgid "Done"
+msgstr ""
+
+#: features/controlCenter/editor.js:106 features/controlCenter/editor.js:107
+msgid "Search Controls"
+msgstr ""
+
+#: features/controlCenter/editor.js:197 features/controlCenter/editor.js:267
+#: features/missionControl/spaces.js:157
+#, javascript-format
+msgid "Remove %s"
+msgstr ""
+
+#: features/controlCenter/editor.js:203
+#, javascript-format
+msgid "Show %s in the Menu Bar"
+msgstr ""
+
+#: features/controlCenter/editor.js:220
+#, javascript-format
+msgid "Move %s Earlier"
+msgstr ""
+
+#: features/controlCenter/editor.js:225
+#, javascript-format
+msgid "Change the Size of %s"
+msgstr ""
+
+#: features/controlCenter/editor.js:228
+#, javascript-format
+msgid "Move %s Later"
+msgstr ""
+
+#: features/controlCenter/editor.js:236
+msgid "Add controls from the list below."
+msgstr ""
+
+#: features/controlCenter/editor.js:267
+#, javascript-format
+msgid "Add %s"
+msgstr ""
+
+#: features/controlCenter/editor.js:282
+msgid "No controls match."
+msgstr ""
+
+#: features/controlCenter/index.js:247
+msgid "More"
+msgstr ""
+
+#: features/controlCenter/index.js:272
+msgid "Edit Controls…"
+msgstr ""
+
+#: features/controlCenter/model.js:77 features/notch/view.js:128
+#: features/notch/view.js:134 features/osd/prefs.js:21 prefs/pages/index.js:53
+msgid "Notch"
+msgstr ""
+
+#: features/controlCenter/model.js:78 features/onboarding/model.js:104
+#: features/onboarding/model.js:107
+#: features/spotlight/providers/settingsCatalog.js:43
+#: features/stageManager/prefs.js:48 features/stageManager/view.js:129
+#: features/stageManager/view.js:131 prefs/pages/index.js:48
+msgid "Stage Manager"
+msgstr ""
+
+#: features/controlCenter/model.js:79 features/notch/tabs.js:232
+#: features/screenshots/index.js:365 features/spotlight/prefs.js:187
+#: features/spotlight/providers/clipboard.js:18
+#: features/spotlight/queryModel.js:21 features/spotlight/queryModel.js:55
+#: features/spotlight/view.js:33 prefs/pages/index.js:56
+msgid "Clipboard"
+msgstr ""
+
+#: features/controlCenter/model.js:80 features/spotlight/index.js:104
+#: features/spotlight/prefs.js:171 prefs/pages/index.js:54
+msgid "Spotlight"
+msgstr ""
+
+#: features/controlCenter/model.js:81 features/liquidGlass/prefs.js:31
+#: features/liquidGlass/prefs.js:80
+#: features/spotlight/providers/settingsCatalog.js:42
+msgid "Liquid Glass"
+msgstr ""
+
+#: features/controlCenter/model.js:82 features/roundedCorners/prefs.js:91
+msgid "Rounded Corners"
+msgstr ""
+
+#: features/controlCenter/model.js:83 features/gestures/prefs.js:25
+#: features/showDesktop/index.js:345 features/showDesktop/prefs.js:26
+#: features/spotlight/actionsModel.js:20
+msgid "Show Desktop"
+msgstr ""
+
+#: features/controlCenter/nowPlaying.js:48
+msgid "Next track"
+msgstr ""
+
+#: features/controlCenter/prefs.js:18 features/controlCenter/prefs.js:21
+#: prefs/pages/controlCenter.js:14
+msgid "Control Center"
+msgstr ""
+
+#: features/controlCenter/prefs.js:19
+msgid ""
+"Re-lays out the Quick Settings menu in blocks, like the macOS Control "
+"Center. GNOME keeps running every toggle; turning this off restores the "
+"stock menu."
+msgstr ""
+
+#: features/controlCenter/prefs.js:22
+msgid ""
+"Blocks for connectivity, focus, display, sound and media, with Stage Manager "
+"and Liquid Glass tiles"
+msgstr ""
+
+#: features/controlCenter/prefs.js:25
+msgid "Details"
+msgstr ""
+
+#: features/controlCenter/prefs.js:26
+msgid "User row"
+msgstr ""
+
+#: features/controlCenter/prefs.js:27
+msgid "Show your picture and name at the bottom, with the battery time left"
+msgstr ""
+
+#: features/controlCenter/prefs.js:29
+msgid "Always show battery percentage"
+msgstr ""
+
+#: features/controlCenter/prefs.js:30
+msgid "Show the charge in the top bar at any level, not only when it is low"
+msgstr ""
+
+#: features/controlCenter/prefs.js:34
+msgid "Controls"
+msgstr ""
+
+#: features/controlCenter/prefs.js:35
+msgid ""
+"Choose, order and size the controls with \"Edit Controls…\" at the bottom of "
+"the Control Center."
+msgstr ""
+
+#: features/controlCenter/prefs.js:37
+msgid "Layout"
+msgstr ""
+
+#: features/controlCenter/prefs.js:43
+msgid "Your own arrangement"
+msgstr ""
+
+#: features/controlCenter/prefs.js:43
+msgid "Guava’s default arrangement"
+msgstr ""
+
+#: features/controlCenter/tiles.js:101
+msgid "On"
+msgstr ""
+
+#: features/controlCenter/userRow.js:29
+#, javascript-format
+msgid "%d h %d min"
+msgstr ""
+
+#: features/controlCenter/userRow.js:32
+#, javascript-format
+msgid "%s left"
+msgstr ""
+
+#: features/controlCenter/userRow.js:33 features/menuBarItems/pinned.js:382
+#, javascript-format
+msgid "%s until full"
+msgstr ""
+
+#: features/desktopIcons/index.js:169 features/hotCorners/prefs.js:16
+#: features/screenshots/index.js:365 features/screenshots/prefs.js:84
+#: prefs/pages/index.js:46
+msgid "Desktop"
+msgstr ""
+
+#: features/desktopIcons/index.js:370
+msgid "untitled folder"
+msgstr ""
+
+#: features/desktopIcons/index.js:387 features/desktopIcons/index.js:504
+#: features/desktopIcons/prefs.js:49
+msgid "Name"
+msgstr ""
+
+#: features/desktopIcons/index.js:402
+msgid "The name cannot be empty."
+msgstr ""
+
+#: features/desktopIcons/index.js:403
+msgid "The name cannot contain “/”."
+msgstr ""
+
+#: features/desktopIcons/index.js:404
+msgid "That name is not allowed."
+msgstr ""
+
+#: features/desktopIcons/index.js:405
+msgid "That name is too long."
+msgstr ""
+
+#: features/desktopIcons/index.js:406
+msgid "A file with that name already exists."
+msgstr ""
+
+#: features/desktopIcons/index.js:462 features/dock/appMenu.js:84
+#: features/dock/index.js:775 features/dock/index.js:815
+#: features/notch/tabs.js:303 features/spotlight/results.js:126
+msgid "Open"
+msgstr ""
+
+#: features/desktopIcons/index.js:462 features/dock/appMenu.js:93
+#: features/dock/index.js:819 features/notch/tabs.js:304
+#: features/screenshots/thumbnail.js:249
+msgid "Show in Files"
+msgstr ""
+
+#: features/desktopIcons/index.js:462
+msgid "Rename"
+msgstr ""
+
+#: features/desktopIcons/index.js:463 features/dock/index.js:830
+msgid "Move to Trash"
+msgstr ""
+
+#: features/desktopIcons/index.js:463
+msgid "Eject"
+msgstr ""
+
+#: features/desktopIcons/index.js:463 features/desktopIcons/index.js:492
+msgid "New Folder"
+msgstr ""
+
+#: features/desktopIcons/index.js:504 features/desktopIcons/prefs.js:49
+#: features/menuBar/prefs.js:24 features/onboarding/model.js:87
+#: features/screenshots/prefs.js:46 features/screenshots/toolbar.js:257
+msgid "None"
+msgstr ""
+
+#: features/desktopIcons/index.js:504 features/desktopIcons/prefs.js:49
+msgid "Kind"
+msgstr ""
+
+#: features/desktopIcons/index.js:504 features/desktopIcons/prefs.js:49
+msgid "Date Modified"
+msgstr ""
+
+#: features/desktopIcons/index.js:505 features/desktopIcons/prefs.js:50
+msgid "Date Created"
+msgstr ""
+
+#: features/desktopIcons/index.js:505 features/desktopIcons/prefs.js:50
+#: features/dock/prefs.js:93 features/onboarding/model.js:77
+msgid "Size"
+msgstr ""
+
+#: features/desktopIcons/index.js:507
+msgid "Sort By"
+msgstr ""
+
+#: features/desktopIcons/layer.js:49
+msgid "Desktop icons"
+msgstr ""
+
+#: features/desktopIcons/ops.js:56 features/desktopIcons/ops.js:60
+#, javascript-format
+msgid "Could not open “%s”"
+msgstr ""
+
+#: features/desktopIcons/ops.js:84
+#, javascript-format
+msgid "Could not rename “%s”"
+msgstr ""
+
+#: features/desktopIcons/ops.js:95
+#, javascript-format
+msgid "Could not move “%s” to the Trash"
+msgstr ""
+
+#: features/desktopIcons/ops.js:106
+msgid "Could not create the folder"
+msgstr ""
+
+#: features/desktopIcons/ops.js:123
+#, javascript-format
+msgid "Could not eject “%s”"
+msgstr ""
+
+#: features/desktopIcons/prefs.js:20 prefs/pages/index.js:49
+msgid "Desktop Icons"
+msgstr ""
+
+#: features/desktopIcons/prefs.js:21
+msgid ""
+"The files and folders of your Desktop folder, as large icons from the top-"
+"right corner of the desktop. Click to select, double-click to open, drag to "
+"rearrange, and right-click for Rename, Move to Trash and more."
+msgstr ""
+
+#: features/desktopIcons/prefs.js:26
+msgid "Desktop Icons NG is enabled"
+msgstr ""
+
+#: features/desktopIcons/prefs.js:27
+msgid ""
+"Guava does not draw desktop icons while that extension runs. Turn it off to "
+"use Guava’s icons."
+msgstr ""
+
+#: features/desktopIcons/prefs.js:32
+msgid "Show icons on the desktop"
+msgstr ""
+
+#: features/desktopIcons/prefs.js:36
+msgid "Icon size"
+msgstr ""
+
+#: features/desktopIcons/prefs.js:37
+msgid "In pixels. 64 is the macOS default."
+msgstr ""
+
+#: features/desktopIcons/prefs.js:43
+msgid "Show mounted drives"
+msgstr ""
+
+#: features/desktopIcons/prefs.js:44
+msgid ""
+"USB sticks, memory cards and discs appear on the desktop. Eject them from "
+"their menu."
+msgstr ""
+
+#: features/desktopIcons/prefs.js:53
+msgid "Sort by"
+msgstr ""
+
+#: features/desktopIcons/prefs.js:54
+msgid ""
+"None keeps icons where you put them. Dragging an icon sets it back to None."
+msgstr ""
+
+#: features/dock/appMenu.js:74 features/missionControl/expose.js:59
+msgid "Untitled Window"
+msgstr ""
+
+#: features/dock/appMenu.js:87 features/screenshots/prefs.js:78
+#: features/screenshots/toolbar.js:145 features/screenshots/toolbar.js:204
+#: features/screenshots/toolbar.js:207 features/screenshots/toolbar.js:261
+msgid "Options"
+msgstr ""
+
+#: features/dock/appMenu.js:91
+msgid "Keep in Dock"
+msgstr ""
+
+#: features/dock/appMenu.js:92 prefs/pages/loginItems.js:96
+msgid "Open at Login"
+msgstr ""
+
+#: features/dock/appMenu.js:106
+msgid "Stop Running in Background"
+msgstr ""
+
+#: features/dock/appMenu.js:108
+msgid "Show All Windows"
+msgstr ""
+
+#: features/dock/appMenu.js:113 features/dock/appMenu.js:122
+#: features/menuBar/forceQuit.js:134 features/menuBar/forceQuit.js:239
+msgid "Force Quit"
+msgstr ""
+
+#: features/dock/appMenu.js:113 features/dock/appMenu.js:122
+msgid "Quit"
+msgstr ""
+
+#: features/dock/index.js:777
+msgid "Empty Trash…"
+msgstr ""
+
+#: features/dock/index.js:786 features/dock/stack.js:401
+#: features/dock/stack.js:474
+msgid "Open in Files"
+msgstr ""
+
+#: features/dock/index.js:788 features/dock/prefs.js:52
+#: features/dock/prefs.js:54
+msgid "Remove from Dock"
+msgstr ""
+
+#: features/dock/index.js:795 features/dock/prefs.js:138
+msgid "View content as"
+msgstr ""
+
+#: features/dock/index.js:796 features/dock/prefs.js:139
+#: features/widgets/prefs.js:25
+msgid "Automatic"
+msgstr ""
+
+#: features/dock/index.js:796 features/dock/prefs.js:139
+msgid "Fan"
+msgstr ""
+
+#: features/dock/index.js:796 features/dock/prefs.js:139
+msgid "Grid"
+msgstr ""
+
+#: features/dock/index.js:796 features/dock/prefs.js:139
+msgid "List"
+msgstr ""
+
+#: features/dock/index.js:824
+msgid "Add to Dock"
+msgstr ""
+
+#: features/dock/launchpad.js:17 features/gestures/prefs.js:23
+#: features/hotCorners/prefs.js:18 features/launchpad/prefs.js:15
+#: features/launchpad/prefs.js:18 features/launchpad/view.js:323
+msgid "Launchpad"
+msgstr ""
+
+#: features/dock/missionControlItem.js:15 features/gestures/prefs.js:17
+#: features/hotCorners/prefs.js:14 features/missionControl/prefs.js:17
+#: features/missionControl/prefs.js:20 features/missionControl/prefs.js:37
+#: prefs/pages/index.js:47
+msgid "Mission Control"
+msgstr ""
+
+#: features/dock/prefs.js:39
+msgid "Folder Stacks"
+msgstr ""
+
+#: features/dock/prefs.js:40
+msgid ""
+"Folders kept on the right side of the Dock, beside Downloads. You can also "
+"drag a folder from a stack onto that side."
+msgstr ""
+
+#: features/dock/prefs.js:42 features/dock/prefs.js:44
+msgid "Add Folder…"
+msgstr ""
+
+#: features/dock/prefs.js:63
+msgid "Add Folder to the Dock"
+msgstr ""
+
+#: features/dock/prefs.js:88 features/dock/view.js:105
+#: features/dock/view.js:132 features/liquidGlass/prefs.js:19
+#: prefs/pages/dock.js:14
+msgid "Dock"
+msgstr ""
+
+#: features/dock/prefs.js:89
+msgid ""
+"Pinned apps are your GNOME favourites. Dash to Dock is turned off while "
+"Guava’s dock runs and turned back on when it stops."
+msgstr ""
+
+#: features/dock/prefs.js:91
+msgid "Show the Dock"
+msgstr ""
+
+#: features/dock/prefs.js:91
+msgid "Guava’s own dock with your apps, Downloads and the Trash"
+msgstr ""
+
+#: features/dock/prefs.js:93
+msgid "Icon size in pixels"
+msgstr ""
+
+#: features/dock/prefs.js:95
+msgid "Magnification"
+msgstr ""
+
+#: features/dock/prefs.js:95
+msgid "Icons under the pointer grow"
+msgstr ""
+
+#: features/dock/prefs.js:98
+msgid "Magnified size"
+msgstr ""
+
+#: features/dock/prefs.js:99 features/widgets/gallery.js:231
+#: prefs/setupAssistant.js:117
+msgid "Large"
+msgstr ""
+
+#: features/dock/prefs.js:104
+msgid "Position on screen"
+msgstr ""
+
+#: features/dock/prefs.js:108
+msgid "Minimize windows using"
+msgstr ""
+
+#: features/dock/prefs.js:109
+msgid "With Reduce Motion on, windows fade instead"
+msgstr ""
+
+#: features/dock/prefs.js:110
+msgid "Genie Effect"
+msgstr ""
+
+#: features/dock/prefs.js:110
+msgid "Scale Effect"
+msgstr ""
+
+#: features/dock/prefs.js:110
+msgid "GNOME Effect"
+msgstr ""
+
+#: features/dock/prefs.js:113
+msgid "Behaviour"
+msgstr ""
+
+#: features/dock/prefs.js:114
+msgid "Automatically hide and show the Dock"
+msgstr ""
+
+#: features/dock/prefs.js:115
+msgid ""
+"Rest the pointer on the screen edge, or push against it, to show the dock"
+msgstr ""
+
+#: features/dock/prefs.js:118
+msgid "Reveal delay"
+msgstr ""
+
+#: features/dock/prefs.js:118
+msgid "Milliseconds the pointer rests on the edge"
+msgstr ""
+
+#: features/dock/prefs.js:123
+msgid "Animate opening applications"
+msgstr ""
+
+#: features/dock/prefs.js:123
+msgid "The icon bounces while the app starts"
+msgstr ""
+
+#: features/dock/prefs.js:124
+msgid "Bounce when apps need attention"
+msgstr ""
+
+#: features/dock/prefs.js:125
+msgid "Show indicators for open applications"
+msgstr ""
+
+#: features/dock/prefs.js:126
+msgid "Show apps running in the background"
+msgstr ""
+
+#: features/dock/prefs.js:127
+msgid "A grey indicator for apps with no window that keep running"
+msgstr ""
+
+#: features/dock/prefs.js:128
+msgid "Show badges on app icons"
+msgstr ""
+
+#: features/dock/prefs.js:129
+msgid "Counts and progress that apps publish"
+msgstr ""
+
+#: features/dock/prefs.js:130
+msgid "Show suggested and recent apps in Dock"
+msgstr ""
+
+#: features/dock/prefs.js:131
+msgid "Up to three recent apps that are not pinned, in their own section"
+msgstr ""
+
+#: features/dock/prefs.js:132
+msgid "Minimize windows into application icon"
+msgstr ""
+
+#: features/dock/prefs.js:133
+msgid "Off: each minimized window gets its own tile beside the Downloads stack"
+msgstr ""
+
+#: features/dock/prefs.js:135
+msgid "Downloads Stack"
+msgstr ""
+
+#: features/dock/prefs.js:136
+msgid "Show Downloads in the Dock"
+msgstr ""
+
+#: features/dock/prefs.js:136
+msgid "Your newest downloads, before the Trash"
+msgstr ""
+
+#: features/dock/stack.js:232 features/notch/prefs.js:73
+msgid "Downloads"
+msgstr ""
+
+#: features/dock/stack.js:306
+#, javascript-format
+msgid "%s (downloading)"
+msgstr ""
+
+#: features/dock/stack.js:400
+#, javascript-format
+msgid "%d more in Files"
+msgid_plural "%d more in Files"
+msgstr[0] ""
+msgstr[1] ""
+
+#: features/dock/stack.js:468
+msgid "No downloads"
+msgstr ""
+
+#: features/dock/stack.js:468
+msgid "Empty folder"
+msgstr ""
+
+#: features/dock/trash.js:35 features/dock/trash.js:98
+msgid "Trash"
+msgstr ""
+
+#: features/dock/trash.js:97
+#, javascript-format
+msgid "Trash, %d item"
+msgid_plural "Trash, %d items"
+msgstr[0] ""
+msgstr[1] ""
+
+#: features/dock/trash.js:114
+msgid "Are you sure you want to permanently erase the items in the Trash?"
+msgstr ""
+
+#: features/dock/trash.js:115
+msgid "You can’t undo this action."
+msgstr ""
+
+#: features/dock/trash.js:117 features/launchpad/view.js:869
+#: features/menuBar/forceQuit.js:132 features/notch/pills.js:40
+#: prefs/pages/general.js:46
+msgid "Cancel"
+msgstr ""
+
+#: features/dock/trash.js:119 features/spotlight/actionsModel.js:32
+msgid "Empty Trash"
+msgstr ""
+
+#: features/emoji/index.js:62 features/emoji/prefs.js:15
+#: features/emoji/prefs.js:18
+msgid "Emoji & Symbols"
+msgstr ""
+
+#: features/emoji/prefs.js:16
+msgid ""
+"A searchable emoji popover at the text cursor. The emoji is typed into the "
+"app you were in. Uses the emoji names IBus provides."
+msgstr ""
+
+#: features/emoji/prefs.js:20 features/launchpad/prefs.js:20
+#: features/showDesktop/prefs.js:35
+msgid "Shortcut"
+msgstr ""
+
+#: features/emoji/prefs.js:21
+msgid "Use Ctrl+Super+Space"
+msgstr ""
+
+#: features/emoji/view.js:49
+msgid "Search Emoji"
+msgstr ""
+
+#: features/emoji/view.js:59
+msgid "Skin tone"
+msgstr ""
+
+#: features/emoji/view.js:152
+msgid ""
+"No emoji data found. Install IBus (the ibus package) to use Emoji & Symbols."
+msgstr ""
+
+#: features/emoji/view.js:159
+msgid "Search Results"
+msgstr ""
+
+#: features/emoji/view.js:182 features/spotlight/view.js:266
+msgid "No Results"
+msgstr ""
+
+#: features/emoji/view.js:183
+msgid "Emoji you use show up here"
+msgstr ""
+
+#: features/focus/index.js:272
+#, javascript-format
+msgid "Until %s"
+msgstr ""
+
+#: features/focus/index.js:274
+msgid "While the app is open"
+msgstr ""
+
+#: features/focus/index.js:274
+msgid "Scheduled"
+msgstr ""
+
+#: features/focus/indicator.js:43
+msgid "Focus Settings…"
+msgstr ""
+
+#: features/focus/indicator.js:81
+msgid "Turn Off"
+msgstr ""
+
+#: features/focus/indicator.js:83
+msgid "Turn On"
+msgstr ""
+
+#: features/focus/indicator.js:84
+msgid "For 1 hour"
+msgstr ""
+
+#: features/focus/indicator.js:85
+msgid "Until tomorrow morning"
+msgstr ""
+
+#: features/focus/prefs.js:41
+msgid ""
+"Silence notifications from all but the apps you choose. Silenced "
+"notifications still go to the Notification Center; time-sensitive ones break "
+"through."
+msgstr ""
+
+#: features/focus/prefs.js:43
+msgid "Focus Modes"
+msgstr ""
+
+#: features/focus/prefs.js:44
+msgid ""
+"Do Not Disturb, Sleep, Work, Personal and your own modes, in the Control "
+"Center"
+msgstr ""
+
+#: features/focus/prefs.js:45
+msgid "Show Focus in the Menu Bar"
+msgstr ""
+
+#: features/focus/prefs.js:46
+msgid "The active mode’s icon in the top bar"
+msgstr ""
+
+#: features/focus/prefs.js:48
+msgid "Modes"
+msgstr ""
+
+#: features/focus/prefs.js:68 features/focus/prefs.js:116
+#: features/spotlight/prefs.js:95 features/widgets/gallery.js:184
+#: features/widgets/gallery.js:218
+msgid "Add"
+msgstr ""
+
+#: features/focus/prefs.js:87
+#, javascript-format
+msgid "%d allowed apps"
+msgstr ""
+
+#: features/focus/prefs.js:87
+msgid "No apps allowed"
+msgstr ""
+
+#: features/focus/prefs.js:88
+msgid "scheduled"
+msgstr ""
+
+#: features/focus/prefs.js:89
+msgid "turns on with an app"
+msgstr ""
+
+#: features/focus/prefs.js:95
+msgid "Time-Sensitive Notifications"
+msgstr ""
+
+#: features/focus/prefs.js:95
+msgid "Urgent notifications break through"
+msgstr ""
+
+#: features/focus/prefs.js:102 prefs/pages/loginItems.js:166
+msgid "Allowed"
+msgstr ""
+
+#: features/focus/prefs.js:103
+msgid "Allow Notifications From"
+msgstr ""
+
+#: features/focus/prefs.js:112
+msgid "Add Schedule"
+msgstr ""
+
+#: features/focus/prefs.js:112
+msgid "From – to, e.g. 22:00 – 07:00"
+msgstr ""
+
+#: features/focus/prefs.js:122
+msgid "Use 24-hour times such as 09:00 and 17:30"
+msgstr ""
+
+#: features/focus/prefs.js:132
+msgid "Turns on while open"
+msgstr ""
+
+#: features/focus/prefs.js:133
+msgid "Turn On When This App Opens"
+msgstr ""
+
+#: features/focus/prefs.js:139
+msgid "Delete This Focus"
+msgstr ""
+
+#: features/focus/prefs.js:140 features/launchpad/view.js:871
+#: features/screenshots/thumbnail.js:250
+msgid "Delete"
+msgstr ""
+
+#: features/focus/prefs.js:149
+msgid "New Focus name"
+msgstr ""
+
+#: features/gestures/prefs.js:11 features/gestures/prefs.js:14
+msgid "Trackpad Gestures"
+msgstr ""
+
+#: features/gestures/prefs.js:12
+msgid ""
+"The macOS gestures with three and four fingers. Opening the Notification "
+"Center with two fingers from the right edge is not possible on GNOME: two-"
+"finger motion always scrolls the app under the pointer. Click the clock or "
+"use a hot corner instead."
+msgstr ""
+
+#: features/gestures/prefs.js:15
+msgid "App Exposé, Launchpad and Show Desktop gestures"
+msgstr ""
+
+#: features/gestures/prefs.js:18
+msgid "Swipe up with three or four fingers"
+msgstr ""
+
+#: features/gestures/prefs.js:19 features/missionControl/prefs.js:38
+msgid "App Exposé"
+msgstr ""
+
+#: features/gestures/prefs.js:20
+msgid "Swipe down with four fingers"
+msgstr ""
+
+#: features/gestures/prefs.js:21
+msgid "Swipe Between Spaces"
+msgstr ""
+
+#: features/gestures/prefs.js:22
+msgid "Swipe left or right with three or four fingers"
+msgstr ""
+
+#: features/gestures/prefs.js:24
+msgid "Pinch with thumb and three fingers"
+msgstr ""
+
+#: features/gestures/prefs.js:26
+msgid "Spread with thumb and three fingers"
+msgstr ""
+
+#: features/hotCorners/prefs.js:13
+msgid "Nothing"
+msgstr ""
+
+#: features/hotCorners/prefs.js:15
+msgid "Application Windows"
+msgstr ""
+
+#: features/hotCorners/prefs.js:17 features/notificationCenter/index.js:66
+#: features/notificationCenter/prefs.js:11
+#: features/notificationCenter/prefs.js:14
+msgid "Notification Center"
+msgstr ""
+
+#: features/hotCorners/prefs.js:19 features/menuBar/logoMenu.js:99
+#: features/spotlight/actionsModel.js:22
+msgid "Lock Screen"
+msgstr ""
+
+#: features/hotCorners/prefs.js:20
+msgid "Put Display to Sleep"
+msgstr ""
+
+#: features/hotCorners/prefs.js:23
+msgid "No Key"
+msgstr ""
+
+#: features/hotCorners/prefs.js:23
+msgid "Shift"
+msgstr ""
+
+#: features/hotCorners/prefs.js:23
+msgid "Ctrl"
+msgstr ""
+
+#: features/hotCorners/prefs.js:23
+msgid "Alt"
+msgstr ""
+
+#: features/hotCorners/prefs.js:23
+msgid "Super"
+msgstr ""
+
+#: features/hotCorners/prefs.js:30
+msgid "Hot Corners"
+msgstr ""
+
+#: features/hotCorners/prefs.js:31
+msgid ""
+"Push the pointer into a corner of the screen to start an action. Choose a "
+"key to hold so a corner never fires by accident."
+msgstr ""
+
+#: features/hotCorners/prefs.js:36
+msgid "Action"
+msgstr ""
+
+#: features/hotCorners/prefs.js:36
+msgid "What the corner does"
+msgstr ""
+
+#: features/hotCorners/prefs.js:40
+msgid "Only While Holding"
+msgstr ""
+
+#: features/hotCorners/prefs.js:40
+msgid "A key that must be down, so the corner never fires by accident"
+msgstr ""
+
+#: features/inputIndicator/index.js:117
+msgid "Caps Lock on"
+msgstr ""
+
+#: features/inputIndicator/index.js:117
+msgid "Caps Lock off"
+msgstr ""
+
+#: features/inputIndicator/prefs.js:15
+msgid "Text Cursor"
+msgstr ""
+
+#: features/inputIndicator/prefs.js:16
+msgid ""
+"A small badge at the text cursor, like macOS. It shows near the pointer in "
+"apps that do not report their cursor."
+msgstr ""
+
+#: features/inputIndicator/prefs.js:18
+msgid "Text cursor indicators"
+msgstr ""
+
+#: features/inputIndicator/prefs.js:19
+msgid "Caps Lock"
+msgstr ""
+
+#: features/inputIndicator/prefs.js:20
+msgid "Show ⇪ when Caps Lock is turned on or off"
+msgstr ""
+
+#: features/inputIndicator/prefs.js:21
+msgid "Input source"
+msgstr ""
+
+#: features/inputIndicator/prefs.js:22
+msgid "Show the new input source when you switch it"
+msgstr ""
+
+#: features/launchpad/prefs.js:16
+msgid ""
+"Every app in a full-screen grid, with pages, search and folders. Drag an app "
+"onto another to make a folder. Folders and order are shared with GNOME’s app "
+"grid."
+msgstr ""
+
+#: features/launchpad/prefs.js:18
+msgid ""
+"Open it from the Dock, with the shortcut or with a pinch on the touchpad"
+msgstr ""
+
+#: features/launchpad/prefs.js:21
+msgid "Show Launchpad in the Dock"
+msgstr ""
+
+#: features/launchpad/prefs.js:22
+msgid "Delete apps in jiggle mode"
+msgstr ""
+
+#: features/launchpad/prefs.js:23
+msgid ""
+"Hold Alt, or press and hold an icon. Only Flatpak apps (through GNOME "
+"Software) can be deleted"
+msgstr ""
+
+#: features/launchpad/store.js:147 features/launchpad/store.js:193
+msgid "Untitled Folder"
+msgstr ""
+
+#: features/launchpad/view.js:200 features/launchpad/view.js:201
+msgid "Folder name"
+msgstr ""
+
+#: features/launchpad/view.js:337
+msgid "Search Apps"
+msgstr ""
+
+#: features/launchpad/view.js:583
+#, javascript-format
+msgid "Page %d"
+msgstr ""
+
+#: features/launchpad/view.js:831
+#, javascript-format
+msgid "Delete “%s”"
+msgstr ""
+
+#: features/launchpad/view.js:854 features/launchpad/view.js:858
+#, javascript-format
+msgid "Delete “%s”?"
+msgstr ""
+
+#: features/launchpad/view.js:863
+msgid ""
+"GNOME Software will remove this app. You can install it again from GNOME "
+"Software."
+msgstr ""
+
+#: features/liquidGlass/prefs.js:17
+msgid "Menu bar"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:18
+msgid "Menus, Control Center and calendar"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:20
+msgid "Spotlight, clipboard and the Stage Manager floor"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:32
+msgid "Clear is more see-through. Tinted is more opaque and easier to read."
+msgstr ""
+
+#: features/liquidGlass/prefs.js:44
+msgid "Liquid Glass: Clear to Tinted"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:81
+msgid ""
+"One glass look for every Guava surface: a tint with a soft sheen, a thin rim "
+"and a shadow. No blur, so it costs almost nothing. App windows keep their "
+"own look."
+msgstr ""
+
+#: features/liquidGlass/prefs.js:83
+msgid "Glass"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:83
+msgid "Off gives every surface its solid theme colour"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:86
+msgid "Allow Wallpaper Tinting"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:87
+msgid "A little of the wallpaper's colour shows through the glass"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:89
+msgid "Frosted Grain"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:90
+msgid "A faint grain instead of the top-to-bottom sheen"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:94
+msgid "Blur my Shell is installed"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:95
+msgid ""
+"Its blur and its own Liquid Glass effect overlap with Guava's glass. Use one "
+"of them for each surface. Guava never changes Blur my Shell."
+msgstr ""
+
+#: features/liquidGlass/prefs.js:104
+msgid ""
+"Like macOS Accessibility > Display. GNOME's High Contrast also makes Guava's "
+"surfaces solid with strong borders."
+msgstr ""
+
+#: features/liquidGlass/prefs.js:106
+msgid "Reduce Transparency"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:107
+msgid "Opaque surfaces, without the wallpaper tint"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:109
+msgid "Opaque, flat surfaces with strong borders"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:110
+msgid "Show Borders"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:111
+msgid "A clear border around every surface and Control Center module"
+msgstr ""
+
+#: features/liquidGlass/prefs.js:113
+msgid "Glass Surfaces"
+msgstr ""
+
+#: features/lowPower/prefs.js:15
+msgid ""
+"Uses GNOME's Power Saver mode (power-profiles-daemon). Choosing a power mode "
+"by hand wins until the power source changes."
+msgstr ""
+
+#: features/lowPower/prefs.js:18
+msgid "On Battery"
+msgstr ""
+
+#: features/lowPower/prefs.js:18
+msgid "Save energy while running on battery"
+msgstr ""
+
+#: features/lowPower/prefs.js:19
+msgid "On Power Adapter"
+msgstr ""
+
+#: features/lowPower/prefs.js:19
+msgid "Save energy while plugged in, or on a computer without a battery"
+msgstr ""
+
+#: features/menuBar/aboutDialog.js:27
+msgid "About This Computer"
+msgstr ""
+
+#: features/menuBar/aboutDialog.js:64
+msgid "Processor"
+msgstr ""
+
+#: features/menuBar/aboutDialog.js:64
+msgid "Graphics"
+msgstr ""
+
+#: features/menuBar/aboutDialog.js:65
+msgid "Storage"
+msgstr ""
+
+#: features/menuBar/aboutDialog.js:77
+msgid "More Info…"
+msgstr ""
+
+#: features/menuBar/aboutDialog.js:104
+#, javascript-format
+msgid "%s, %s available"
+msgstr ""
+
+#: features/menuBar/appMenuBar.js:231
+msgid "More Menus"
+msgstr ""
+
+#: features/menuBar/forceQuit.js:42 features/menuBar/forceQuit.js:105
+#: features/menuBar/prefs.js:60
+msgid "Force Quit Applications"
+msgstr ""
+
+#: features/menuBar/forceQuit.js:107
+msgid ""
+"If an app doesn’t respond for a while, select its name and click Force Quit."
+msgstr ""
+
+#: features/menuBar/forceQuit.js:123
+#, javascript-format
+msgid "You can open this window by pressing %s."
+msgstr ""
+
+#: features/menuBar/forceQuit.js:133 features/menuBar/forceQuit.js:239
+msgid "Relaunch"
+msgstr ""
+
+#: features/menuBar/forceQuit.js:189
+msgid "(not responding)"
+msgstr ""
+
+#: features/menuBar/forceQuit.js:196
+msgid "not responding"
+msgstr ""
+
+#: features/menuBar/forceQuit.js:235
+#, javascript-format
+msgid "Do you want to force “%s” to quit? You will lose any unsaved changes."
+msgstr ""
+
+#: features/menuBar/fullscreenReveal.js:97
+msgid "Top Bar"
+msgstr ""
+
+#: features/menuBar/logoMenu.js:48 features/menuBar/prefs.js:22
+msgid "Logo Menu"
+msgstr ""
+
+#: features/menuBar/logoMenu.js:71
+msgid "About This PC"
+msgstr ""
+
+#: features/menuBar/logoMenu.js:73
+msgid "System Settings…"
+msgstr ""
+
+#: features/menuBar/logoMenu.js:74
+msgid "Guava Settings…"
+msgstr ""
+
+#: features/menuBar/logoMenu.js:75
+msgid "App Store…"
+msgstr ""
+
+#: features/menuBar/logoMenu.js:80
+msgid "Recent Items"
+msgstr ""
+
+#: features/menuBar/logoMenu.js:89
+msgid "Force Quit…"
+msgstr ""
+
+#: features/menuBar/logoMenu.js:92
+msgid "Sleep"
+msgstr ""
+
+#: features/menuBar/logoMenu.js:93
+msgid "Restart…"
+msgstr ""
+
+#: features/menuBar/logoMenu.js:94
+msgid "Shut Down…"
+msgstr ""
+
+#: features/menuBar/logoMenu.js:100
+#, javascript-format
+msgid "Log Out %s…"
+msgstr ""
+
+#: features/menuBar/logoMenu.js:157 features/spotlight/queryModel.js:18
+#: features/spotlight/queryModel.js:43 features/spotlight/view.js:30
+msgid "Applications"
+msgstr ""
+
+#: features/menuBar/logoMenu.js:168
+msgid "No Recent Items"
+msgstr ""
+
+#: features/menuBar/logoMenu.js:175 features/screenshots/index.js:365
+#: features/screenshots/prefs.js:84 features/spotlight/queryModel.js:46
+#: features/spotlight/view.js:32
+msgid "Documents"
+msgstr ""
+
+#: features/menuBar/logoMenu.js:183
+#, javascript-format
+msgid "Could not open %s"
+msgstr ""
+
+#: features/menuBar/prefs.js:18 features/osd/prefs.js:21
+#: prefs/pages/menuBar.js:17
+msgid "Menu Bar"
+msgstr ""
+
+#: features/menuBar/prefs.js:19
+msgid ""
+"The logo menu, the app’s name and menus, then the status items, the Control "
+"Center and the clock, as on macOS."
+msgstr ""
+
+#: features/menuBar/prefs.js:22
+msgid ""
+"About This PC, System Settings, Force Quit, Sleep, Restart, Shut Down, Lock "
+"Screen and Log Out"
+msgstr ""
+
+#: features/menuBar/prefs.js:24
+msgid "System Logo"
+msgstr ""
+
+#: features/menuBar/prefs.js:24
+msgid "Guava Logo"
+msgstr ""
+
+#: features/menuBar/prefs.js:26
+msgid "App Menus"
+msgstr ""
+
+#: features/menuBar/prefs.js:27
+msgid ""
+"The focused app’s name in bold and its menus: App, File, Edit, Window and "
+"Help"
+msgstr ""
+
+#: features/menuBar/prefs.js:28
+msgid "Apps’ Own Menus"
+msgstr ""
+
+#: features/menuBar/prefs.js:29
+msgid ""
+"Show the menus apps export (GTK menu bars, and Qt, Electron or LibreOffice "
+"under Xwayland) in place of the generic File, Edit and View"
+msgstr ""
+
+#: features/menuBar/prefs.js:31
+msgid "Transparent Menu Bar"
+msgstr ""
+
+#: features/menuBar/prefs.js:32
+msgid "No background over the wallpaper, with text that follows its brightness"
+msgstr ""
+
+#: features/menuBar/prefs.js:34
+msgid "Solid When a Window Touches It"
+msgstr ""
+
+#: features/menuBar/prefs.js:35
+msgid ""
+"Off: the bar stays transparent over maximized windows. On: it turns solid "
+"while a window touches it"
+msgstr ""
+
+#: features/menuBar/prefs.js:37
+msgid "Always Show Menu Bar in Full Screen"
+msgstr ""
+
+#: features/menuBar/prefs.js:38
+msgid ""
+"Off: the menu bar hides in full screen and slides in when the pointer "
+"touches the top edge"
+msgstr ""
+
+#: features/menuBar/prefs.js:40
+msgid "Privacy Dots"
+msgstr ""
+
+#: features/menuBar/prefs.js:41
+msgid ""
+"Orange for the microphone, green for the camera, purple for screen sharing. "
+"Click to see which app"
+msgstr ""
+
+#: features/menuBar/prefs.js:43
+msgid "Alt-Click the Clock for Do Not Disturb"
+msgstr ""
+
+#: features/menuBar/prefs.js:44
+msgid "Clicking the clock opens the calendar and notifications"
+msgstr ""
+
+#: features/menuBar/prefs.js:47
+msgid "Experimental"
+msgstr ""
+
+#: features/menuBar/prefs.js:48
+msgid ""
+"Menus read from the accessibility tree. Apps must expose it (GTK always "
+"does; Firefox, Chromium and Qt only with accessibility turned on)."
+msgstr ""
+
+#: features/menuBar/prefs.js:50
+msgid "Read Menus Through Accessibility"
+msgstr ""
+
+#: features/menuBar/prefs.js:51
+msgid ""
+"Mirror the menu bar inside windows of apps that do not export their menus"
+msgstr ""
+
+#: features/menuBar/prefs.js:52
+msgid "Read Primary Menus"
+msgstr ""
+
+#: features/menuBar/prefs.js:53
+msgid ""
+"For apps without a menu bar, open the ☰ menu out of sight, read it into the "
+"app menu and remember it. The app sees its menu open and close"
+msgstr ""
+
+#: features/menuBar/prefs.js:56
+#: features/spotlight/providers/settingsCatalog.js:18
+#: features/stageManager/prefs.js:173 prefs/pages/keyboard.js:13
+msgid "Keyboard"
+msgstr ""
+
+#: features/menuBar/prefs.js:57
+msgid "Shortcut Symbols"
+msgstr ""
+
+#: features/menuBar/prefs.js:58
+msgid ""
+"Write shortcuts in menus as ⌘ ⌥ ⌃ ⇧ (Super is ⌘). Off writes them in words"
+msgstr ""
+
+#: features/menuBar/prefs.js:59
+msgid "Use the Menu Bar with the Keyboard"
+msgstr ""
+
+#: features/menuBar/privacyDots.js:146
+msgid "Privacy Indicators"
+msgstr ""
+
+#: features/menuBar/privacyDots.js:158
+msgid "An app is using the microphone"
+msgstr ""
+
+#: features/menuBar/privacyDots.js:163
+msgid "An app is using the camera"
+msgstr ""
+
+#: features/menuBar/privacyDots.js:166
+msgid "Screen"
+msgstr ""
+
+#: features/menuBar/privacyDots.js:168
+msgid "Stop Screen Sharing"
+msgstr ""
+
+#: features/menuBar/privacyDots.js:172
+msgid "The screen is being recorded"
+msgstr ""
+
+#: features/menuBar/privacyDots.js:176
+msgid "Nothing is using the camera, microphone or screen"
+msgstr ""
+
+#: features/menuBarItems/manager.js:110
+msgid "More Menu Bar Items"
+msgstr ""
+
+#: features/menuBarItems/manager.js:379
+msgid "Menu Bar Settings…"
+msgstr ""
+
+#: features/menuBarItems/pinned.js:164
+msgid "Output"
+msgstr ""
+
+#: features/menuBarItems/pinned.js:377 features/menuBarItems/pinned.js:385
+#: lib/menuBarPins.js:18
+msgid "Battery"
+msgstr ""
+
+#: features/menuBarItems/pinned.js:382
+#, javascript-format
+msgid "%s remaining"
+msgstr ""
+
+#: features/menuBarItems/pinned.js:385
+msgid "Power Source:"
+msgstr ""
+
+#: features/menuBarItems/pinned.js:385
+msgid "Power Adapter"
+msgstr ""
+
+#: features/menuBarItems/pinned.js:396
+msgid "Service Recommended"
+msgstr ""
+
+#: features/menuBarItems/pinned.js:397
+msgid "Battery Health:"
+msgstr ""
+
+#: features/menuBarItems/pinned.js:399
+msgid "Cycle Count:"
+msgstr ""
+
+#: features/menuBarItems/pinned.js:402
+msgid "Battery Settings…"
+msgstr ""
+
+#: features/menuBarItems/pinned.js:414
+msgid "Nothing is playing"
+msgstr ""
+
+#: features/menuBarItems/pinned.js:426
+msgid "Play or Pause"
+msgstr ""
+
+#: features/menuBarItems/pinned.js:447 features/notch/pills.js:50
+msgid "Stop Recording"
+msgstr ""
+
+#: features/menuBarItems/pinned.js:452
+msgid "Record Screen…"
+msgstr ""
+
+#: features/menuBarItems/pinned.js:454
+msgid "Take Screenshot…"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:18
+msgid "Menu Bar Items"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:19
+msgid ""
+"Apps' status icons and Control Center controls on the right of the menu bar. "
+"When the AppIndicator extension is enabled it draws the app icons, and Guava "
+"only orders and hides them."
+msgstr ""
+
+#: features/menuBarItems/prefs.js:21
+msgid "App Status Icons"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:22
+msgid ""
+"Tray icons of apps such as Discord, Steam or Nextcloud, with their menus"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:23
+msgid "Collapse When Crowded"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:24
+msgid "Items that do not fit beside the notch go behind a chevron"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:27
+msgid "Show in Menu Bar"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:28
+msgid ""
+"Control Center controls that also get their own menu bar item. They open the "
+"same control as a menu."
+msgstr ""
+
+#: features/menuBarItems/prefs.js:32 features/showDesktop/prefs.js:58
+msgid "Never"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:32 features/showDesktop/prefs.js:58
+msgid "Always"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:49
+msgid "Battery Percentage"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:50
+msgid "Show the charge next to the Battery item"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:58
+msgid "Item Order"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:59
+msgid "Left to right. Items appear here once they have been in the menu bar."
+msgstr ""
+
+#: features/menuBarItems/prefs.js:73
+msgid "No items yet"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:73
+msgid "Pin a control above, or start an app with a status icon"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:90
+msgid "Move Left"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:90
+msgid "Move Right"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:112
+msgid "Control Center control"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:114
+msgid "GNOME (the input-source menu shows with two or more input sources)"
+msgstr ""
+
+#: features/menuBarItems/prefs.js:115
+msgid "App status icon"
+msgstr ""
+
+#: features/missionControl/prefs.js:18
+msgid ""
+"Mission Control shows the windows of the current Space side by side, with "
+"your Spaces along the top. Swipe up with three fingers, or press F3 or "
+"Control+Up."
+msgstr ""
+
+#: features/missionControl/prefs.js:21
+msgid ""
+"Replaces the Activities overview. The app grid stays on Launchpad and "
+"Super+A."
+msgstr ""
+
+#: features/missionControl/prefs.js:23
+msgid "Automatically rearrange Spaces based on most recent use"
+msgstr ""
+
+#: features/missionControl/prefs.js:24
+msgid ""
+"When switching to an application, switch to a Space with open windows for "
+"the application"
+msgstr ""
+
+#: features/missionControl/prefs.js:25
+msgid "Off: the app switcher lists only the windows of the current Space"
+msgstr ""
+
+#: features/missionControl/prefs.js:26
+msgid "Group windows by application"
+msgstr ""
+
+#: features/missionControl/prefs.js:27
+msgid "Keep Spaces until you remove them"
+msgstr ""
+
+#: features/missionControl/prefs.js:28
+msgid ""
+"Empty Spaces stay, and the Spaces bar has + and × buttons. Off: GNOME adds "
+"and removes workspaces by itself."
+msgstr ""
+
+#: features/missionControl/prefs.js:29
+msgid "Start on the desktop"
+msgstr ""
+
+#: features/missionControl/prefs.js:30
+msgid "Show the desktop after you log in, not the overview"
+msgstr ""
+
+#: features/missionControl/prefs.js:34
+msgid "Shortcuts"
+msgstr ""
+
+#: features/missionControl/prefs.js:35
+msgid ""
+"App Exposé shows all windows of the front app; its minimized windows wait "
+"along the bottom. The dock's \"Show All Windows\" opens it too."
+msgstr ""
+
+#: features/missionControl/spaces.js:151
+#, javascript-format
+msgid "Desktop %d"
+msgstr ""
+
+#: features/missionControl/spaces.js:201
+msgid "Add Desktop"
+msgstr ""
+
+#: features/missionControl/spaces.js:261
+msgid "Remove Desktop"
+msgstr ""
+
+#: features/notch/index.js:607 features/notch/index.js:713
+msgid "Copied"
+msgstr ""
+
+#: features/notch/index.js:685
+msgid "Code copied"
+msgstr ""
+
+#: features/notch/pills.js:38
+msgid "Resume"
+msgstr ""
+
+#: features/notch/pills.js:54
+msgid "Charging"
+msgstr ""
+
+#: features/notch/pills.js:56
+msgid "Low Battery"
+msgstr ""
+
+#: features/notch/pills.js:60 features/notch/prefs.js:69
+msgid "Headphones"
+msgstr ""
+
+#: features/notch/pills.js:61
+msgid "Connected"
+msgstr ""
+
+#: features/notch/pills.js:66
+#, javascript-format
+msgid "%d downloads"
+msgstr ""
+
+#: features/notch/pills.js:75 features/notch/view.js:671
+msgid "Now"
+msgstr ""
+
+#: features/notch/pills.js:78
+#, javascript-format
+msgid "in %d min"
+msgstr ""
+
+#: features/notch/pills.js:81
+msgid "Event"
+msgstr ""
+
+#: features/notch/pills.js:122 features/notch/pills.js:156
+#, javascript-format
+msgid "Code %s"
+msgstr ""
+
+#: features/notch/prefs.js:17
+msgid "Notification notch"
+msgstr ""
+
+#: features/notch/prefs.js:18
+msgid ""
+"A pill at the top centre of the screen shows notifications, live activities "
+"and volume changes, and opens into Now, Tray and Widgets. The notification "
+"history stays in the calendar menu."
+msgstr ""
+
+#: features/notch/prefs.js:22
+msgid "Show the notch"
+msgstr ""
+
+#: features/notch/prefs.js:23
+msgid "Moves the clock to the right and shows notifications in Quick Settings"
+msgstr ""
+
+#: features/notch/prefs.js:35
+msgid "Show banners in the notch instead of the standard banner"
+msgstr ""
+
+#: features/notch/prefs.js:36
+msgid "Live activities"
+msgstr ""
+
+#: features/notch/prefs.js:37
+msgid "Music, timers, charging and more. Replaces the top bar media button"
+msgstr ""
+
+#: features/notch/prefs.js:40
+msgid "Notification time (seconds)"
+msgstr ""
+
+#: features/notch/prefs.js:41
+msgid ""
+"How long a banner stays. Hovering keeps it open; urgent ones stay until "
+"dismissed"
+msgstr ""
+
+#: features/notch/prefs.js:47
+msgid "Open on hover"
+msgstr ""
+
+#: features/notch/prefs.js:48
+msgid ""
+"Rest the pointer on the notch to open it. A click opens it too, and keeps it "
+"open"
+msgstr ""
+
+#: features/notch/prefs.js:50
+msgid "Hover delay (milliseconds)"
+msgstr ""
+
+#: features/notch/prefs.js:58
+msgid "Live Activities"
+msgstr ""
+
+#: features/notch/prefs.js:59
+msgid ""
+"What the notch shows while it happens. The most important one takes the "
+"pill; the rest are listed in the Now tab."
+msgstr ""
+
+#: features/notch/prefs.js:68
+msgid "Charging and battery"
+msgstr ""
+
+#: features/notch/prefs.js:68
+msgid "Charging, low battery"
+msgstr ""
+
+#: features/notch/prefs.js:69
+msgid "Bluetooth headphones and their battery"
+msgstr ""
+
+#: features/notch/prefs.js:70
+msgid "Timers"
+msgstr ""
+
+#: features/notch/prefs.js:70
+msgid "Guava timers counting down, and the timer buttons in Widgets"
+msgstr ""
+
+#: features/notch/prefs.js:71
+msgid "Screen recording"
+msgstr ""
+
+#: features/notch/prefs.js:71
+msgid "Elapsed time and a stop button"
+msgstr ""
+
+#: features/notch/prefs.js:72
+msgid "Next event"
+msgstr ""
+
+#: features/notch/prefs.js:72
+msgid "From 15 minutes before it starts"
+msgstr ""
+
+#: features/notch/prefs.js:73
+msgid "App progress bars and partial files in Downloads"
+msgstr ""
+
+#: features/notch/prefs.js:74
+msgid "Copy one-time codes"
+msgstr ""
+
+#: features/notch/prefs.js:74
+msgid ""
+"A Copy button for codes found in notifications. Read only on this computer"
+msgstr ""
+
+#: features/notch/prefs.js:79
+msgid "Shelf"
+msgstr ""
+
+#: features/notch/prefs.js:80
+msgid ""
+"The Tray tab keeps links to files. Copy files in Files, then use Add from "
+"Clipboard. The files themselves stay where they are."
+msgstr ""
+
+#: features/notch/prefs.js:89
+msgid "Add finished downloads"
+msgstr ""
+
+#: features/notch/prefs.js:90
+msgid "Add screenshots"
+msgstr ""
+
+#: features/notch/prefs.js:92
+msgid "Show clipboard in the Tray"
+msgstr ""
+
+#: features/notch/prefs.js:93
+msgid "Turn off to keep copied text off the screen while sharing it"
+msgstr ""
+
+#: features/notch/sources/timers.js:40
+msgid "Timer done"
+msgstr ""
+
+#: features/notch/tabs.js:72
+msgid "Seek"
+msgstr ""
+
+#: features/notch/tabs.js:174
+msgid "No notifications"
+msgstr ""
+
+#: features/notch/tabs.js:219
+#, javascript-format
+msgid "%d more"
+msgstr ""
+
+#: features/notch/tabs.js:296
+msgid "Drop to add to the Shelf"
+msgstr ""
+
+#: features/notch/tabs.js:306
+msgid "Remove from Shelf"
+msgstr ""
+
+#: features/notch/tabs.js:309 features/notch/tabs.js:310
+msgid "Add from Clipboard"
+msgstr ""
+
+#: features/notch/tabs.js:318
+msgid "Clear Shelf"
+msgstr ""
+
+#: features/notch/tabs.js:328
+msgid "Drop files here, or copy them and Add from Clipboard"
+msgstr ""
+
+#: features/notch/tabs.js:395
+msgid "No calendar"
+msgstr ""
+
+#: features/notch/tabs.js:448
+msgid "Mic Off"
+msgstr ""
+
+#: features/notch/tabs.js:456
+#, javascript-format
+msgid "%dm"
+msgstr ""
+
+#: features/notch/tabs.js:457
+#, javascript-format
+msgid "Start a %d minute timer"
+msgstr ""
+
+#: features/notch/view.js:671
+msgid "Tray"
+msgstr ""
+
+#: features/notch/view.js:671 features/notificationCenter/prefs.js:16
+#: features/widgets/gallery.js:57 features/widgets/gallery.js:73
+#: prefs/pages/index.js:50
+msgid "Widgets"
+msgstr ""
+
+#: features/notch/view.js:965
+msgid "Dismiss"
+msgstr ""
+
+#: features/notificationCenter/prefs.js:12
+msgid ""
+"Clicking the clock opens a column at the right with the date, your "
+"notifications grouped by app, and widgets. Banners still appear in the notch."
+msgstr ""
+
+#: features/notificationCenter/prefs.js:15
+msgid "Off: the clock opens the calendar card"
+msgstr ""
+
+#: features/notificationCenter/prefs.js:17
+msgid "Show the widgets area below the notifications"
+msgstr ""
+
+#: features/notificationCenter/view.js:57
+#, javascript-format
+msgid "%d, today"
+msgstr ""
+
+#: features/notificationCenter/view.js:67
+msgid "now"
+msgstr ""
+
+#: features/notificationCenter/view.js:68
+#, javascript-format
+msgid "%dm ago"
+msgstr ""
+
+#: features/notificationCenter/view.js:69
+#, javascript-format
+msgid "%dh ago"
+msgstr ""
+
+#: features/notificationCenter/view.js:155
+msgid "Show Less"
+msgstr ""
+
+#: features/notificationCenter/view.js:156
+#: features/notificationCenter/view.js:181
+msgid "Clear All"
+msgstr ""
+
+#: features/notificationCenter/view.js:181
+msgid "Clear All notifications"
+msgstr ""
+
+#: features/notificationCenter/view.js:185
+msgid "No Notifications"
+msgstr ""
+
+#: features/notificationCenter/view.js:192
+msgid "1 more notification"
+msgstr ""
+
+#: features/notificationCenter/view.js:192
+#, javascript-format
+msgid "%d more notifications"
+msgstr ""
+
+#: features/notificationCenter/view.js:223 features/widgets/index.js:214
+#: features/widgets/index.js:367
+msgid "Edit Widgets…"
+msgstr ""
+
+#: features/onboarding/model.js:55
+msgid "Welcome to Guava"
+msgstr ""
+
+#: features/onboarding/model.js:56
+msgid ""
+"Make GNOME feel like a Mac. Choose a few things now, or keep the macOS "
+"defaults and change them later in Guava Settings."
+msgstr ""
+
+#: features/onboarding/model.js:61
+msgid "Choose Your Look"
+msgstr ""
+
+#: features/onboarding/model.js:62
+msgid "Light, Dark, or Auto, which switches between them through the day."
+msgstr ""
+
+#: features/onboarding/model.js:70
+msgid "Your Dock"
+msgstr ""
+
+#: features/onboarding/model.js:71
+msgid "Your favourite apps, running apps, Downloads and the Trash."
+msgstr ""
+
+#: features/onboarding/model.js:74
+msgid "Position on Screen"
+msgstr ""
+
+#: features/onboarding/model.js:82
+msgid "The Menu Bar"
+msgstr ""
+
+#: features/onboarding/model.js:83
+msgid ""
+"The logo at the left end opens the logo menu: About, System Settings, Force "
+"Quit, Sleep, Restart and Shut Down."
+msgstr ""
+
+#: features/onboarding/model.js:86
+msgid "Logo"
+msgstr ""
+
+#: features/onboarding/model.js:87
+msgid "Fedora"
+msgstr ""
+
+#: features/onboarding/model.js:94
+msgid ""
+"Close, minimize and zoom always stay in each window's own title bar. Choose "
+"the side they are on."
+msgstr ""
+
+#: features/onboarding/model.js:105
+msgid ""
+"Keep the window you work in at the centre, with your other apps in a strip "
+"at the side. Turn it on or off any time from the Control Center."
+msgstr ""
+
+#: features/onboarding/model.js:113
+msgid ""
+"Clipboard history keeps what you copy on this computer only, readable only "
+"by you, and skips passwords from password managers. The notch shows "
+"notification text at the top of the screen, also while you share it."
+msgstr ""
+
+#: features/onboarding/model.js:116
+msgid "Notifications in the Notch"
+msgstr ""
+
+#: features/onboarding/model.js:121
+msgid "You’re All Set"
+msgstr ""
+
+#: features/onboarding/model.js:122
+msgid ""
+"Everything here, and much more, is in Guava Settings. You can run this "
+"assistant again from About."
+msgstr ""
+
+#: features/onboarding/prefs.js:17
+msgid "Setup Assistant"
+msgstr ""
+
+#: features/onboarding/prefs.js:18
+msgid "Choose your look, Dock, menu bar and privacy options again"
+msgstr ""
+
+#: features/onboarding/prefs.js:21
+msgid "Run Again…"
+msgstr ""
+
+#: features/osd/model.js:51
+msgid "Volume"
+msgstr ""
+
+#: features/osd/model.js:53
+msgid "Keyboard Backlight"
+msgstr ""
+
+#: features/osd/model.js:55
+msgid "Muted"
+msgstr ""
+
+#: features/osd/prefs.js:14
+msgid "Volume and Brightness"
+msgstr ""
+
+#: features/osd/prefs.js:15
+msgid ""
+"macOS 26 shows them in a glass pill under the Control Center; with a notch "
+"they show in the notch"
+msgstr ""
+
+#: features/osd/prefs.js:18
+msgid "Show Volume and Brightness In"
+msgstr ""
+
+#: features/osd/prefs.js:19
+msgid "The notch while it is on, or a glass pill under the menu bar like macOS"
+msgstr ""
+
+#: features/osd/prefs.js:21
+msgid "Standard Pop-up"
+msgstr ""
+
+#: features/roundedCorners/prefs.js:18
+msgid "Top corners only"
+msgstr ""
+
+#: features/roundedCorners/prefs.js:18
+msgid "All four corners"
+msgstr ""
+
+#: features/roundedCorners/prefs.js:20
+msgid "Rounded corners"
+msgstr ""
+
+#: features/roundedCorners/prefs.js:21
+msgid "Top only keeps the bottom edge square"
+msgstr ""
+
+#: features/roundedCorners/prefs.js:43
+msgid "Excluded Apps"
+msgstr ""
+
+#: features/roundedCorners/prefs.js:44
+msgid ""
+"These apps keep square corners. Use the WM_CLASS or app id, for example "
+"\"org.gnome.Terminal\" or \"firefox\"."
+msgstr ""
+
+#: features/roundedCorners/prefs.js:46
+msgid "Add an app id or WM_CLASS"
+msgstr ""
+
+#: features/roundedCorners/prefs.js:92
+msgid ""
+"Round the top corners of app windows, or all four. Maximized, tiled and "
+"fullscreen windows stay square."
+msgstr ""
+
+#: features/roundedCorners/prefs.js:94
+msgid "Round window corners"
+msgstr ""
+
+#: features/roundedCorners/prefs.js:100
+msgid "Corner radius"
+msgstr ""
+
+#: features/roundedCorners/prefs.js:101
+msgid "In pixels"
+msgstr ""
+
+#: features/screenshots/countdown.js:29
+msgid "Cancel the timer"
+msgstr ""
+
+#: features/screenshots/index.js:312 features/screenshots/prefs.js:22
+msgid "Save Screenshots To"
+msgstr ""
+
+#: features/screenshots/index.js:366 features/screenshots/prefs.js:84
+msgid "Pictures/Screenshots"
+msgstr ""
+
+#: features/screenshots/prefs.js:14 features/screenshots/prefs.js:84
+msgid "Other location"
+msgstr ""
+
+#: features/screenshots/prefs.js:16
+msgid "Not chosen"
+msgstr ""
+
+#: features/screenshots/prefs.js:20
+msgid "Choose…"
+msgstr ""
+
+#: features/screenshots/prefs.js:45
+msgid "Wait after Capture or Record in the toolbar"
+msgstr ""
+
+#: features/screenshots/prefs.js:46
+msgid "5 seconds"
+msgstr ""
+
+#: features/screenshots/prefs.js:46
+msgid "10 seconds"
+msgstr ""
+
+#: features/screenshots/prefs.js:70 prefs/pages/index.js:57
+msgid "Screenshots"
+msgstr ""
+
+#: features/screenshots/prefs.js:71
+msgid ""
+"macOS capture shortcuts and the Shift+Super+5 toolbar, on GNOME's own "
+"screenshot tool. Print and GNOME's other shortcuts keep working."
+msgstr ""
+
+#: features/screenshots/prefs.js:73
+msgid "macOS screenshots"
+msgstr ""
+
+#: features/screenshots/prefs.js:73
+msgid "Shortcuts, toolbar and floating thumbnail"
+msgstr ""
+
+#: features/screenshots/prefs.js:74
+msgid "Capture entire screen"
+msgstr ""
+
+#: features/screenshots/prefs.js:75
+msgid "Capture selection (Space: window)"
+msgstr ""
+
+#: features/screenshots/prefs.js:76
+msgid "Screenshot toolbar"
+msgstr ""
+
+#: features/screenshots/prefs.js:80 features/screenshots/thumbnail.js:244
+#: features/screenshots/toolbar.js:243
+msgid "Save to"
+msgstr ""
+
+#: features/screenshots/prefs.js:81
+msgid "macOS saves to the Desktop; GNOME to Pictures/Screenshots"
+msgstr ""
+
+#: features/screenshots/prefs.js:84
+msgid "Clipboard only"
+msgstr ""
+
+#: features/screenshots/prefs.js:88
+msgid "Show floating thumbnail"
+msgstr ""
+
+#: features/screenshots/prefs.js:89
+msgid ""
+"Saves after 5 seconds, or swipe it right. Click to open, right-click for "
+"more."
+msgstr ""
+
+#: features/screenshots/prefs.js:90
+msgid "Remember last selection"
+msgstr ""
+
+#: features/screenshots/prefs.js:91
+msgid "Show mouse pointer"
+msgstr ""
+
+#: features/screenshots/prefs.js:92
+msgid "Name files like macOS"
+msgstr ""
+
+#: features/screenshots/prefs.js:92
+msgid "\"Screenshot 2026-03-09 at 08.05.07\""
+msgstr ""
+
+#: features/screenshots/prefs.js:95
+msgid ""
+"GNOME also copies every screenshot to the clipboard. The thumbnail cannot be "
+"dragged into apps: GNOME Shell cannot start a drag into app windows. "
+"Recordings use GNOME's recorder, which records no sound."
+msgstr ""
+
+#: features/screenshots/thumbnail.js:252 features/screenshots/toolbar.js:167
+msgid "Close"
+msgstr ""
+
+#: features/screenshots/toolbar.js:110
+msgid "Record"
+msgstr ""
+
+#: features/screenshots/toolbar.js:110 features/screenshots/toolbar.js:214
+msgid "Capture"
+msgstr ""
+
+#: features/screenshots/toolbar.js:257
+#, javascript-format
+msgid "%d Seconds"
+msgstr ""
+
+#: features/screenshots/toolbar.js:276 features/screenshots/toolbar.js:277
+msgid "Other Location…"
+msgstr ""
+
+#: features/showDesktop/prefs.js:27
+msgid ""
+"Slide every window to the nearest screen edge to see the desktop. Press "
+"again, or click a window, to bring them back."
+msgstr ""
+
+#: features/showDesktop/prefs.js:30
+msgid "Show the top bar button"
+msgstr ""
+
+#: features/showDesktop/prefs.js:31
+msgid "A small button next to the system menu"
+msgstr ""
+
+#: features/showDesktop/prefs.js:38 features/stageManager/prefs.js:146
+msgid "Animation speed"
+msgstr ""
+
+#: features/showDesktop/prefs.js:39
+msgid "Fast"
+msgstr ""
+
+#: features/showDesktop/prefs.js:39
+msgid "Slow"
+msgstr ""
+
+#: features/showDesktop/prefs.js:55
+msgid "Click wallpaper to reveal desktop"
+msgstr ""
+
+#: features/showDesktop/prefs.js:56
+msgid "Clicking empty wallpaper moves the windows aside to show the desktop"
+msgstr ""
+
+#: features/showDesktop/prefs.js:58
+msgid "Only in Stage Manager"
+msgstr ""
+
+#: features/showDesktop/prefs.js:62
+msgid ""
+"GNOME's own \"Hide all normal windows\" shortcut, if you set one in "
+"Settings, plays the same animation while Guava runs. Guava never changes it. "
+"With Stage Manager on, Stage Manager handles Show Desktop."
+msgstr ""
+
+#: features/splitView/index.js:123
+msgid "Choose a Window"
+msgstr ""
+
+#: features/spotlight/actionsModel.js:24
+msgid "Start Timer"
+msgstr ""
+
+#: features/spotlight/actionsModel.js:26
+msgid "Turn Off Do Not Disturb"
+msgstr ""
+
+#: features/spotlight/actionsModel.js:26
+msgid "Turn On Do Not Disturb"
+msgstr ""
+
+#: features/spotlight/actionsModel.js:29
+msgid "Turn Off Dark Mode"
+msgstr ""
+
+#: features/spotlight/actionsModel.js:29
+msgid "Turn On Dark Mode"
+msgstr ""
+
+#: features/spotlight/actionsModel.js:34
+msgid "Take Screenshot"
+msgstr ""
+
+#: features/spotlight/actionsModel.js:61 features/spotlight/actionsModel.js:156
+msgid "Guava Action"
+msgstr ""
+
+#: features/spotlight/actionsModel.js:116
+msgid "h"
+msgstr ""
+
+#: features/spotlight/actionsModel.js:118
+msgid "min"
+msgstr ""
+
+#: features/spotlight/actionsModel.js:120
+#: features/spotlight/actionsModel.js:121
+msgid "s"
+msgstr ""
+
+#: features/spotlight/actionsModel.js:155
+#, javascript-format
+msgid "Start a %s Timer"
+msgstr ""
+
+#: features/spotlight/prefs.js:17
+msgid "DuckDuckGo"
+msgstr ""
+
+#: features/spotlight/prefs.js:18
+msgid "Google"
+msgstr ""
+
+#: features/spotlight/prefs.js:19
+msgid "Bing"
+msgstr ""
+
+#: features/spotlight/prefs.js:20
+msgid "Brave Search"
+msgstr ""
+
+#: features/spotlight/prefs.js:21
+msgid "Startpage"
+msgstr ""
+
+#: features/spotlight/prefs.js:22
+msgid "Ecosia"
+msgstr ""
+
+#: features/spotlight/prefs.js:30
+msgid "Search engine"
+msgstr ""
+
+#: features/spotlight/prefs.js:30
+msgid "Used by the Web result"
+msgstr ""
+
+#: features/spotlight/prefs.js:33
+#, javascript-format
+msgid "Custom address (https, with %s for the search)"
+msgstr ""
+
+#: features/spotlight/prefs.js:87
+msgid "Quick Keys"
+msgstr ""
+
+#: features/spotlight/prefs.js:88
+msgid ""
+"Type a short alias in Spotlight to run an action or open an app. Words after "
+"it are the action’s value, as in “tm 5” for a 5-minute timer."
+msgstr ""
+
+#: features/spotlight/prefs.js:93
+msgid "Alias (1–12 lowercase letters or digits)"
+msgstr ""
+
+#: features/spotlight/prefs.js:94
+msgid "Runs"
+msgstr ""
+
+#: features/spotlight/prefs.js:135
+msgid "Reset Quick Keys"
+msgstr ""
+
+#: features/spotlight/prefs.js:143
+msgid "History"
+msgstr ""
+
+#: features/spotlight/prefs.js:144
+msgid "Search history"
+msgstr ""
+
+#: features/spotlight/prefs.js:145
+msgid ""
+"Recent searches and opened results show in the empty field; Up recalls past "
+"searches. Turning it off clears them"
+msgstr ""
+
+#: features/spotlight/prefs.js:147
+msgid "Clear History"
+msgstr ""
+
+#: features/spotlight/prefs.js:172 features/spotlight/prefs.js:180
+msgid ""
+"A search bar in the middle of the screen. Apps, settings, files, the "
+"clipboard, a calculator and the web."
+msgstr ""
+
+#: features/spotlight/prefs.js:174
+msgid "Enable Spotlight"
+msgstr ""
+
+#: features/spotlight/prefs.js:174
+msgid "Search from the keyboard"
+msgstr ""
+
+#: features/spotlight/prefs.js:176
+msgid "Open with a tap of Super"
+msgstr ""
+
+#: features/spotlight/prefs.js:177
+msgid ""
+"The Activities overview stays on the hot corner, the touchpad gesture, "
+"Super+A and the Activities button"
+msgstr ""
+
+#: features/spotlight/prefs.js:179
+msgid "Extra shortcut"
+msgstr ""
+
+#: features/spotlight/prefs.js:183 features/spotlight/view.js:142
+msgid "Results"
+msgstr ""
+
+#: features/spotlight/prefs.js:184
+msgid "Files and documents"
+msgstr ""
+
+#: features/spotlight/prefs.js:184
+msgid "Uses GNOME search, so nothing is indexed twice"
+msgstr ""
+
+#: features/spotlight/prefs.js:185
+#: features/spotlight/providers/settingsCatalog.js:59
+#: features/spotlight/queryModel.js:54 features/spotlight/view.js:31
+msgid "Settings"
+msgstr ""
+
+#: features/spotlight/prefs.js:185
+msgid "GNOME Settings panels and Guava switches"
+msgstr ""
+
+#: features/spotlight/prefs.js:186 features/spotlight/view.js:34
+msgid "Calculator"
+msgstr ""
+
+#: features/spotlight/prefs.js:186
+msgid "Arithmetic and unit conversions such as 5 km in miles"
+msgstr ""
+
+#: features/spotlight/prefs.js:187
+msgid "Search your copies from Clipboard history"
+msgstr ""
+
+#: features/spotlight/prefs.js:188
+msgid "Show recent clipboard when the search is empty"
+msgstr ""
+
+#: features/spotlight/prefs.js:189
+msgid "Anyone who can see the screen sees what you copied"
+msgstr ""
+
+#: features/spotlight/prefs.js:194
+msgid ""
+"Show Desktop, Lock Screen, timers, Do Not Disturb, Dark Mode, Empty Trash, "
+"screenshots and the actions apps offer"
+msgstr ""
+
+#: features/spotlight/prefs.js:196
+msgid "Menu items of the focused app"
+msgstr ""
+
+#: features/spotlight/prefs.js:197
+msgid "From Guava’s menu bar. Tab scopes the search to them"
+msgstr ""
+
+#: features/spotlight/prefs.js:199
+msgid "Browse and Preview"
+msgstr ""
+
+#: features/spotlight/prefs.js:200
+msgid "Browse views"
+msgstr ""
+
+#: features/spotlight/prefs.js:201
+msgid ""
+"Applications, Files, Actions and Clipboard buttons next to the empty field; "
+"Super+1 to Super+4 open them"
+msgstr ""
+
+#: features/spotlight/prefs.js:203
+msgid "Quick Look"
+msgstr ""
+
+#: features/spotlight/prefs.js:204
+msgid "Space previews the selected file with GNOME’s previewer (install Sushi)"
+msgstr ""
+
+#: features/spotlight/prefs.js:206 features/spotlight/results.js:134
+#: features/spotlight/view.js:36
+msgid "Web"
+msgstr ""
+
+#: features/spotlight/prefs.js:207
+msgid "Web search"
+msgstr ""
+
+#: features/spotlight/prefs.js:207
+msgid ""
+"Adds a row that opens your search engine. Nothing is sent until you press "
+"Return"
+msgstr ""
+
+#: features/spotlight/providers/actions.js:130
+#, javascript-format
+msgid "Your %s timer is done"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:13
+msgid "Network"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:15
+msgid "Displays"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:17
+msgid "Power"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:19
+msgid "Mouse & Touchpad"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:24
+msgid "Multitasking"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:25
+msgid "Apps"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:26
+msgid "Privacy & Security"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:27
+msgid "Online Accounts"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:28
+msgid "Sharing"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:29
+msgid "Printers"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:30
+msgid "Color"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:31
+msgid "Date & Time"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:32
+msgid "Region & Language"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:34
+msgid "Digital Wellbeing"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:35
+msgid "Users"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:37 prefs/pages/about.js:16
+msgid "About"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:70
+msgid "Guava · On, press Return to turn off"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:70
+msgid "Guava · Off, press Return to turn on"
+msgstr ""
+
+#: features/spotlight/providers/settingsCatalog.js:76
+msgid "Guava Settings"
+msgstr ""
+
+#: features/spotlight/queryModel.js:19 features/spotlight/queryModel.js:44
+msgid "Files"
+msgstr ""
+
+#: features/spotlight/queryModel.js:45
+msgid "Folders"
+msgstr ""
+
+#: features/spotlight/queryModel.js:49
+msgid "PDF"
+msgstr ""
+
+#: features/spotlight/queryModel.js:52
+msgid "Videos"
+msgstr ""
+
+#: features/spotlight/queryModel.js:56 features/spotlight/view.js:39
+msgid "Menu Items"
+msgstr ""
+
+#: features/spotlight/results.js:133
+msgid "Search the web for"
+msgstr ""
+
+#: features/spotlight/results.js:234
+msgid "Files are turned off"
+msgstr ""
+
+#: features/spotlight/results.js:234
+msgid "Turn on Files and documents in Guava’s Spotlight settings"
+msgstr ""
+
+#: features/spotlight/results.js:241
+msgid "File search is not available"
+msgstr ""
+
+#: features/spotlight/results.js:241
+msgid "GNOME’s file indexer (LocalSearch) is not running"
+msgstr ""
+
+#: features/spotlight/results.js:244
+msgid "No recent files"
+msgstr ""
+
+#: features/spotlight/results.js:244
+msgid "Files you change appear here"
+msgstr ""
+
+#: features/spotlight/results.js:258
+msgid "Clipboard history is off"
+msgstr ""
+
+#: features/spotlight/results.js:258
+msgid "Turn on Clipboard history in Guava Settings to see what you copied"
+msgstr ""
+
+#: features/spotlight/results.js:261
+msgid "Text and images you copy appear here"
+msgstr ""
+
+#: features/spotlight/view.js:35
+msgid "Other Results"
+msgstr ""
+
+#: features/spotlight/view.js:37
+msgid "Suggestions"
+msgstr ""
+
+#: features/spotlight/view.js:40
+msgid "Filters"
+msgstr ""
+
+#: features/spotlight/view.js:41
+msgid "Recents"
+msgstr ""
+
+#: features/spotlight/view.js:42
+msgid "Recent Searches"
+msgstr ""
+
+#: features/spotlight/view.js:43
+msgid "All Apps"
+msgstr ""
+
+#: features/spotlight/view.js:44
+msgid "Recent Files"
+msgstr ""
+
+#: features/spotlight/view.js:46
+msgid "App Actions"
+msgstr ""
+
+#: features/spotlight/view.js:272
+msgid "Top hit"
+msgstr ""
+
+#: features/stageManager/prefs.js:49
+msgid ""
+"Other apps wait as live thumbnails in a strip at the edge of the screen. "
+"Click one to switch to it."
+msgstr ""
+
+#: features/stageManager/prefs.js:51
+msgid "Show the Stage Manager strip"
+msgstr ""
+
+#: features/stageManager/prefs.js:55
+msgid "Toggle shortcut"
+msgstr ""
+
+#: features/stageManager/prefs.js:56
+msgid "Use Ctrl+Super+S"
+msgstr ""
+
+#: features/stageManager/prefs.js:59
+msgid "Strip"
+msgstr ""
+
+#: features/stageManager/prefs.js:64
+msgid "Which screen edge holds the strip"
+msgstr ""
+
+#: features/stageManager/prefs.js:81
+msgid "Show recent apps"
+msgstr ""
+
+#: features/stageManager/prefs.js:82
+msgid ""
+"Off: the strip stays hidden until you push the pointer against the screen "
+"edge"
+msgstr ""
+
+#: features/stageManager/prefs.js:88
+msgid "Hide recent apps under windows"
+msgstr ""
+
+#: features/stageManager/prefs.js:89
+msgid ""
+"The strip steps aside while a window overlaps it; push the screen edge to "
+"bring it back"
+msgstr ""
+
+#: features/stageManager/prefs.js:96
+msgid "Windows from an app"
+msgstr ""
+
+#: features/stageManager/prefs.js:97
+msgid ""
+"All at once: one stack per app. One at a time: each window has its own entry"
+msgstr ""
+
+#: features/stageManager/prefs.js:98
+msgid "All at once"
+msgstr ""
+
+#: features/stageManager/prefs.js:98
+msgid "One at a time"
+msgstr ""
+
+#: features/stageManager/prefs.js:114
+msgid "Tilt the windows"
+msgstr ""
+
+#: features/stageManager/prefs.js:115
+msgid "The windows in the strip turn toward the stage, as on macOS"
+msgstr ""
+
+#: features/stageManager/prefs.js:118
+msgid "Tilt angle"
+msgstr ""
+
+#: features/stageManager/prefs.js:119
+msgid "Degrees"
+msgstr ""
+
+#: features/stageManager/prefs.js:147
+msgid "1 is normal, 2 twice as fast"
+msgstr ""
+
+#: features/stageManager/prefs.js:156
+msgid "Sets"
+msgstr ""
+
+#: features/stageManager/prefs.js:157
+msgid ""
+"Drag an app from the strip onto the stage, or Shift-click it, to use it with "
+"the windows already there. Drag a window onto the strip to take it out. Alt-"
+"click an app in the dock or the app grid to open it into the current stage."
+msgstr ""
+
+#: features/stageManager/prefs.js:159
+msgid "New windows"
+msgstr ""
+
+#: features/stageManager/prefs.js:160
+msgid "What a newly opened app window does"
+msgstr ""
+
+#: features/stageManager/prefs.js:161
+msgid "Replace the stage"
+msgstr ""
+
+#: features/stageManager/prefs.js:161
+msgid "Join the current set"
+msgstr ""
+
+#: features/stageManager/prefs.js:163
+msgid "Remove from set shortcut"
+msgstr ""
+
+#: features/stageManager/prefs.js:166
+msgid "Click wallpaper to show the desktop"
+msgstr ""
+
+#: features/stageManager/prefs.js:167
+msgid ""
+"The windows on the stage step into the strip; click again to bring them back"
+msgstr ""
+
+#: features/stageManager/prefs.js:174
+msgid ""
+"Every set operation has a shortcut. They work while Stage Manager is on."
+msgstr ""
+
+#: features/stageManager/prefs.js:177
+msgid "Next set"
+msgstr ""
+
+#: features/stageManager/prefs.js:180
+msgid "Previous set"
+msgstr ""
+
+#: features/stageManager/prefs.js:182
+msgid "Strip entries 1 to 6"
+msgstr ""
+
+#: features/stageManager/prefs.js:182
+msgid "Super+Alt+1 to 6"
+msgstr ""
+
+#. TRANSLATORS: %d is a position in the Stage Manager strip, counted from the top
+#: features/stageManager/prefs.js:187
+#, javascript-format
+msgid "Entry %d"
+msgstr ""
+
+#: features/stageManager/prefs.js:203
+msgid "Paused while Stage Manager is on"
+msgstr ""
+
+#: features/stageManager/prefs.js:207
+msgid "Full screen in its own Space"
+msgstr ""
+
+#: features/stageManager/view.js:97
+msgid "Add to Stage"
+msgstr ""
+
+#: features/switcher/index.js:123
+msgid "Application Switcher"
+msgstr ""
+
+#: features/switcher/prefs.js:11
+msgid "App Switcher"
+msgstr ""
+
+#: features/switcher/prefs.js:12
+msgid ""
+"Super+Tab works like Cmd-Tab: hold Super and press Tab to move, Q to quit, H "
+"to hide, Down to show the app's windows; release Super to switch."
+msgstr ""
+
+#: features/switcher/prefs.js:14
+msgid "macOS App Switcher"
+msgstr ""
+
+#: features/switcher/prefs.js:15
+msgid ""
+"Big app icons in the order you last used them, instead of GNOME's switcher"
+msgstr ""
+
+#: features/switcher/prefs.js:17
+msgid "Super+` Cycles Windows of the Front App"
+msgstr ""
+
+#: features/switcher/prefs.js:18
+msgid ""
+"Like Cmd-`: each press brings the next window of the current app forward"
+msgstr ""
+
+#: features/switcher/prefs.js:19
+msgid "Switch to a Space With Open Windows for the App"
+msgstr ""
+
+#: features/switcher/prefs.js:20
+msgid "Off: an app with no window on this workspace opens a new one here"
+msgstr ""
+
+#: features/switcher/prefs.js:21
+msgid "Restore Minimized Windows"
+msgstr ""
+
+#: features/switcher/prefs.js:22
+msgid ""
+"As on macOS, minimized windows stay in the Dock unless you hold Alt as you "
+"release Super"
+msgstr ""
+
+#: features/widgets/gallery.js:76 features/widgets/gallery.js:77
+msgid "Search Widgets"
+msgstr ""
+
+#: features/widgets/gallery.js:85
+msgid "Add Default Widgets"
+msgstr ""
+
+#: features/widgets/gallery.js:101
+msgid "All Widgets"
+msgstr ""
+
+#: features/widgets/gallery.js:165
+msgid "No Widgets"
+msgstr ""
+
+#: features/widgets/gallery.js:231
+msgid "Medium"
+msgstr ""
+
+#: features/widgets/gallery.js:231
+msgid "Extra Large"
+msgstr ""
+
+#: features/widgets/index.js:137
+msgid "No room for the widget"
+msgstr ""
+
+#: features/widgets/index.js:137
+msgid "Remove or move a widget first."
+msgstr ""
+
+#: features/widgets/index.js:215
+msgid "Remove Widget"
+msgstr ""
+
+#: features/widgets/prefs.js:16
+msgid "Desktop Widgets"
+msgstr ""
+
+#: features/widgets/prefs.js:17
+msgid ""
+"Widgets sit on the desktop above the wallpaper and below your windows. Right-"
+"click the desktop and choose Edit Widgets… to add them, drag them to place "
+"them, and right-click a widget to resize or remove it."
+msgstr ""
+
+#: features/widgets/prefs.js:19
+msgid "Show widgets on the desktop"
+msgstr ""
+
+#: features/widgets/prefs.js:21
+msgid "Widget style"
+msgstr ""
+
+#: features/widgets/prefs.js:22
+msgid "Automatic dims the widgets to monochrome while a window is in front"
+msgstr ""
+
+#: features/widgets/prefs.js:25
+msgid "Monochrome"
+msgstr ""
+
+#: features/widgets/prefs.js:25
+msgid "Full colour"
+msgstr ""
+
+#: features/widgets/prefs.js:30
+msgid "Remove all widgets"
+msgstr ""
+
+#: features/widgets/prefs.js:31
+msgid "The gallery offers Add Default Widgets when the desktop is empty"
+msgstr ""
+
+#: features/widgets/prefs.js:33
+msgid "Remove All"
+msgstr ""
+
+#: features/windows/picker.js:28
+msgid "Layouts"
+msgstr ""
+
+#: features/windows/prefs.js:19
+msgid "Center"
+msgstr ""
+
+#: features/windows/prefs.js:20
+msgid "Return to Previous Size"
+msgstr ""
+
+#: features/windows/prefs.js:26
+msgid "Bottom & Top"
+msgstr ""
+
+#: features/windows/prefs.js:27
+msgid "Left & Quarters"
+msgstr ""
+
+#: features/windows/prefs.js:28
+msgid "Right & Quarters"
+msgstr ""
+
+#: features/windows/prefs.js:29
+msgid "Top & Quarters"
+msgstr ""
+
+#: features/windows/prefs.js:30
+msgid "Bottom & Quarters"
+msgstr ""
+
+#: features/windows/prefs.js:46
+msgid "Tiling"
+msgstr ""
+
+#: features/windows/prefs.js:47
+msgid ""
+"Drag windows to the edges, corners or top bar (the top centre opens a layout "
+"picker), or use the shortcuts. GNOME's own edge tiling is off while this is "
+"on and comes back when it is turned off."
+msgstr ""
+
+#: features/windows/prefs.js:50
+msgid "Tile Windows"
+msgstr ""
+
+#: features/windows/prefs.js:51
+msgid "Guava's macOS-style tiling: halves, quarters, Fill, arrangements"
+msgstr ""
+
+#: features/windows/prefs.js:53
+msgid "Drag windows to screen edges to tile"
+msgstr ""
+
+#: features/windows/prefs.js:54
+msgid "Left or right edge for a half, a corner for a quarter"
+msgstr ""
+
+#: features/windows/prefs.js:55
+msgid "Drag windows to top bar to fill screen"
+msgstr ""
+
+#: features/windows/prefs.js:56
+msgid "Fills the screen without going full screen"
+msgstr ""
+
+#: features/windows/prefs.js:57
+msgid "Layout picker at the top centre"
+msgstr ""
+
+#: features/windows/prefs.js:58
+msgid ""
+"Drag to the middle of the top bar for halves, quarters and arrangements; "
+"release elsewhere on the bar to fill"
+msgstr ""
+
+#: features/windows/prefs.js:60
+msgid "Hold Alt key while dragging windows to tile"
+msgstr ""
+
+#: features/windows/prefs.js:61
+msgid ""
+"Shows the half outlines at once, without reaching the edge (the macOS Option "
+"key)"
+msgstr ""
+
+#: features/windows/prefs.js:63
+msgid "Tiled windows have margins"
+msgstr ""
+
+#: features/windows/prefs.js:64
+msgid "A small gap around and between tiled windows"
+msgstr ""
+
+#: features/windows/prefs.js:65
+msgid "Move & Resize Shortcuts"
+msgstr ""
+
+#: features/windows/prefs.js:66
+msgid ""
+"macOS uses Fn-Control; Guava uses Ctrl+Super. A shortcut GNOME or Stage "
+"Manager already uses is left unbound"
+msgstr ""
+
+#: features/windows/prefs.js:68
+msgid "Arrange Shortcuts"
+msgstr ""
+
+#: features/windows/prefs.js:69
+msgid ""
+"The focused window takes the first place, the windows used before it the "
+"others"
+msgstr ""
+
+#: features/windows/prefs.js:77
+msgid "Hide"
+msgstr ""
+
+#: features/windows/prefs.js:78
+msgid "Hide and Hide Others"
+msgstr ""
+
+#: features/windows/prefs.js:79
+msgid ""
+"Hide an app: its windows leave the screen without an animation and come back "
+"together when you switch to it"
+msgstr ""
+
+#: features/windows/prefs.js:82
+msgid "Hide shortcut"
+msgstr ""
+
+#: features/windows/prefs.js:83
+msgid "Hide Others shortcut"
+msgstr ""
+
+#: features/windows/prefs.js:89
+msgid ""
+"Super+H is GNOME's minimize shortcut: Guava borrows it while Hide uses it, "
+"and gives it back when Hide is off."
+msgstr ""
+
+#: lib/menuBarPins.js:15
+msgid "When connected"
+msgstr ""
+
+#: lib/menuBarPins.js:16
+msgid "When a device is connected"
+msgstr ""
+
+#: lib/menuBarPins.js:17
+msgid "When not muted"
+msgstr ""
+
+#: lib/menuBarPins.js:19
+msgid "When on"
+msgstr ""
+
+#: lib/menuBarPins.js:20
+msgid "When playing"
+msgstr ""
+
+#: lib/menuBarPins.js:21
+msgid "When lit"
+msgstr ""
+
+#: lib/menuBarPins.js:22
+msgid "While recording"
+msgstr ""
+
+#: lib/mpris.js:255
+msgid "Unknown artist"
+msgstr ""
+
+#: prefs/pages/about.js:62
+msgid "Change log"
+msgstr ""
+
+#: prefs/pages/about.js:99
+msgid "Website"
+msgstr ""
+
+#: prefs/pages/about.js:103
+msgid "Report an Issue"
+msgstr ""
+
+#: prefs/pages/about.js:108
+msgid "Credits"
+msgstr ""
+
+#: prefs/pages/about.js:111 prefs/pages/about.js:126
+msgid "Legal"
+msgstr ""
+
+#: prefs/pages/about.js:134
+msgid "License"
+msgstr ""
+
+#: prefs/pages/about.js:135
+msgid "Guava is free and open source software"
+msgstr ""
+
+#: prefs/pages/about.js:140
+msgid "GNU General Public License v3.0"
+msgstr ""
+
+#: prefs/pages/about.js:142
+msgid "View the full license text on GitHub"
+msgstr ""
+
+#: prefs/pages/about.js:149 prefs/pages/about.js:150
+msgid "Copyright"
+msgstr ""
+
+#: prefs/pages/about.js:150
+msgid ""
+"This program is free software: you can redistribute it and/or modify it "
+"under the terms of the GNU General Public License as published by the Free "
+"Software Foundation, either version 3 of the License, or (at your option) "
+"any later version."
+msgstr ""
+
+#: prefs/pages/about.js:204
+msgid "Become a sponsor on GitHub"
+msgstr ""
+
+#: prefs/pages/about.js:217
+msgid "Support Me ♡"
+msgstr ""
+
+#: prefs/pages/about.js:240
+msgid "More of my work..."
+msgstr ""
+
+#: prefs/pages/about.js:244
+msgid "Kiwi Menu"
+msgstr ""
+
+#: prefs/pages/about.js:244
+msgid "MacOS style menu for GNOME"
+msgstr ""
+
+#: prefs/pages/about.js:245
+msgid "AppManager"
+msgstr ""
+
+#: prefs/pages/about.js:245
+msgid "MacOS style AppImage installer and management application"
+msgstr ""
+
+#: prefs/pages/about.js:246
+msgid "Catalina Reloaded Icon Pack"
+msgstr ""
+
+#: prefs/pages/about.js:246
+msgid "macOS Tahoe icon theme for Linux"
+msgstr ""
+
+#: prefs/pages/about.js:247
+msgid "GDM Wallpaper"
+msgstr ""
+
+#: prefs/pages/about.js:247
+msgid "Set custom GDM login screen wallpaper"
+msgstr ""
+
+#: prefs/pages/about.js:259
+msgid "Other Recommended Extensions"
+msgstr ""
+
+#: prefs/pages/about.js:260
+msgid "Extensions that are compatible with Guava"
+msgstr ""
+
+#: prefs/pages/appearance.js:27
+msgid "Menus"
+msgstr ""
+
+#: prefs/pages/appearance.js:28
+msgid "Menu and App Styling"
+msgstr ""
+
+#: prefs/pages/appearance.js:29
+msgid ""
+"Narrower shell menu items with accent-colored hover and selection, plus the "
+"GTK app fixes"
+msgstr ""
+
+#: prefs/pages/general.js:23 prefs/pages/index.js:45
+msgid "General"
+msgstr ""
+
+#: prefs/pages/general.js:25
+msgid "Overview and gestures"
+msgstr ""
+
+#: prefs/pages/general.js:27
+msgid "Swipe Up to Workspaces Only"
+msgstr ""
+
+#: prefs/pages/general.js:27
+msgid ""
+"Swiping up opens the workspace overview and never the app grid. The apps "
+"button and Super+A still show it"
+msgstr ""
+
+#: prefs/pages/general.js:28
+msgid "Disable Hot Corner"
+msgstr ""
+
+#: prefs/pages/general.js:28
+msgid "Pointing at the top-left corner does not open the overview"
+msgstr ""
+
+#: prefs/pages/general.js:34 prefs/pages/general.js:47
+msgid "Reset Everything"
+msgstr ""
+
+#: prefs/pages/general.js:38
+msgid "Reset every Guava setting to its default value"
+msgstr ""
+
+#: prefs/pages/general.js:43
+msgid "Reset Every Guava Setting?"
+msgstr ""
+
+#: prefs/pages/general.js:44
+msgid ""
+"Every Guava setting goes back to its default, the macOS one. This cannot be "
+"undone."
+msgstr ""
+
+#: prefs/pages/index.js:51
+msgid "Features"
+msgstr ""
+
+#: prefs/pages/loginItems.js:93
+msgid "Login Items"
+msgstr ""
+
+#: prefs/pages/loginItems.js:97
+msgid ""
+"These items open when you log in. Add an app from its Dock menu: Options › "
+"Open at Login. Items Guava added can be removed here; the others belong to "
+"their apps."
+msgstr ""
+
+#: prefs/pages/loginItems.js:101
+msgid "Allow in the Background"
+msgstr ""
+
+#: prefs/pages/loginItems.js:102
+msgid ""
+"Apps that asked to keep running after their windows close. Change this in "
+"GNOME Settings."
+msgstr ""
+
+#: prefs/pages/loginItems.js:104
+msgid "Open Settings…"
+msgstr ""
+
+#: prefs/pages/loginItems.js:132
+msgid "No items open at login"
+msgstr ""
+
+#: prefs/pages/loginItems.js:135
+msgid "Turned off"
+msgstr ""
+
+#: prefs/pages/loginItems.js:136
+msgid "Added by Guava"
+msgstr ""
+
+#: prefs/pages/loginItems.js:136
+msgid "Installed for everyone"
+msgstr ""
+
+#: prefs/pages/loginItems.js:143
+msgid "Remove from Login Items"
+msgstr ""
+
+#: prefs/pages/loginItems.js:145
+#, javascript-format
+msgid "Remove %s from Login Items"
+msgstr ""
+
+#: prefs/pages/loginItems.js:156
+msgid "No app has asked to run in the background"
+msgstr ""
+
+#: prefs/pages/loginItems.js:166
+msgid "Not allowed"
+msgstr ""
+
+#: prefs/pages/loginItems.js:166
+msgid "Asks each time"
+msgstr ""
+
+#: prefs/pages/menuBar.js:20
+msgid "Top bar"
+msgstr ""
+
+#: prefs/pages/menuBar.js:21
+msgid "Activities Button"
+msgstr ""
+
+#: prefs/pages/menuBar.js:22
+msgid "Show GNOME's Activities button at the left of the bar. macOS has none"
+msgstr ""
+
+#: prefs/pages/menuBar.js:26
+msgid "Clock on the Right"
+msgstr ""
+
+#: prefs/pages/menuBar.js:27
+msgid ""
+"The clock and calendar move to the right end; notifications move to Quick "
+"Settings"
+msgstr ""
+
+#: prefs/pages/menuBar.js:35
+msgid "On while the notch is on"
+msgstr ""
+
+#: prefs/pages/menuBar.js:40
+msgid "Notification Dot"
+msgstr ""
+
+#: prefs/pages/menuBar.js:40
+msgid "Colour of the dot that shows waiting notifications"
+msgstr ""
+
+#: prefs/pages/menuBar.js:42
+msgid "Accent"
+msgstr ""
+
+#: prefs/pages/menuBar.js:42
+msgid "Symbolic"
+msgstr ""
+
+#: prefs/pages/menuBar.js:44
+msgid "Keep GNOME Notification Panel"
+msgstr ""
+
+#: prefs/pages/menuBar.js:45
+msgid "Don't split notification and calendar layout"
+msgstr ""
+
+#: prefs/pages/menuBar.js:49
+msgid "Do Not Disturb Button"
+msgstr ""
+
+#: prefs/pages/menuBar.js:50
+msgid ""
+"Guava's moon button in Quick Settings and the top bar, in place of GNOME's"
+msgstr ""
+
+#: prefs/pages/menuBar.js:55
+msgid "The Control Center has its own Do Not Disturb tile"
+msgstr ""
+
+#: prefs/pages/navigation.js:14
+msgid "Gestures & Corners"
+msgstr ""
+
+#: prefs/pages/notifications.js:14
+msgid "Notifications & Focus"
+msgstr ""
+
+#: prefs/pages/windows.js:17
+msgid "Windows"
+msgstr ""
+
+#: prefs/pages/windows.js:22
+msgid "Full Screen"
+msgstr ""
+
+#: prefs/pages/windows.js:23
+msgid "Full Screen in Its Own Space"
+msgstr ""
+
+#: prefs/pages/windows.js:24
+msgid ""
+"A window that goes full screen moves to a new workspace of its own, and back "
+"when it leaves full screen"
+msgstr ""
+
+#: prefs/pages/windows.js:26
+msgid "Split View"
+msgstr ""
+
+#: prefs/pages/windows.js:27
+msgid ""
+"Tile a full-screen window to the left or right of the screen with a "
+"shortcut, then pick the other window"
+msgstr ""
+
+#: prefs/pages/windows.js:30
+msgid "Split View: Tile Left"
+msgstr ""
+
+#: prefs/pages/windows.js:31
+msgid "Split View: Tile Right"
+msgstr ""
+
+#: prefs/setupAssistant.js:40
+msgid "Light"
+msgstr ""
+
+#: prefs/setupAssistant.js:41
+msgid "Auto"
+msgstr ""
+
+#: prefs/setupAssistant.js:188
+msgid "Back"
+msgstr ""
+
+#: prefs/setupAssistant.js:189
+msgid "Not Now"
+msgstr ""
+
+#: prefs/setupAssistant.js:190 prefs/setupAssistant.js:215
+msgid "Continue"
+msgstr ""
+
+#: prefs/setupAssistant.js:204
+msgid "Guava Setup Assistant"
+msgstr ""
+
+#: prefs/setupAssistant.js:215
+msgid "Get Started"
+msgstr ""
+
+#: prefs/widgets.js:104
+#, javascript-format
+msgid "Not a valid shortcut. Example: %s"
+msgstr ""
+
+#: prefs/widgets.js:108
+#, javascript-format
+msgid "Also used by GNOME: %s"
+msgstr ""
+
+#: prefs/widgets.js:159
+msgid "This section failed to load"
+msgstr ""
+
+#: prefs/window.js:46
+msgid "Page"
+msgstr ""
+
+#: prefs/window.js:121
+msgid "Search preferences"
+msgstr ""
+
+#: prefs/window.js:137
+msgid "No Results Found"
+msgstr ""
+
+#: prefs/window.js:138
+msgid "Try a different search"
+msgstr ""

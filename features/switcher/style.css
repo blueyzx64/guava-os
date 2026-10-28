@@ -1,0 +1,60 @@
+/* feature: app-switcher
+   The Cmd-Tab panel (features/switcher/popup.js): lib/glass.js gives .guava-switcher its
+   faux-glass fill and rim; these rules set the shape. Tahoe: one row of big icons on a
+   rounded glass panel (radius 28), the selected app on a soft rounded square, its name under
+   it. Padding 16 + item padding 8 + spacing 8 = the ITEM_EXTRA of index.js. */
+.guava-switcher.switcher-list {
+  padding: 16px;
+  border-radius: 28px;
+  /* St draws an outer box-shadow as a square-cornered blur under software rendering; the
+     glass rim carries the edge instead */
+  box-shadow: none;
+}
+
+.guava-switcher .switcher-list-item-container {
+  spacing: 8px;
+}
+
+.guava-switcher .item-box,
+.guava-switcher .item-box:hover,
+.guava-switcher .item-box:focus {
+  padding: 8px;
+  border-radius: 18px;
+  border: none;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.guava-switcher .item-box:selected {
+  background-color: rgba(255, 255, 255, 0.16);
+}
+
+.guava-switcher.guava-glass-light .item-box:selected {
+  background-color: rgba(0, 0, 0, 0.10);
+}
+
+.guava-switcher-app {
+  spacing: 6px;
+}
+
+/* Only the selected app shows its name, as on macOS; the label keeps its height so the row
+   does not jump */
+.guava-switcher-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: transparent;
+  text-align: center;
+}
+
+.guava-switcher .item-box:selected .guava-switcher-label {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.guava-switcher.guava-glass-light .item-box:selected .guava-switcher-label {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+/* The arrows the stock list draws under apps with several windows are not part of macOS */
+.guava-switcher .switcher-arrow {
+  color: transparent;
+}

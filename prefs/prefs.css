@@ -1,0 +1,53 @@
+.guava-version-button {
+    padding: 6px 14px;
+    min-height: 0;
+    border-radius: 999px;
+    border: none;
+    background-color: alpha(@accent_bg_color, 0.18);
+    color: @accent_color;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.guava-version-button:hover {
+    background-color: alpha(@accent_bg_color, 0.26);
+}
+
+.guava-version-button:active {
+    background-color: alpha(@accent_bg_color, 0.34);
+}
+
+/* Sidebar section headings (General, macOS Features, Guava) */
+.guava-sidebar-heading {
+    font-size: 0.85em;
+    font-weight: 700;
+}
+
+/* Setup Assistant (features/onboarding/assistant.js): accent swatches like macOS Appearance */
+.guava-accent-swatch {
+    min-width: 22px;
+    min-height: 22px;
+    padding: 0;
+    border-radius: 999px;
+    border: 1px solid alpha(black, 0.18);
+}
+
+.guava-accent-swatch:checked {
+    outline: 2px solid alpha(currentColor, 0.55);
+    outline-offset: 2px;
+}
+
+.guava-accent-multicolor { background: linear-gradient(135deg, #ff5257, #ffc600 33%, #62ba46 55%, #007aff 78%, #a550a7); }
+.guava-accent-blue { background: #007aff; }
+.guava-accent-purple { background: #a550a7; }
+.guava-accent-pink { background: #f74f9e; }
+.guava-accent-red { background: #ff5257; }
+.guava-accent-orange { background: #f7821b; }
+.guava-accent-yellow { background: #ffc600; }
+.guava-accent-green { background: #62ba46; }
+.guava-accent-graphite { background: #8c8c8c; }
+
+.guava-setup-icon {
+    color: @accent_color;
+}

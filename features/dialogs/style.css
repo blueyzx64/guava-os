@@ -1,0 +1,71 @@
+/* feature: dialogs */
+/* The Shell's modal dialogs as macOS alerts. lib/glass.js gives the card its fill and rim
+   (surface 'overlays'); with glass off the stock card colour stays. */
+.modal-dialog.guava-dialog {
+  border-radius: 20px;
+  padding: 22px 22px 18px;
+  spacing: 14px;
+  box-shadow: none;
+}
+
+.guava-dialog-shadow {
+  background-color: transparent;
+  border-radius: 20px;
+}
+
+.guava-dialog .modal-dialog-content-box {
+  padding-top: 0;
+  spacing: 12px;
+}
+
+.guava-dialog-icon {
+  margin-bottom: 2px;
+}
+
+.guava-dialog .message-dialog-title {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.guava-dialog .message-dialog-description {
+  font-size: 13px;
+}
+
+.guava-dialog .modal-dialog-button-box {
+  padding-top: 4px;
+}
+
+.guava-dialog .modal-dialog-button-box .modal-dialog-button {
+  font-weight: normal;
+  min-width: 76px;
+  padding: 6px 16px;
+  border-radius: 8px;
+}
+
+/* Light style: dark text on light glass, quiet grey buttons (before the default button's rule) */
+.guava-dialog.guava-glass-light,
+.guava-dialog.guava-glass-light .message-dialog-title,
+.guava-dialog.guava-glass-light .message-dialog-description {
+  color: #1d1d1f;
+}
+
+.guava-dialog.guava-glass-light .modal-dialog-button-box .modal-dialog-button {
+  color: #1d1d1f;
+  background-color: rgba(0, 0, 0, 0.07);
+}
+
+.guava-dialog.guava-glass-light .modal-dialog-button-box .modal-dialog-button:hover,
+.guava-dialog.guava-glass-light .modal-dialog-button-box .modal-dialog-button:focus {
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
+.guava-dialog .modal-dialog-button-box .modal-dialog-button:default {
+  color: -st-accent-fg-color;
+  background-color: -st-accent-color;
+}
+
+.guava-dialog .modal-dialog-button-box .modal-dialog-button:default:hover,
+.guava-dialog .modal-dialog-button-box .modal-dialog-button:default:focus {
+  color: -st-accent-fg-color;
+  background-color: st-lighten(-st-accent-color, 8%);
+}

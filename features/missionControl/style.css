@@ -1,0 +1,91 @@
+/* feature: mission-control */
+
+/* The Spaces bar: GNOME's thumbnails, larger with room for the labels under them */
+.guava-mission-control .guava-mc-spaces-box {
+    padding: 12px 0 30px;
+    spacing: 22px;
+}
+
+.guava-mission-control .guava-mc-spaces-box .workspace-thumbnail {
+    border-radius: 8px;
+}
+
+.guava-mission-control .guava-mc-spaces-box .workspace-thumbnail-indicator {
+    border: 3px solid rgba(255, 255, 255, 0.92);
+    border-radius: 11px;
+    padding: 0;
+}
+
+/* macOS spreads the windows with wider gaps than GNOME */
+.guava-mission-control .window-picker {
+    spacing: 36px;
+}
+
+.guava-mc-space-label {
+    color: #ffffff;
+    font-size: 9.5pt;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.guava-mc-space-close {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border-radius: 10px;
+    color: #ffffff;
+    background-color: rgba(58, 58, 60, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+.guava-mc-space-close:hover {
+    background-color: rgba(88, 88, 92, 0.96);
+}
+
+.guava-mc-space-add {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 10px;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.guava-mc-space-add:hover,
+.guava-mc-space-add:focus {
+    background-color: rgba(255, 255, 255, 0.28);
+}
+
+/* App Exposé: the minimized windows along the bottom */
+.guava-mc-expose-strip {
+    padding: 12px 20px;
+    spacing: 20px;
+    border-radius: 20px;
+    background-color: rgba(28, 28, 30, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.guava-mc-expose-card {
+    padding: 6px;
+    border-radius: 12px;
+}
+
+.guava-mc-expose-card:hover,
+.guava-mc-expose-card:focus {
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.guava-mc-expose-preview {
+    border-radius: 6px;
+}
+
+.guava-mc-expose-title {
+    color: #ffffff;
+    font-size: 9pt;
+    margin-top: 6px;
+    max-width: 180px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+

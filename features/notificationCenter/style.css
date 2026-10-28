@@ -1,0 +1,281 @@
+/* feature: notification-center (features/notificationCenter)
+   The right-side column (lib/modalSurface.js position 'right', glass frame .guava-nc): the
+   date widget, grouped notification stacks and the widgets area. Cards are lighter rounded
+   tiles on the glass, as in macOS Big Sur's Notification Center. */
+
+.guava-nc {
+  padding: 0;
+}
+
+.guava-nc .guava-nc-content {
+  padding: 12px;
+  spacing: 14px;
+}
+
+.guava-nc .guava-nc-card {
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 12px;
+}
+
+.guava-modal-light.guava-nc .guava-nc-card {
+  background-color: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Date widget */
+.guava-nc .guava-nc-date {
+  spacing: 6px;
+}
+
+.guava-nc .guava-nc-date-weekday {
+  font-size: 0.75em;
+  font-weight: 700;
+  color: #ff453a;
+}
+
+.guava-nc .guava-nc-date-day {
+  font-size: 1.35em;
+  font-weight: 600;
+}
+
+.guava-nc .guava-nc-month-weekday {
+  font-size: 0.7em;
+  font-weight: 600;
+  opacity: 0.6;
+  padding: 2px 0;
+}
+
+.guava-nc .guava-nc-month-day {
+  font-size: 0.8em;
+  min-width: 24px;
+  min-height: 20px;
+  padding: 2px 0;
+  text-align: center;
+  border-radius: 999px;
+}
+
+.guava-nc .guava-nc-month-other {
+  opacity: 0.35;
+}
+
+.guava-nc .guava-nc-month-today {
+  background-color: #ff453a;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Sections */
+.guava-nc .guava-nc-section {
+  spacing: 8px;
+}
+
+.guava-nc .guava-nc-section-head,
+.guava-nc .guava-nc-group-head {
+  spacing: 6px;
+  padding: 0 4px;
+}
+
+.guava-nc .guava-nc-section-title {
+  font-weight: 700;
+  font-size: 1.05em;
+}
+
+.guava-nc .guava-nc-group-title {
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.guava-nc .guava-nc-pill {
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.8em;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.guava-nc .guava-nc-pill:hover,
+.guava-nc .guava-nc-pill:focus {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+.guava-modal-light.guava-nc .guava-nc-pill {
+  background-color: rgba(0, 0, 0, 0.07);
+}
+
+.guava-modal-light.guava-nc .guava-nc-pill:hover,
+.guava-modal-light.guava-nc .guava-nc-pill:focus {
+  background-color: rgba(0, 0, 0, 0.13);
+}
+
+.guava-nc .guava-nc-pill-icon {
+  padding: 3px 5px;
+}
+
+.guava-nc .guava-nc-button-icon {
+  icon-size: 12px;
+}
+
+.guava-nc .guava-nc-empty {
+  padding: 18px 0;
+  opacity: 0.55;
+}
+
+/* Notification cards and stacks */
+.guava-nc .guava-nc-group {
+  spacing: 6px;
+}
+
+.guava-nc .guava-nc-stacked {
+  spacing: 0;
+}
+
+.guava-nc .guava-nc-notification:hover,
+.guava-nc .guava-nc-notification:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.guava-modal-light.guava-nc .guava-nc-notification:hover,
+.guava-modal-light.guava-nc .guava-nc-notification:focus {
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+.guava-nc .guava-nc-notification-row {
+  spacing: 10px;
+}
+
+.guava-nc .guava-nc-app-icon {
+  border-radius: 8px;
+}
+
+.guava-nc .guava-nc-title {
+  font-weight: 700;
+  font-size: 0.9em;
+}
+
+.guava-nc .guava-nc-age {
+  font-size: 0.75em;
+  opacity: 0.55;
+  padding-left: 6px;
+}
+
+.guava-nc .guava-nc-body {
+  font-size: 0.85em;
+  opacity: 0.85;
+}
+
+.guava-nc .guava-nc-actions {
+  spacing: 6px;
+  padding-top: 8px;
+}
+
+.guava-nc .guava-nc-action {
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 0.8em;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.guava-nc .guava-nc-action:hover,
+.guava-nc .guava-nc-action:focus {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+.guava-modal-light.guava-nc .guava-nc-action {
+  background-color: rgba(0, 0, 0, 0.07);
+}
+
+.guava-nc .guava-nc-close {
+  border-radius: 999px;
+  padding: 3px;
+  margin-left: 6px;
+  background-color: rgba(90, 90, 96, 0.95);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.guava-modal-light.guava-nc .guava-nc-close {
+  background-color: rgba(245, 245, 247, 0.98);
+  color: #1d1d1f;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* The cards peeking out under a collapsed stack */
+.guava-nc .guava-nc-peek {
+  height: 8px;
+  border-radius: 0 0 12px 12px;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.guava-nc .guava-nc-peek-1 {
+  margin: 0 10px;
+}
+
+.guava-nc .guava-nc-peek-2 {
+  margin: 0 20px;
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+.guava-modal-light.guava-nc .guava-nc-peek {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.guava-modal-light.guava-nc .guava-nc-peek-2 {
+  background-color: rgba(255, 255, 255, 0.32);
+}
+
+/* Widgets area: rows of core/widgets cards (cards are 160 px cells 16 px apart) */
+.guava-nc .guava-nc-widget-row {
+  spacing: 16px;
+}
+
+.guava-nc .guava-nc-widgets {
+  spacing: 16px;
+}
+
+.guava-nc .guava-nc-edit-widgets {
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 0.85em;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+.guava-nc .guava-nc-edit-widgets:hover,
+.guava-nc .guava-nc-edit-widgets:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.guava-modal-light.guava-nc .guava-nc-edit-widgets {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Placeholders, only while no widget is registered */
+.guava-nc .guava-nc-placeholder-row {
+  spacing: 10px;
+}
+
+.guava-nc .guava-nc-placeholder {
+  min-height: 72px;
+  padding: 14px 12px;
+  spacing: 6px;
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.guava-modal-light.guava-nc .guava-nc-placeholder {
+  border: 1px dashed rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+.guava-nc .guava-nc-placeholder-icon,
+.guava-nc .guava-nc-placeholder-label {
+  opacity: 0.55;
+}
+
+.guava-nc .guava-nc-placeholder-label {
+  font-size: 0.8em;
+  font-weight: 600;
+}

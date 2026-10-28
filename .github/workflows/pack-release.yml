@@ -1,0 +1,91 @@
+name: Pack and upload GNOME extension and shelf helper RPM on release
+
+on:
+  release:
+    types: [published]
+  push:
+    tags: ['v*']      # a pushed version tag creates the release with both assets
+  workflow_dispatch:  # manual run; with a tag it publishes that release from the chosen ref
+    inputs:
+      tag:
+        description: 'Release tag to create (for example v1.0.0); empty only builds the assets'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  pack:
+    name: Pack extension and upload
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y gnome-shell zip jq gettext rpm
+
+      - id: pack
+        name: Pack extension and set asset name
+        run: |
+          set -euo pipefail
+          # Every source folder the zip needs (new folders go here and in the Makefile EXTRA)
+          extra=(--extra-source=icons --extra-source=lib --extra-source=core
+                 --extra-source=features --extra-source=prefs --extra-source=features.js)
+          tools/build-css.sh --check
+          gnome-extensions pack "${extra[@]}" --podir=po .
+          # find the generated shell-extension zip (guava-os@blueyzx64.shell-extension.zip)
+          zipfile=$(ls -1 *shell-extension.zip | head -n1)
+          if [ -z "$zipfile" ]; then
+            echo "No shell-extension zip produced"
+            ls -la
+            exit 1
+          fi
+          # extract version from metadata.json (use version-name for semver string)
+          version=$(jq -r '."version-name"' metadata.json || true)
+          if [ -z "$version" ] || [ "$version" = "null" ]; then
+            echo "metadata.json has no version-name; leaving original name"
+            newname="$zipfile"
+          else
+            newname="${zipfile%.zip}-${version}.zip"
+            mv -- "$zipfile" "$newname"
+          fi
+          echo "asset=$newname" >> "$GITHUB_OUTPUT"
+          echo "asset_name=${newname%.zip}" >> "$GITHUB_OUTPUT"
+
+      - id: helper
+        name: Build the shelf helper RPM (helpers/guava-shelf-helper, not in the extension zip)
+        run: |
+          set -euo pipefail
+          make helper-rpm DISTDIR=dist
+          rpm=$(ls -1 dist/helper/RPMS/noarch/guava-shelf-helper-*.noarch.rpm | head -n1)
+          echo "rpm=$rpm" >> "$GITHUB_OUTPUT"
+
+      - name: Verify package
+        run: ls -la | sed -n '1,200p'
+
+      - name: Upload pack and RPM to release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.release.tag_name }}
+          ASSET: ${{ steps.pack.outputs.asset }}
+          RPM: ${{ steps.helper.outputs.rpm }}
+        run: gh release upload "$TAG" "$ASSET" "$RPM" --clobber
+
+      - name: Create release from a pushed tag or a dispatched tag
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.tag != '')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.tag }}
+          ASSET: ${{ steps.pack.outputs.asset }}
+          RPM: ${{ steps.helper.outputs.rpm }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ASSET" "$RPM" --clobber
+          else
+            gh release create "$TAG" "$ASSET" "$RPM" --target "$GITHUB_SHA" --title "Guava $TAG" --notes-file .github/release-notes.md
+          fi

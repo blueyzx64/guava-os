@@ -1,0 +1,39 @@
+/* feature: input-indicator */
+/* The text-cursor badge: a small glass pill under the caret (lib/glass.js gives the fill) */
+.guava-input-badge {
+    min-width: 14px;
+    padding: 3px 6px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    color: #1d1d1f;
+    background-color: rgba(246, 246, 248, 0.86);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+}
+.guava-input-badge.guava-input-badge-caps-on {
+    font-size: 14px;
+    color: -st-accent-color;
+}
+.guava-input-badge.guava-input-badge-caps-off {
+    font-size: 14px;
+    color: rgba(60, 60, 67, 0.55);
+}
+.guava-input-badge.guava-input-badge-source {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+.guava-input-badge.guava-glass-dark {
+    color: #f5f5f7;
+    border-color: rgba(255, 255, 255, 0.16);
+}
+.guava-input-badge.guava-glass-dark.guava-input-badge-caps-off {
+    color: rgba(235, 235, 245, 0.55);
+}
+.guava-input-badge.guava-glass-dark.guava-input-badge-caps-on {
+    color: -st-accent-color;
+}
+.guava-input-badge-icon {
+    icon-size: 14px;
+}

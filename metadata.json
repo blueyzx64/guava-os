@@ -1,0 +1,12 @@
+{
+  "description": "Guava OS is a free and open source GNOME Shell extension that brings the macOS desktop to GNOME. It is based on Kiwi (is not Apple).\n\n*Note. This extension is tested with the vanilla GNOME Adwaita theme. Other extensions may cause compatibility issues.\n\nFeatures:\n- macOS menu bar with the logo menu, app menus and Help search\n- Guava's own Dock with Genie minimize, magnification and Stacks\n- Window tiling, the green-button menu, Split View and Hide\n- Stage Manager\n- Mission Control, App Exposé and Launchpad\n- App switcher, gestures and hot corners\n- Spotlight search on a tap of Super\n- Control Center, Notification Center and Focus\n- Notification notch with live activities and a file shelf\n- Desktop widgets\n- Screenshots toolbar, emoji picker, colour filters\n- Liquid Glass translucency\n- Clipboard history and Quick Paste\n- Multilingual support and more...\n\nEvery feature can be turned off in the preferences.\n\nClipboard history: Guava reads the clipboard to keep a local history (saved in ~/.local/share/guava/clipboard, never sent anywhere; password-manager copies are skipped).\n\nDisclaimer: This extension is unofficial and not affiliated with Apple in any way.",
+  "name": "Guava OS",
+  "settings-schema": "org.gnome.shell.extensions.guava-os",
+  "shell-version": [
+    "50"
+  ],
+  "url": "https://github.com/blueyzx64/guava-is-not-apple",
+  "uuid": "guava-os@blueyzx64",
+  "version-name": "1.0.0",
+  "gettext-domain": "guava-os@blueyzx64"
+}
