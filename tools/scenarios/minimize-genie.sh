@@ -60,7 +60,7 @@ J "globalThis.__s0=st(); const w=anyw('$E'); w.minimize(); await sl(1200); const
 assert "genie-restore-from-dock-tile" "globalThis.__tile && !__anyw('$E').minimized && inst('minimize-effect').stats.animations-globalThis.__s0.animations===2 && __clean()"
 
 echo "-- B1 maximized and full-screen windows"
-J "globalThis.__s0=st(); const w=anyw('$E'); w.maximize(); await sl(900); w.minimize(); await sl(200); globalThis.__mx=genie(); await sl(900); w.unminimize(); await sl(900); w.unmaximize(); await sl(700); w.make_fullscreen(); await sl(150); w.minimize(); await sl(200); globalThis.__fs=genie(); await sl(900); w.unminimize(); await sl(900); w.unmake_fullscreen(); await sl(900); return 1" >/dev/null
+J "globalThis.__s0=st(); const w=anyw('$E'); w.maximize(); await sl(900); w.minimize(); await sl(200); globalThis.__mx=genie(); await sl(900); w.unminimize(); await sl(900); w.unmaximize(); await sl(700); w.make_fullscreen(); await sl(4500); w.minimize(); await sl(350); globalThis.__fs=genie(); await sl(900); w.unminimize(); await sl(900); w.unmake_fullscreen(); await sl(900); return 1" >/dev/null
 assert "genie-maximized" "globalThis.__mx>0 && globalThis.__mx<1"
 # B24: the Genie runs for a full-screen window once its Space has settled (4.5 s: isolation delay
 # plus the slowed workspace switch of features/fullscreenSpace). Inside that switch Mutter hides the
