@@ -173,6 +173,7 @@ export class StageModel {
         case 'config': this._cfg = { ...this._cfg, ...event.config }; this._dirty = true; break;
         case 'monitors': this._primary = event.primary; this._reclassifyAll(now); break;
         case 'workspace': this._active = event.active; this._animate = false; this._dirty = true; break;
+        case 'renumber': this._onRenumber(event.live); break;
         case 'add': this._onAdd(event.window, now); break;
         case 'change': this._onChange(event.window, now); break;
         case 'remove': this._onRemove(event.id, now); break;
@@ -217,6 +218,48 @@ export class StageModel {
                 this._promote(this._sets.get(lead));
         }
         this._focus = focus;
+        this._dirty = true;
+    }
+
+    // Mutter removed a workspace in the middle: every window behind it now reports an index one
+    // lower, but says so in no event. `live` (Map id -> workspace index now) shows it. The sets,
+    // stages and strips of the shifted workspaces move to the new indexes as they are; a
+    // renumbering that is not a clean shift of whole workspaces is left to the window events.
+    _onRenumber(live) {
+        const map = new Map();       // old index -> new index
+        for (const w of this._win.values()) {
+            const now = live.get(w.id);
+            if (w.workspace === -1 || now === undefined || now === -1 || now === w.workspace)
+                continue;
+            if (now > w.workspace || map.has(w.workspace) && map.get(w.workspace) !== now)
+                return;
+            map.set(w.workspace, now);
+        }
+        if (map.size === 0)
+            return;
+        for (const w of this._win.values()) {
+            // A workspace that shifts takes all its windows; a target is not a workspace that stays
+            if (map.has(w.workspace) ? live.get(w.id) !== map.get(w.workspace) : [...map.values()].includes(w.workspace))
+                return;
+        }
+        const to = ws => map.get(ws) ?? ws;
+        // (a space left at a target index holds no window: it is the removed workspace's stale entry)
+        const targets = new Set(map.values());
+        const spaces = new Map();
+        for (const [ws, space] of this._spaces) {
+            if (!map.has(ws) && !targets.has(ws))
+                spaces.set(ws, space);
+        }
+        for (const [ws, space] of this._spaces) {
+            if (map.has(ws))
+                spaces.set(map.get(ws), space);
+        }
+        this._spaces = spaces;
+        for (const set of this._sets.values())
+            set.ws = to(set.ws);
+        for (const [id, w] of this._win)
+            this._win.set(id, { ...w, workspace: to(w.workspace) });
+        this._animate = false;
         this._dirty = true;
     }
 

@@ -234,7 +234,14 @@ export class DesktopService {
 
     _syncWorkspaces() {
         const wm = global.workspace_manager;
+        const before = this._model.workspaces.count;
         this._model.setWorkspaces({ count: wm.get_n_workspaces(), active: wm.get_active_workspace_index() });
+        // Mutter renumbers the windows behind a removed workspace without a window signal: read
+        // their index again (after 'workspaces-changed', so listeners can tell a shift from a move)
+        if (wm.get_n_workspaces() !== before) {
+            for (const { win } of this._windows.values())
+                this._sync(win, ['workspace']);
+        }
     }
 
     _syncMonitors() {

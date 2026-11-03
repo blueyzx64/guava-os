@@ -59,6 +59,8 @@ const SET_ASIDE = ['hidden', 'splitView'];
 const DRAG_POLL_MS = 50;       // a dragged window: how often the thumbnail under it is looked up
 const DRAG_EDGE_PX = 24;       // a dragged window this close to the strip's edge reveals the strip
 
+// The index of the window's workspace now (-1: on all), `fallback` when it has none
+const liveWorkspace = (win, fallback) => win.is_on_all_workspaces() ? -1 : win.get_workspace()?.index() ?? fallback;
 const rectOf = r => ({ x: r.x, y: r.y, width: r.width, height: r.height });
 const nowMs = () => Math.round(GLib.get_monotonic_time() / 1000);
 
@@ -69,13 +71,13 @@ export class StageManager {
         this._model = null;
         this._timers = new Map();    // model timer key -> cleanup token
         this._pending = new Set();   // window ids not mapped yet (not told to the model)
+        this._wsCount = 1;           // workspaces last seen
         this._geometry = new Map();  // stage Meta.Window -> cleanup tokens (position/size)
         this._geometryIdle = 0;
         this._drag = null;           // a stage window being moved: {win, frame, last}
         this._dragWatch = 0;         // the poll token while a window is dragged
         this._overlapped = false;
         this._press = null;          // a primary press on the wallpaper
-        this._drag = null;           // a stage window being moved: {win, frame}
     }
 
     enable() {
@@ -132,7 +134,7 @@ export class StageManager {
         events.on('window-changed', ({ window }) => this._changed(window), cleanup);
         events.on('window-removed', ({ window }) => this._removed(window), cleanup);
         events.on('window-focused', () => this._queueFocus(), cleanup);
-        events.on('workspaces-changed', ({ active }) => this._workspace(active), cleanup);
+        events.on('workspaces-changed', ({ count, active }) => this._workspace(count, active), cleanup);
         events.on('monitors-changed', ({ primary }) => {
             this._send({ type: 'monitors', primary });
             this._render();
@@ -177,11 +179,15 @@ export class StageManager {
         return this._model?.desktopShown() ?? false;
     }
 
-    /** Show the desktop (the stage goes to the strip), or bring the stage back. */
+    /**
+     * Show the desktop (the stage goes to the strip), or bring the stage back.
+     * @returns {boolean} false when nothing changed (no managed window on the stage): the caller
+     *   (Show Desktop) then does its own reveal, which also covers the windows Stage Manager sets aside.
+     */
     toggleDesktop() {
-        if (this._model && !Main.overview.visible)
-            this._send({ type: 'toggle-desktop' });
-        return this.isDesktopShown;
+        if (!this._model || Main.overview.visible)
+            return false;
+        return this._send({ type: 'toggle-desktop' }).some(f => f.type === 'desktop');
     }
 
     /**
@@ -212,17 +218,23 @@ export class StageManager {
         };
     }
 
+    // Returns the model's effects (empty when it is gone)
     _send(event) {
         if (!this._model)
-            return;
-        this._apply(this._model.dispatch({ now: nowMs(), ...event }));
+            return [];
+        const effects = this._model.dispatch({ now: nowMs(), ...event });
+        this._apply(effects);
+        return effects;
     }
 
     // The model's view of a window. The transient parent is read live (a portal dialog gets
     // it after it is created), and so are the flags of features that set windows aside.
     _info(window) {
-        const { id, appId, type, workspace, monitor, fullscreen, maximized, above, skipTaskbar, title, minimized } = window;
+        const { id, appId, type, monitor, fullscreen, maximized, above, skipTaskbar, title, minimized } = window;
         const win = this._desktop.metaWindow(id);
+        // Live: Mutter renumbers the windows behind a removed workspace without an event, so the
+        // desktop model's index can be stale
+        const workspace = win ? liveWorkspace(win, window.workspace) : window.workspace;
         const parent = win?.get_transient_for()?.get_stable_sequence() ?? window.parent ?? null;
         const flagged = !!win && SET_ASIDE.some(f => WindowState.has(win, f));
         return { id, appId, type, parent, workspace, monitor, fullscreen, maximized, above, skipTaskbar, title, minimized, flagged };
@@ -236,6 +248,7 @@ export class StageManager {
                 continue;
             windows.push(this._info(w));
         }
+        this._wsCount = model.workspaces.count;
         this._send({
             type: 'init', windows, focus: model.focusedWindow?.id ?? null,
             active: model.workspaces.active, primary: model.primaryMonitor,
@@ -263,8 +276,13 @@ export class StageManager {
     }
 
     _changed(window) {
-        if (this._pending.has(window.id))
+        if (this._pending.has(window.id)) {
+            // Created minimized, or mapped without a 'map' signal: it has mapped when its actor says so
+            const win = this._desktop.metaWindow(window.id);
+            if (win?.get_compositor_private()?.mapped)
+                this._mapped(win);
             return;
+        }
         this._send({ type: 'change', window: this._info(window) });
     }
 
@@ -293,16 +311,30 @@ export class StageManager {
         }, { name: 'stage-manager-focus' });
     }
 
-    _workspace(active) {
+    _workspace(count, active) {
         // A window first shown on this workspace has mapped now
         for (const id of [...this._pending]) {
             const actor = this._desktop.metaWindow(id)?.get_compositor_private();
             if (actor?.mapped)
                 this._mapped(actor.meta_window);
         }
+        // A workspace in the middle went away: the windows behind it moved down (RV1-4)
+        if (count < this._wsCount) {
+            const live = new Map();
+            for (const w of this._desktop.model.windows({ userFacing: false })) {
+                const win = this._desktop.metaWindow(w.id);
+                if (win && !this._pending.has(w.id))
+                    live.set(w.id, liveWorkspace(win, w.workspace));
+            }
+            this._send({ type: 'renumber', live });
+        }
+        this._wsCount = count;
+        // 'workspaces-changed' also fires when a workspace is added or removed: only a real switch
+        // slides the strip in again (D-017)
+        const switched = active !== this._model?.activeWorkspace;
         this._send({ type: 'workspace', active });
-        // The strip slides in for the new workspace (D-017)
-        this._view.replay();
+        if (switched)
+            this._view.replay();
     }
 
     _removeFocused() {
@@ -404,8 +436,9 @@ export class StageManager {
         const opacity = this._hider.show(win, { keepTransparent: fly }) ?? 255;
         if (fly) {
             const to = { ...rectOf(win.get_frame_rect()), angle: 0 };
-            if (!this._flights.fly(win, { from, to, toStage: true, opacity }))
-                win.get_compositor_private().opacity = opacity;
+            const actor = win.get_compositor_private();
+            if (!this._flights.fly(win, { from, to, toStage: true, opacity }) && actor)
+                actor.opacity = opacity;
         }
     }
 

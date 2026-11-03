@@ -122,11 +122,15 @@ export class ShowDesktop {
     /** Show the desktop, or bring the windows back. Stage Manager handles it while it runs. */
     toggle() {
         const stage = this._ctx.features?.instance?.('stage-manager');
-        if (typeof stage?.toggleDesktop === 'function') {
+        // Our own reveal is on screen: our own restore ends it, whatever the stage holds now
+        if (typeof stage?.toggleDesktop === 'function' && !this._shown) {
             try {
-                stage.toggleDesktop();
-                this._syncChecked();
-                return;
+                // false: no managed window on the stage, so nothing changed: reveal here
+                // (always-on-top, sticky and split-view windows are Stage Manager's exempt ones)
+                if (stage.toggleDesktop()) {
+                    this._syncChecked();
+                    return;
+                }
             } catch (e) {
                 console.error('[Guava] Stage Manager toggleDesktop failed, using Show Desktop:', e);
             }
