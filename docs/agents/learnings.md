@@ -4,6 +4,27 @@
 > orchestrator writes here (agents propose entries as `LEARN:` lines in their memory file).
 > Format: **Context** · what worked / what failed · **Do instead**.
 
+## Hand-over audit (what "0 errors" was hiding)
+
+- **A green check is only as good as the check.** Three of ours failed open: `check-pack.sh`
+  checked nothing without git (a failure inside `< <(...)` does not stop a bash script); the
+  harness error counter stopped at the blank line GLib puts before a CRITICAL's JS stack, so
+  errors with a Guava frame were not counted; and the prefs process's log was never read.
+  Do instead: plant one example of each failure (a mutation) and see the check go red before
+  trusting it green.
+- **Warnings hide real bugs.** `[Guava] pointer: big cursor not loaded: … Image is not a
+  constructor` was a console.warn in every run: the crisp pointer never worked. Triage every
+  `[Guava]` warning in shell.log; a feature that silently degrades is a bug.
+- **Adw rows and group titles are Pango markup by default:** a title with `&` or `<` renders
+  blank. Prefs text is plain text (`prefs/plainText.js`; row helpers set `use_markup: false`).
+- **Harness roots are chroots sharing the host's PID namespace.** `pkill -f` in a scenario kills
+  matching processes in every root and on the host (it killed the orchestrator's own shell).
+  Kill exactly your window's client (`meta_window.kill()`) or the PID owning a name on your bus.
+- **`pgrep -f <text>` matches the shell command that contains `<text>`,** so a wait loop on it
+  never ends. Wait on a PID or a file, not a pattern.
+- **A harness run copies `GUAVA_SRC` when its turn comes:** edit in a separate worktree while
+  runs are queued.
+
 ## Windows (Mutter 50)
 
 - **Tell an app's own maximize request from the Shell's** (B12, green button):
