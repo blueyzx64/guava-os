@@ -10,5 +10,6 @@ for th in none gnome gtk3 xdgdesktopportal; do
   echo "SPIKE theme=$th monitor: $(grep -c RegisterWindow "$W/mon-$th.log") RegisterWindow calls"
   grep -A3 "RegisterWindow" "$W/mon-$th.log" | head -6
   grep -i "theme\|menubar\|registrar\|AppMenu" "$W/app-qt-$th.log" | head -5
-  kill $MON; pkill -f designer-qt6; sleep 2
+  kill $MON
+  P "global.get_window_actors().map(a=>a.meta_window).filter(w=>/designer/i.test(w.get_wm_class()??'')).forEach(w=>w.kill()); return 1" >/dev/null; sleep 2
 done

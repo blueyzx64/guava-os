@@ -52,9 +52,9 @@ measure() {
   set -- $g
   shot "$name" >/dev/null
   r=$(gjs $W/ink.js /opt/shots/$name.png $(( $1 + 40 )) $(( $2 + 70 )) $(( $3 - 80 )) $(( $4 - 100 )) 2>/dev/null | grep INK)
-  _kjs "kwin('$cls').delete(global.get_current_time()); return 1" >/dev/null
+  # kill() ends exactly this window's client (no pattern kill: the roots share the host's PIDs)
+  _kjs "kwin('$cls')?.kill(); return 1" >/dev/null
   sleep 1
-  pkill -f "ta$kind.js" 2>/dev/null
   echo "$r"
 }
 inkval() { echo "$1" | awk '{print $2}'; }

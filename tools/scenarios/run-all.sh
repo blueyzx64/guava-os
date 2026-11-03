@@ -25,7 +25,7 @@ run_one() {
     # Stage Manager scenarios share a helper file
     [[ "$n" == stage-manager-* ]] && libs+=("$HERE/stage-manager-lib.sh")
     "$K/bundle.sh" "$OUT/$base.extra.sh" "$K/lib.sh" "$K/perf-lib.sh" "$K/classify.js" "${libs[@]}" "$HERE/$n" >/dev/null
-    GUAVA_SRC=$REPO GUAVA_EXTRA=$OUT/$base.extra.sh ${pre:+GUAVA_PRE=$pre} timeout 1500 \
+    env GUAVA_SRC="$REPO" GUAVA_EXTRA="$OUT/$base.extra.sh" GUAVA_PRE="$pre" timeout 1500 \
         "$REPO/tools/harness/run-f44.sh" 1 >"$OUT/$base.log" 2>&1
     local dir errs asserts
     dir=$(grep "RUN DIR" "$OUT/$base.log" | awk '{print $3}')

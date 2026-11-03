@@ -29,8 +29,16 @@ ALL='notch liquid-glass control-center stage-manager clipboard-history spotlight
 if [ -n "$GUAVA_ONLY" ]; then for k in $ALL; do gs $k false; done; for k in $GUAVA_ONLY; do gs $k true; done; else for k in $ALL; do gs $k true; done; fi
 # Optional per-agent setup before the Shell starts (GUAVA_PRE): mock system services, audio, ...
 if [ -f /opt/guava-pre.sh ]; then echo "== PRE"; . /opt/guava-pre.sh; fi
-gnome-shell --headless --wayland --no-x11 --virtual-monitor 1280x800 >$W/shell.log 2>&1 &
+MONS="1280x800"; [ -f /opt/guava-monitors ] && MONS=$(cat /opt/guava-monitors)
+MARGS=""; for m in $MONS; do MARGS="$MARGS --virtual-monitor $m"; done
+X11ARG="--no-x11"; [ -f /opt/guava-x11 ] && X11ARG=""
+# A scale above 1 needs fractional scaling for non-integer values; set before the Shell starts
+if [ -f /opt/guava-scale ]; then gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']"; fi
+gnome-shell --headless --wayland $X11ARG $MARGS >$W/shell.log 2>&1 &
 SP=$!
+# As in a real session, D-Bus-activated apps (the prefs window the Setup Assistant opens at first
+# login) get the display as soon as the compositor's socket exists, not only once probes start
+( for _ in $(seq 1 300); do WD=$(ls $W/run 2>/dev/null | grep -m1 '^wayland-[0-9]*$'); [ -n "$WD" ] && { dbus-update-activation-environment WAYLAND_DISPLAY=$WD XDG_RUNTIME_DIR=$W/run GDK_BACKEND=wayland XDG_CURRENT_DESKTOP=GNOME GSETTINGS_BACKEND=keyfile HOME=$HOME XDG_CONFIG_HOME=$XDG_CONFIG_HOME XDG_DATA_HOME=$XDG_DATA_HOME GSETTINGS_SCHEMA_DIR=$GSETTINGS_SCHEMA_DIR >/dev/null 2>&1; break; }; sleep 0.05; done ) &
 sleep 8
 P() { gdbus call --session --dest org.x2.Probe --object-path /org/x2/Probe --method org.x2.Probe.Eval "$1" 2>&1; }
 
@@ -57,6 +65,10 @@ for _ in $(seq 1 30); do P "return globalThis.__x2startup?.trace.running === fal
 P "return 'STARTUP '+JSON.stringify(globalThis.__x2startup?.summary() ?? null)" | tr -d '\\' | grep -o 'STARTUP .*[}l]' | head -1
 echo "== launch GTK app"
 for _ in $(seq 1 60); do WD=$(ls $W/run 2>/dev/null | grep -m1 '^wayland-[0-9]*$'); [ -n "$WD" ] && P 'return 1' | grep -q 1 && break; sleep 1; done; echo "wayland socket: $WD"
+if [ -f /opt/guava-scale ]; then
+  WAYLAND_DISPLAY=$WD XDG_RUNTIME_DIR=$W/run gjs -m /opt/set-scale.js "$(cat /opt/guava-scale)" 2>&1 | sed 's/^/SCALE /'; sleep 2
+  P "return [...Array(global.display.get_n_monitors()).keys()].map(i=>global.display.get_monitor_scale(i)+'@'+JSON.stringify(global.display.get_monitor_geometry(i))).join(' ')" | sed 's/^/MONITORS /'
+fi
 # Let D-Bus-activated portals reach the compositor, like a real session (apps read button-layout via the Settings portal)
 dbus-update-activation-environment WAYLAND_DISPLAY=$WD XDG_RUNTIME_DIR=$W/run GDK_BACKEND=wayland XDG_CURRENT_DESKTOP=GNOME GSETTINGS_BACKEND=keyfile HOME=$HOME XDG_CONFIG_HOME=$XDG_CONFIG_HOME XDG_DATA_HOME=$XDG_DATA_HOME GSETTINGS_SCHEMA_DIR=$GSETTINGS_SCHEMA_DIR >/dev/null 2>&1
 # A portal started before this has no display; restart it (and its gtk backend) so it re-activates with the env above

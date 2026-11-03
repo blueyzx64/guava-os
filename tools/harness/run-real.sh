@@ -23,8 +23,15 @@ rm -rf $R/opt/guava-src $R/opt/probe $R/opt/shell.log; mkdir -p $R/opt/guava-src
 cp "$REPO/tools/smoke/fake-logind.js" $R/opt/fake-logind.js
 cp -r "$HARNESS_DIR/probe/probe@x2" $R/opt/probe/
 cp "$HARNESS_DIR/inner-real.sh" $R/opt/inner-real.sh
+cp "$HARNESS_DIR/lib/set-scale.js" $R/opt/set-scale.js
 rm -rf $R/opt/guava-extra.sh $R/opt/shots; mkdir -p $R/opt/shots; chmod 777 $R/opt/shots; rm -f $R/opt/guava-pre.sh; [ -n "$GUAVA_PRE" ] && cp "$GUAVA_PRE" $R/opt/guava-pre.sh; [ -n "$GUAVA_EXTRA" ] && cp "$GUAVA_EXTRA" $R/opt/guava-extra.sh
 rm -f $R/opt/guava-only; [ -n "$GUAVA_ONLY" ] && echo "$GUAVA_ONLY" > $R/opt/guava-only
+# Display matrix: GUAVA_MONITORS="1280x800 1920x1080" (virtual monitors, left to right),
+# GUAVA_SCALE=2|1.25 (every monitor's scale), GUAVA_X11=1 (Xwayland on, for X11 apps)
+rm -f $R/opt/guava-monitors $R/opt/guava-scale $R/opt/guava-x11
+[ -n "${GUAVA_MONITORS:-}" ] && echo "$GUAVA_MONITORS" > $R/opt/guava-monitors
+[ -n "${GUAVA_SCALE:-}" ] && echo "$GUAVA_SCALE" > $R/opt/guava-scale
+[ -n "${GUAVA_X11:-}" ] && touch $R/opt/guava-x11
 rm -f $R/opt/guava-stock $R/opt/guava-skip-probes; [ -n "$GUAVA_STOCK" ] && touch $R/opt/guava-stock; [ -n "$GUAVA_SKIP_PROBES" ] && touch $R/opt/guava-skip-probes
 ENTER="$HARNESS_DIR/enter.sh"; [ -x $R.enter.sh ] && ENTER=$R.enter.sh; export ARCH_ROOT=$R
 trap '"$HARNESS_DIR/killroot.sh" "$R"' EXIT
@@ -50,7 +57,20 @@ while i<len(L):
             g[(m.group(1) if m else '(no frame)',msg)]+=1
         i=j
     else: i+=1
+# The preferences process (org.gnome.Shell.Extensions, started over D-Bus) logs into the session
+# output (last-run.txt): a text that fails to parse as markup shows as a blank row, a JS error with
+# a Guava frame is a broken prefs page. Both count. Its shutdown noise is reported, not counted.
+import os
+lr=os.path.join(os.path.dirname(sys.argv[1]),'last-run.txt')
+P=open(lr,errors='replace').read().split('\n') if os.path.exists(lr) else []
+for k,l in enumerate(P):
+    if 'org.gnome.Shell.Extensions' in l and 'Failed to set text' in l:
+        g[('prefs (markup)',re.sub(r'^.*Failed to set text ','',l)[:100])]+=1
+    elif 'org.gnome.Shell.Extensions' in l and re.search(r'JS ERROR|CRITICAL',l) and 'during shutdown' not in l:
+        if fr.search('\n'.join(P[k:k+12])): g[('prefs (js)',l[-100:])]+=1
+noise=sum(1 for l in P if 'org.gnome.Shell.Extensions' in l and 'during shutdown' in l)
 print('== SUMMARY Guava errors:',sum(g.values()))
+if noise: print(f'   (prefs process shutdown callbacks: {noise}, not counted)')
 for (k,m),c in g.most_common(): print(f'  {c:3d}x {k}  {m}')
 PY
 grep "^PROBE" $OUT/last-run.txt | cut -c1-260

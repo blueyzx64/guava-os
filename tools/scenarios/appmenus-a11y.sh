@@ -16,7 +16,8 @@ gs appmenus-accessibility false; sleep 2
 gs appmenus-accessibility true; sleep 2
 
 gs menubar-atspi-menus true; gs menubar-atspi-popovers true; sleep 2
-pkill -f gnome-text-editor; sleep 2
+# kill() ends exactly this session's Text Editor (pkill would hit other roots and the host)
+P "global.get_window_actors().map(a=>a.meta_window).filter(w=>w.get_wm_class()==='org.gnome.TextEditor').forEach(w=>w.kill()); return 1" >/dev/null; sleep 2
 launch_app "env NO_AT_BRIDGE=0 GTK_A11Y=atspi gnome-text-editor --standalone" org.gnome.TextEditor 40
 sleep 3
 H='const win=()=>global.get_window_actors().map(a=>a.meta_window).find(w=>w.get_wm_class()==="org.gnome.TextEditor");
