@@ -28,7 +28,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import * as A11y from '../../lib/a11y.js';
 import { WindowState, skipsTaskbar } from '../../core/windowState.js';
-import { isMaximized, unmaximizeWindow } from '../../lib/compat.js';
+import { isMaximized, moveResizeFrame, unmaximizeWindow } from '../../lib/compat.js';
 import { CleanupRegistry } from '../../lib/disposables.js';
 import { Keybindings } from '../../lib/keybindings.js';
 import { isCandidate, preSplitRect, splitRects, survivorAfter, thumbnailRects } from './model.js';
@@ -109,7 +109,7 @@ export class SplitView {
             settle.dispose();
             this._settling = null;
             const before = preSplitRect(win.get_frame_rect(), area);
-            win.move_resize_frame(true, rects.tiled.x, rects.tiled.y, rects.tiled.width, rects.tiled.height);
+            moveResizeFrame(win, rects.tiled.x, rects.tiled.y, rects.tiled.width, rects.tiled.height);
             this._showPicker(win, side, ws, rects.other, candidates, before);
         };
         settle.connect(win, 'size-changed', place);
@@ -218,7 +218,7 @@ export class SplitView {
             unmaximizeWindow(other);
         if (home !== ws)
             other.change_workspace(ws);
-        other.move_resize_frame(true, half.x, half.y, half.width, half.height);
+        moveResizeFrame(other, half.x, half.y, half.width, half.height);
         other.activate(global.get_current_time());
         this._watch({ a: win, b: other, ws, home, before: new Map([[win, before], [other, otherBefore]]) });
     }
@@ -267,7 +267,7 @@ export class SplitView {
         // It leaves at the size it had before the split, not as a half
         const before = pair.before.get(gone);
         if (!closed && before && !isMaximized(gone))
-            gone.move_resize_frame(true, before.x, before.y, before.width, before.height);
+            moveResizeFrame(gone, before.x, before.y, before.width, before.height);
         if (survivor?.get_compositor_private())
             survivor.make_fullscreen();
     }

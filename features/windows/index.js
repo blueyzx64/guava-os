@@ -28,7 +28,7 @@ import { CleanupRegistry } from '../../lib/disposables.js';
 import { GuavaSettings } from '../../lib/settings.js';
 import { Keybindings } from '../../lib/keybindings.js';
 import { normalizeAccel } from '../../lib/keybindingsModel.js';
-import { isMaximized, maximizeWindow, unmaximizeWindow } from '../../lib/compat.js';
+import { isMaximized, maximizeWindow, moveResizeFrame, unmaximizeWindow } from '../../lib/compat.js';
 import { SettingOwner } from '../../core/originals.js';
 import { WindowState } from '../../core/windowState.js';
 
@@ -187,7 +187,7 @@ export class WindowTiling {
         }
         const area = this._layout.workArea(win.get_monitor());
         const rect = area && !this._inside(restore, area) ? centerRect(area, restore.width, restore.height) : restore;
-        this._motion.move(win, rect, () => win.move_resize_frame(true, rect.x, rect.y, rect.width, rect.height));
+        this._motion.move(win, rect, () => moveResizeFrame(win, rect.x, rect.y, rect.width, rect.height));
     }
 
     /** A tiled window is being dragged away: back to its pre-tile size under the pointer. */
@@ -198,7 +198,7 @@ export class WindowTiling {
         if (!restore || restore.maximized)
             return;
         const r = untileRect(rectOf(win.get_frame_rect()), restore, pointer);
-        win.move_resize_frame(true, r.x, r.y, r.width, r.height);
+        moveResizeFrame(win, r.x, r.y, r.width, r.height);
     }
 
     /** A grab started on the window: the user moves or resizes it, Guava stops placing it. */
@@ -304,7 +304,7 @@ export class WindowTiling {
             return;
         }
         this._motion.move(win, rect, () => {
-            win.move_resize_frame(true, rect.x, rect.y, rect.width, rect.height);
+            moveResizeFrame(win, rect.x, rect.y, rect.width, rect.height);
             const now = win.get_frame_rect();
             if (!entry || (now.width === rect.width && now.height === rect.height))
                 return;

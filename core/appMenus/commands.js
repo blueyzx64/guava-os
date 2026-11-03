@@ -25,7 +25,7 @@ import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import { DesktopAppInfo, isMaximized, maximizeWindow, unmaximizeWindow } from '../../lib/compat.js';
+import { DesktopAppInfo, isMaximized, maximizeWindow, moveResizeFrame, unmaximizeWindow } from '../../lib/compat.js';
 import { isUserFacing } from '../desktopModel.js';
 import { ZONES } from '../tileActions.js';
 import { FOCUS_SETTLE_MS } from '../../lib/paste.js';
@@ -252,7 +252,7 @@ export class GenericCommands {
             win.unmake_fullscreen();
         const x = area.x + Math.round(zone.x * area.width);
         const y = area.y + Math.round(zone.y * area.height);
-        win.move_resize_frame(true, x, y, Math.round(zone.w * area.width), Math.round(zone.h * area.height));
+        moveResizeFrame(win, x, y, Math.round(zone.w * area.width), Math.round(zone.h * area.height));
         return true;
     }
 
