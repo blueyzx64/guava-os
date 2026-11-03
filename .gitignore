@@ -12,3 +12,5 @@ locale
 dist/
 # Agent skills and the project CLAUDE.md are tracked (the rule above would hide .claude/)
 !.claude/
+# Agent git worktrees (tools: Agent isolation) are checkouts, never content
+.claude/worktrees/

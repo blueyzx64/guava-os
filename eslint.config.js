@@ -32,7 +32,7 @@ const LEGACY = {group: ['resource:///org/gnome/gjs/modules/*'], message: 'Legacy
 const restrict = (...patterns) => ['error', {patterns: [LEGACY, ...patterns]}];
 
 export default [
-    {ignores: ['po/**', 'icons/**', 'docs/**', 'node_modules/**', 'dist/**', 'tools/harness/**']},
+    {ignores: ['po/**', 'icons/**', 'docs/**', 'node_modules/**', 'dist/**', 'tools/harness/**', '.claude/**']},
     {
         files: ['**/*.js'],
         languageOptions: {
