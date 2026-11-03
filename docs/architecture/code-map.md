@@ -162,6 +162,7 @@ pinch, hot corner), `split-view-changed` (Split View), `recording-started` /
 | `osd/` | `osd` | the Tahoe volume / brightness / keyboard backlight pill under the Control Center button (glass, core/motion), a `ctx.osd` sink; output name and mute from the Shell's Gvc mixer |
 | `dialogs/` | `dialogs` | the Shell's modal dialogs (auth, end session, Run, others) as glass alerts: icon on top, natural-width buttons at the right, accent default; `ModalDialog.prototype.open` injection, undone on close and disable |
 | `colorFilters/` | `color-filters` | greyscale, protanopia / deuteranopia / tritanopia corrections and colour tint: one shader effect (a colour matrix as uniforms) on `global.stage` |
+| `pointer/` | `pointer` | shake to locate (`model.js` ShakeDetector, gated by `isBlocked`; big pointer from the theme's Xcursor at 4x size, `theme.js`), hide while typing (`lib/caret.js` onMoved), `cursor-size` / recoloured `cursor-theme` through core/originals |
 
 Shared-resource rules (defined once in `features.js`): `app-buttons` alone owns `button-layout`; `control-center` beats `dnd-button`; `stage-manager` beats
 `move-window-to-new-workspace`; the notch forces the calendar to the right.

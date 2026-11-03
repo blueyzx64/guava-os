@@ -22,6 +22,7 @@ One page per area: what it does, how to use it, its settings with defaults, its 
 | Screenshots | [screenshots.md](screenshots.md) | `screenshots` |
 | Text cursor badges, Emoji & Symbols | [input.md](input.md) | `input-indicator`, `emoji-picker` |
 | Volume pill, glass dialogs, colour filters | [system-ui.md](system-ui.md) | `osd`, `dialogs`, `color-filters` |
+| Pointer (shake to locate, hide while typing, size, colours) | [pointer.md](pointer.md) | `pointer` |
 | Appearance | [appearance.md](appearance.md) | `appearance`, `popup-menu-styling` |
 | Liquid Glass | [liquid-glass.md](liquid-glass.md) | `liquid-glass` |
 | Setup Assistant | [onboarding.md](onboarding.md) | `onboarding` |

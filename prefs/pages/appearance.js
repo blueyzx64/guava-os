@@ -7,6 +7,7 @@ import Adw from 'gi://Adw';
 import * as appearancePrefs from '../../features/appearance/prefs.js';
 import * as liquidGlassPrefs from '../../features/liquidGlass/prefs.js';
 import * as colorFilterPrefs from '../../features/colorFilters/prefs.js';
+import * as pointerPrefs from '../../features/pointer/prefs.js';
 import * as typographyPrefs from '../../features/typography/prefs.js';
 import { addFeatureGroups, switchRow } from '../widgets.js';
 
@@ -26,6 +27,7 @@ export function build(args) {
             return groups;
         },
     }, args);
+    addFeatureGroups(page, pointerPrefs, args);
     const menus = new Adw.PreferencesGroup({ title: _('Menus') });
     menus.add(switchRow(settings, _('Menu and App Styling'),
         _('Narrower shell menu items with accent-colored hover and selection, plus the GTK app fixes'),

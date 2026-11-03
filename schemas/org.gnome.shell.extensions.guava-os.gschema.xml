@@ -1524,5 +1524,45 @@
         <description>The hue of the colour tint filter, in degrees.</description>
       </key>
 
+      <!-- Pointer (features/pointer) -->
+      <key name="pointer-shake-to-locate" type="b">
+        <default>true</default>
+        <summary>Shake mouse pointer to locate</summary>
+        <description>Make the pointer big for a moment when you shake the mouse or move your finger quickly side to side on the touchpad, like macOS Accessibility > Display > Pointer.</description>
+      </key>
+      <key name="pointer-hide-while-typing" type="b">
+        <default>true</default>
+        <summary>Hide the pointer while typing</summary>
+        <description>Hide the pointer while you type in a text field, and show it again as soon as the mouse moves, like macOS apps do. Works in apps that report their text cursor.</description>
+      </key>
+      <key name="pointer-size" type="s">
+        <choices>
+          <choice value="system"/>
+          <choice value="24"/>
+          <choice value="32"/>
+          <choice value="48"/>
+          <choice value="64"/>
+          <choice value="96"/>
+        </choices>
+        <default>'system'</default>
+        <summary>Pointer size</summary>
+        <description>The pointer size in pixels. 'system' leaves GNOME's cursor size as it is; another value sets it while Guava runs and gives your own size back when Guava stops.</description>
+      </key>
+      <key name="pointer-custom-colors" type="b">
+        <default>false</default>
+        <summary>Custom pointer colours</summary>
+        <description>Recolour the pointer with the fill and outline colours below. Guava makes a copy of your cursor theme in ~/.local/share/icons/Guava-Pointer-* and selects it while this is on.</description>
+      </key>
+      <key name="pointer-fill-color" type="s">
+        <default>'#000000'</default>
+        <summary>Pointer fill colour</summary>
+        <description>The colour inside the pointer, as #rrggbb (macOS default black).</description>
+      </key>
+      <key name="pointer-outline-color" type="s">
+        <default>'#ffffff'</default>
+        <summary>Pointer outline colour</summary>
+        <description>The colour of the pointer's outline, as #rrggbb (macOS default white).</description>
+      </key>
+
     </schema>
 </schemalist>

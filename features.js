@@ -284,6 +284,14 @@ export const FEATURES = [
         load: async () => (await import('./features/colorFilters/index.js')).ColorFilters,
     },
     {
+        // Pointer: shake to locate, hide while typing, size and colours (macOS Accessibility >
+        // Display > Pointer). Runs while any of them is on.
+        id: 'pointer',
+        when: ctx => ['pointer-shake-to-locate', 'pointer-hide-while-typing', 'pointer-custom-colors']
+            .some(k => ctx.settings.get_boolean(k)) || ctx.settings.get_string('pointer-size') !== 'system',
+        load: async () => (await import('./features/pointer/index.js')).Pointer,
+    },
+    {
         // Desktop widgets above the wallpaper, below windows (core/widgets is the shared model)
         id: 'desktop-widgets', setting: 'widgets',
         load: async () => (await import('./features/widgets/index.js')).DesktopWidgets,
