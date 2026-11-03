@@ -2,7 +2,7 @@
 // gjs -m tests/glassParams.test.js
 // lib/glassParams.js: the Liquid Glass look (fill, edge, rim, variants) for every surface.
 import {
-    ALPHA_RANGE, BLUR_ALPHA_RANGE, LoadGovernor, SETTING_FIELDS, captureMargin, captureMode, downscaleFor,
+    ALPHA_RANGE, BLUR_ALPHA_RANGE, FROST, LoadGovernor, SETTING_FIELDS, captureMargin, captureMode, downscaleFor,
     effectColors, TINT, WALLPAPER_MIX, fillStyle, glassClasses, hostClasses,
     hostStyle, readSnapshot, liveCaptureDue, LIVE_CAPTURE_MS, LIVE_CAPTURE_DEGRADED_MS, resolve, roleFor, sliderAlpha,
     clipCovers, clipToDevice, captureRects, intersectRect, textureSide, TEXTURE_STEP,
@@ -28,19 +28,19 @@ const snap = (over = {}) => ({
 });
 const env = (over = {}) => ({ dark: true, highContrast: false, reducedMotion: false, wallpaper: null, ...over });
 
-test('defaults follow macOS: glass on, Clear, wallpaper tint on, accessibility off', () => {
+test('defaults: Liquid Glass off (the frosted blur), Clear, wallpaper tint on, accessibility off', () => {
     const d = Object.fromEntries(Object.values(SETTING_FIELDS));
     eq([d.liquid, d.tint, d.wallpaperTint, d.reduceTransparency, d.increaseContrast, d.showBorders, d.noise],
-        [true, 0, true, false, false, false, false]);
+        [false, 0, true, false, false, false, false]);
 });
 
-test('surfaces: the list and the master switch decide', () => {
+test('surfaces: the list decides, Liquid Glass only picks the look', () => {
     ok(wantsSurface(snap(), 'menus'), 'menus wanted');
     ok(!wantsSurface(snap({ surfaces: ['dock'] }), 'menus'), 'list respected');
-    ok(!wantsSurface(snap({ liquid: false }), 'dock'), 'master off');
-    eq(resolve(snap({ liquid: false }), env(), 'menus').tier, 'off');
-    eq(glassClasses(resolve(snap({ liquid: false }), env(), 'menus'), 'menus'), []);
-    eq(fillStyle(resolve(snap({ liquid: false }), env(), 'menus')), '');
+    ok(wantsSurface(snap({ liquid: false }), 'dock'), 'frosted by default');
+    eq(resolve(snap({ surfaces: [] }), env(), 'menus').tier, 'off');
+    eq(glassClasses(resolve(snap({ surfaces: [] }), env(), 'menus'), 'menus'), []);
+    eq(fillStyle(resolve(snap({ surfaces: [] }), env(), 'menus')), '');
 });
 
 test('roles: bars for the menu bar and dock, content elsewhere, callers may say', () => {
@@ -138,7 +138,7 @@ test('classes: scheme, surface, role, motion', () => {
     eq(c.slice(0, 4), ['guava-glass', 'guava-glass-dock', 'guava-glass-bar', 'guava-glass-light']);
     ok(c.includes('guava-glass-static'), 'reduced motion');
     eq(hostClasses(resolve(snap(), env(), 'menus')), ['guava-glass-shadow', 'guava-glass-dark']);
-    eq(hostClasses(resolve(snap({ liquid: false }), env(), 'menus')), []);
+    eq(hostClasses(resolve(snap({ surfaces: [] }), env(), 'menus')), []);
 });
 
 test('a content surface writes its rim inline, over the theme outer shadow', () => {
@@ -167,7 +167,66 @@ test('readSnapshot reads typed keys, defaults for missing ones', () => {
     };
     const s = readSnapshot(gs);
     eq([s.liquid, s.tint, s.surfaces, s.reduceTransparency], [false, 70, ['dock'], false]);
-    eq(readSnapshot(null).liquid, true);
+    eq(readSnapshot(null).liquid, false);
+});
+
+// ---- B41: the frosted look (Liquid Glass off) ----------------------------------------------
+
+const frost = (over = {}) => snap({ liquid: false, ...over });
+
+test('frost: the look is a parameter set of the same pipeline: flat fill, no boost, no rim, no wallpaper tint', () => {
+    for (const dark of [true, false]) {
+        for (const surface of ['panel', 'menus', 'dock', 'overlays']) {
+            const l = resolve(frost(), env({ dark, blur: true, wallpaper: [200, 30, 30] }), surface);
+            const g = resolve(snap(), env({ dark, blur: true, wallpaper: [200, 30, 30] }), surface);
+            eq([l.style, g.style], ['frost', 'glass']);
+            eq(l.tier, 'glass');
+            eq(l.bottom, null, `${surface} flat fill`);
+            eq(l.noise, false);
+            ok(l.blur && l.blur.sigma > 0, 'a real blur');
+            eq([l.blur.saturation, l.blur.brightness, l.blur.lift], [1, 1, 0]);
+            ok(g.blur.saturation > 1, 'Liquid Glass still boosts colour');
+            eq(l.top.slice(0, 3).join(), (dark ? TINT.dark : TINT.light).join(), `${surface} neutral tint, no wallpaper`);
+            ok(g.top.slice(0, 3).join() !== l.top.slice(0, 3).join(), 'glass mixes wallpaper and sheen');
+            ok(worstCaseContrast(l) >= 4.5, `${surface} ${dark} readable: ${worstCaseContrast(l).toFixed(2)}`);
+        }
+    }
+    ok(resolve(frost(), env({ blur: true }), 'panel').alpha >= FROST.alpha.bar, 'bar alpha');
+    eq(resolve(frost(), env({ blur: true }), 'menus').alpha >= FROST.alpha.content, true);
+});
+
+test('frost ignores the Clear <-> Tinted slider, the wallpaper tint and the grain', () => {
+    const a = resolve(frost(), env({ blur: true }), 'menus');
+    const b = resolve(frost({ tint: 100, noise: true, wallpaperTint: true }), env({ blur: true, wallpaper: [255, 0, 0] }), 'menus');
+    eq(b, a);
+});
+
+test('frost without a blur effect uses a denser fill, still readable', () => {
+    const l = resolve(frost(), env({ blur: false }), 'dock');
+    eq(l.blur, null);
+    ok(l.alpha >= FROST.noBlur.bar, `alpha ${l.alpha}`);
+    ok(worstCaseContrast(l) >= 4.5, 'readable');
+});
+
+test('frost draws no rim and keeps the rounded corners; Liquid Glass keeps its rim', () => {
+    const f = fillStyle(resolve(frost(), env(), 'menus'), 24, true);
+    ok(f.includes('box-shadow: none;'), 'no rim');
+    ok(f.includes('border-radius: 24px;'), 'corners');
+    ok(!f.includes('gradient-end'), 'no gradient');
+    ok(fillStyle(resolve(snap(), env(), 'menus'), 24, true).includes('inset 0 1px 0 0'), 'glass rim');
+    const c = glassClasses(resolve(frost(), env(), 'menus'), 'menus');
+    ok(c.includes('guava-glass-frost'), 'frost class');
+    ok(!glassClasses(resolve(snap(), env(), 'menus'), 'menus').includes('guava-glass-frost'), 'no frost class on glass');
+    ok(!glassClasses(resolve(frost({ showBorders: true }), env(), 'menus'), 'menus').includes('guava-glass-frost'), 'Show Borders wins');
+    ok(glassClasses(resolve(frost({ showBorders: true }), env(), 'menus'), 'menus').includes('guava-glass-borders'), 'borders');
+});
+
+test('frost: Reduce Transparency and contrast make it opaque, as for Liquid Glass', () => {
+    const r = resolve(frost({ reduceTransparency: true }), env({ blur: true }), 'menus');
+    eq([r.tier, r.alpha, r.blur], ['solid', 1, null]);
+    const c = resolve(frost({ increaseContrast: true }), env({ blur: true }), 'dock');
+    eq([c.tier, c.alpha, c.edge], ['solid', 1, 'contrast']);
+    eq(resolve(frost(), env({ highContrast: true, blur: true }), 'panel').tier, 'solid');
 });
 
 
