@@ -108,7 +108,7 @@ pinch, hot corner), `split-view-changed` (Split View), `recording-started` /
 | `disposables.js` | `CleanupRegistry`: signals, timeouts, idles, injections, actors, files; `dispose()` undoes all, newest first |
 | `settings.js` | `GuavaSettings` (typed access, per-key watchers) |
 | `compat.js` (+`compatModel.js`, `gioCompat.js`) | everything that differs between Shell 50 and 51; the reduced-motion source; shader effects; `isMaximized`, `maximizeWindow` |
-| `glass.js` (+`glassParams.js`) | faux Liquid Glass service: classes and a fill fragment on every Guava surface, shadow hosts, Clear↔Tinted, Reduce Transparency, Increase Contrast, Show Borders (CSS in `styles/base.css`); `attach`, `attachMenu`, `watch` |
+| `glass.js` (+`glassBlur.js`, `glassParams.js`) | Liquid Glass service: real backdrop blur per surface (`glassBlur.js`: copy behind, blur, saturate, tint, rounded clip; one shared static blur for the bar and dock over wallpaper; frozen under load), classes and a fill fragment on every Guava surface, shadow hosts, Clear↔Tinted, Reduce Transparency, Increase Contrast, Show Borders (CSS in `styles/base.css`); `attach`, `attachMenu`, `watch` |
 | `wallpaperTint.js` (+`wallpaperModel.js`) | the wallpaper's average colour for the glass tint (async 32×32 decode, cached per URI) |
 | `modalSurface.js` (+`modalLook.js`, `modalModel.js`) | one Guava modal at a time (Spotlight, Quick Paste, clipboard popover) |
 | `outsideClick.js` + `inputRing.js` (+`inputRingModel.js`) | a press outside a non-modal popup (notch, widget gallery) closes it and the click is replayed to what lay under it; `replayClick()` for popups that hold a modal grab (the dock stacks) |
