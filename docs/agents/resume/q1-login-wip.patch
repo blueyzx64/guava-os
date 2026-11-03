@@ -1,0 +1,260 @@
+diff --git a/src/extension.js b/src/extension.js
+index 96713dd..fb57ac3 100644
+--- a/src/extension.js
++++ b/src/extension.js
+@@ -8,7 +8,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+ import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
+ 
+ import { CleanupRegistry } from './lib/disposables.js';
+-import { FeatureRegistry } from './lib/featureRegistry.js';
++import { FeatureRegistry, isLater } from './lib/featureRegistry.js';
+ import { SurfaceLedger, sweepTargets } from './lib/lockModel.js';
+ import { Glass } from './lib/glass.js';
+ import { IconStyle } from './lib/iconStyle.js';
+@@ -194,8 +194,7 @@ export default class GuavaExtension extends Extension {
+         });
+ 
+         // Staged start (login, B2): entries marked `later` in features.js start after the login
+-        const holdBack = entry => entry.later === true;
+-        this._features.start({
++        const ctx = {
+             extension: this,
+             settings: this._settings,
+             gettext: this.gettext.bind(this),
+@@ -210,7 +209,8 @@ export default class GuavaExtension extends Extension {
+             timers: this._timers,
+             appMenus: this._appMenus,
+             session,
+-        }, { holdBack });
++        };
++        this._features.start(ctx, { holdBack: entry => isLater(entry, ctx) });
+         this._features.setLocked(session.locked);
+         if (session.locked)
+             sweepNow();
+diff --git a/src/features.js b/src/features.js
+index 030b9a0..28054f9 100644
+--- a/src/features.js
++++ b/src/features.js
+@@ -13,6 +13,9 @@
+ // for the chrome the user sees. Anything that changes what is on screen at login must NOT be
+ // `later`, or it would appear late.
+ //
++// `later` can also be a function of ctx, for a feature that shows something at login only in some
++// settings (desktop-widgets: a saved layout).
++//
+ // `lockScreen: true` (D-018, D-022): the feature runs on the lock screen. Without it, a feature is
+ // suspended while the screen is locked (its surfaces hidden and inert, nothing torn down;
+ // lib/lockModel.js). With it, it stays active, reads ctx.session.locked and gets the optional
+@@ -56,7 +59,7 @@ export const FEATURES = [
+     },
+     {
+         // Full screen as its own Space, the macOS default
+-        id: 'move-window-to-new-workspace', setting: 'move-window-to-new-workspace',
++        id: 'move-window-to-new-workspace', later: true, setting: 'move-window-to-new-workspace',
+         load: async () => (await import('./features/fullscreenSpace/index.js')).FullscreenSpace,
+     },
+ 
+@@ -89,7 +92,7 @@ export const FEATURES = [
+     },
+     {
+         // The maximize (green) button of the apps' titlebars enters / leaves full screen
+-        id: 'green-button', setting: 'windows-green-button-fullscreen',
++        id: 'green-button', later: true, setting: 'windows-green-button-fullscreen',
+         load: async () => (await import('./features/appButtons/greenButton.js')).GreenButton,
+     },
+     {
+@@ -147,7 +150,7 @@ export const FEATURES = [
+         load: async () => (await import('./features/typography/index.js')).Typography,
+     },
+     {
+-        id: 'popup-menu-styling', setting: 'popup-menu-styling',
++        id: 'popup-menu-styling', later: true, setting: 'popup-menu-styling',
+         load: async () => (await import('./features/appearance/index.js')).PopupMenuStyling,
+     },
+     {
+@@ -172,7 +175,7 @@ export const FEATURES = [
+     },
+     {
+         // macOS-style rounded corners: one shader effect per window actor
+-        id: 'rounded-corners', setting: 'rounded-corners',
++        id: 'rounded-corners', later: true, setting: 'rounded-corners',
+         load: async () => (await import('./features/roundedCorners/index.js')).RoundedCorners,
+     },
+     {
+@@ -305,6 +308,8 @@ export const FEATURES = [
+     {
+         // Desktop widgets above the wallpaper, below windows (core/widgets is the shared model)
+         id: 'desktop-widgets', setting: 'widgets',
++        // Nothing to draw until a layout is saved; the gallery and the desktop menu can wait for the login
++        later: ctx => ctx.settings.get_string('widgets-layout') === '',
+         load: async () => (await import('./features/widgets/index.js')).DesktopWidgets,
+     },
+     {
+diff --git a/src/lib/featureRegistry.js b/src/lib/featureRegistry.js
+index d87b4ab..5d9da28 100644
+--- a/src/lib/featureRegistry.js
++++ b/src/lib/featureRegistry.js
+@@ -33,6 +33,19 @@
+ 
+ import { isSuspended } from './lockModel.js';
+ 
++/**
++ * Whether an entry waits for the end of the login (features.js `later`): true, or a function of
++ * ctx for a feature that shows something at login only in some settings (a widgets layout that
++ * is not empty, a panel icon that is on).
++ *
++ * @param {{later?: boolean|((ctx: object) => boolean)}} entry
++ * @param {object} ctx the ctx start() was given
++ * @returns {boolean}
++ */
++export function isLater(entry, ctx) {
++    return typeof entry.later === 'function' ? !!entry.later(ctx) : entry.later === true;
++}
++
+ export class FeatureRegistry {
+     /**
+      * @param {typeof CleanupRegistry} CleanupClass class used for each entry's own registry
+diff --git a/tests/featureRegistry.test.js b/tests/featureRegistry.test.js
+index ac0d371..352a2f1 100644
+--- a/tests/featureRegistry.test.js
++++ b/tests/featureRegistry.test.js
+@@ -1,7 +1,7 @@
+ // Run: gjs -m tests/featureRegistry.test.js
+ import GLib from 'gi://GLib';
+ 
+-import { FeatureRegistry } from '../src/lib/featureRegistry.js';
++import { FeatureRegistry, isLater } from '../src/lib/featureRegistry.js';
+ import { CleanupRegistry } from '../src/lib/disposables.js';
+ import { FEATURES } from '../src/features.js';
+ 
+@@ -356,6 +356,25 @@ test('B2 staged start: stop() while held drops the hold; a throwing predicate ho
+     reg.start(ctx, { holdBack: () => { throw new Error('x'); } });
+     eq(log, ['+a', '-a', '+a', '+b']);
+ });
++test('B38 isLater: true, or a function of ctx; anything else starts at login', () => {
++    eq(isLater({ later: true }, {}), true);
++    eq(isLater({}, {}), false);
++    eq(isLater({ later: false }, {}), false);
++    eq(isLater({ later: ctx => ctx.empty }, { empty: true }), true);
++    eq(isLater({ later: ctx => ctx.empty }, { empty: false }), false);
++    eq(isLater({ later: () => 1 }, {}), true, 'a truthy answer holds it back');
++});
++test('B38 desktop widgets start at login only with a saved layout; the look-only features wait', () => {
++    const get = id => FEATURES.find(f => f.id === id);
++    const ctx = layout => ({ settings: { get_string: k => (k === 'widgets-layout' ? layout : '') } });
++    eq(isLater(get('desktop-widgets'), ctx('')), true, 'nothing to draw yet');
++    eq(isLater(get('desktop-widgets'), ctx('[{"id":"clock"}]')), false, 'a layout is on screen at login');
++    for (const id of ['popup-menu-styling', 'rounded-corners', 'move-window-to-new-workspace', 'green-button'])
++        eq(isLater(get(id), ctx('')), true, id);
++    // Visible at login: never held back
++    for (const id of ['menu-bar', 'dock', 'notch', 'desktop-icons', 'liquid-glass', 'control-center', 'calendar'])
++        eq(isLater(get(id), ctx('')), false, id);
++});
+ test('timings(): one row per entry with start time and enable cost', () => {
+     let t = 0;
+     const { reg, ctx } = setup([{ id: 'a', hooks: { onEnable: () => { t += 5; } } }, { id: 'b', setting: 'b' }],
+diff --git a/tools/harness/probe/probe@x2/startupTrace.js b/tools/harness/probe/probe@x2/startupTrace.js
+index fdc62a7..bf8070c 100644
+--- a/tools/harness/probe/probe@x2/startupTrace.js
++++ b/tools/harness/probe/probe@x2/startupTrace.js
+@@ -12,6 +12,7 @@ import { summarize } from './startupModel.js';
+ 
+ const STOP_AFTER_MS = 8000;
+ const HARD_STOP_MS = 40000;
++const TASK_MIN_MS = 12;
+ const GUAVA = 'guava-os@blueyzx64';
+ // Chrome found by name (walked a few times a second until each one exists)
+ const NAMED = ['guava-dock', 'guava-notch', 'guava-stage-manager', 'guava-desktop-icons', 'guava-widgets-layer'];
+@@ -43,6 +44,50 @@ export function startTrace() {
+         frames: [], stalls: [], events: [], actors: {}, running: true,
+     };
+     const rel = () => now() - t0;
++    // CPU ms the Shell has used (main thread, whole process) at the first frames and signals: wall
++    // time swells when the machine is busy, CPU time does not. trace.cpu: [t, mainMs, processMs, label]
++    trace.cpu = [];
++    const cpuMs = file => {
++        try {
++            const [, raw] = GLib.file_get_contents(file);
++            const f = new TextDecoder().decode(raw).split(')')[1].trim().split(' ');
++            return (Number(f[11]) + Number(f[12])) * 10;
++        } catch (_e) {
++            return -1;
++        }
++    };
++    const cpuMark = label => {
++        if (trace.cpu.length < 40)
++            trace.cpu.push([Math.round(rel()), cpuMs('/proc/thread-self/stat'), cpuMs('/proc/self/stat'), label]);
++    };
++    cpuMark('probe');
++    // Task profile: every GLib idle / timeout callback that holds the main loop for more than
++    // TASK_MIN_MS, with the stack of the code that registered it (trace.tasks: [start, ms, kind, where])
++    trace.tasks = [];
++    const restoreSources = [];
++    for (const kind of ['idle_add', 'timeout_add', 'timeout_add_seconds']) {
++        const orig = GLib[kind];
++        GLib[kind] = function (...args) {
++            const i = args.findIndex(a => typeof a === 'function');
++            if (i < 0 || !trace.running)
++                return orig.apply(this, args);
++            const fn = args[i];
++            const where = new Error().stack.split('\n').slice(1, 4)
++                .map(l => l.replace(/file:\/\/\S*\/guava-os@blueyzx64\//, '').replace('resource:///org/gnome/shell/', 'S:')).join('|');
++            args[i] = function (...a) {
++                const t = now();
++                try {
++                    return fn.apply(this, a);
++                } finally {
++                    const d = now() - t;
++                    if (d > TASK_MIN_MS)
++                        trace.tasks.push([Math.round(t - t0), Math.round(d), kind, where]);
++                }
++            };
++            return orig.apply(this, args);
++        };
++        restoreSources.push(() => (GLib[kind] = orig));
++    }
+     const ev = (name, detail = null) => trace.events.push([rel(), name, detail]);
+     const ids = [];
+     const conn = (obj, sig, fn) => {
+@@ -87,6 +132,7 @@ export function startTrace() {
+     };
+ 
+     conn(global.stage, 'after-paint', () => {
++        cpuMark('paint');
+         const t = rel();
+         trace.frames.push(t);
+         if (t - lastWalk > 250) {
+@@ -95,6 +141,13 @@ export function startTrace() {
+         }
+         sample(t);
+     });
++    // Frame phases of the first frames (trace.phases: [t, name]): where one long frame spends its time
++    trace.phases = [];
++    for (const sig of ['before-update', 'prepare-frame', 'before-paint', 'paint-view', 'after-paint', 'after-update'])
++        conn(global.stage, sig, () => {
++            if (trace.phases.length < 60)
++                trace.phases.push([Math.round(rel()), sig]);
++        });
+     let expected = now() + 10;
+     const hb = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 10, () => {
+         const n = now();
+@@ -110,6 +163,7 @@ export function startTrace() {
+             return;
+         trace.running = false;
+         ev('trace-stop');
++        restoreSources.forEach(f => f());
+         for (const [obj, id] of ids) {
+             try {
+                 obj.disconnect(id);
+@@ -123,9 +177,10 @@ export function startTrace() {
+ 
+     if (!lm._startingUp)
+         ev('startup-complete', 'before-probe');
+-    conn(lm, 'startup-prepared', () => ev('startup-prepared'));
++    conn(lm, 'startup-prepared', () => { ev('startup-prepared'); cpuMark('prepared'); });
+     conn(lm, 'startup-complete', () => {
+         ev('startup-complete');
++        cpuMark('complete');
+         if (stopTimer)
+             GLib.source_remove(stopTimer);
+         stopTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, STOP_AFTER_MS, () => {

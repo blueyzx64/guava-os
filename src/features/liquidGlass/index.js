@@ -85,17 +85,19 @@ export class LiquidGlass {
         // animation, a gesture, and an open interrupted by a close, with nothing of its own to
         // run or retarget.
         const adjustment = Main.overview._overview?.controls?._stateAdjustment ?? null;
+        // Only while the overview is open: features/missionControl/warm.js moves the adjustment
+        // for an invisible first paint with the overview closed, and the bar must not fade then
         const follow = () => {
-            const v = adjustment ? adjustment.value : (Main.overview.visible ? 1 : 0);
+            const v = !Main.overview.visible ? 0 : adjustment ? adjustment.value : 1;
             handle.setPresence(1 - Math.min(1, Math.max(0, v)));
         };
         const tokens = [
             reg.connect(global.display, 'in-fullscreen-changed', sync),
-            adjustment ? reg.connect(adjustment, 'notify::value', follow)
-                : reg.connect(Main.overview, 'showing', follow),
+            reg.connect(Main.overview, 'showing', follow),
+            reg.connect(Main.overview, 'hidden', follow),
         ];
-        if (!adjustment)
-            tokens.push(reg.connect(Main.overview, 'hidden', follow));
+        if (adjustment)
+            tokens.push(reg.connect(adjustment, 'notify::value', follow));
         sync();
         follow();
         this._panel = { handle, tokens };
