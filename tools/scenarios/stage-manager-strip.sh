@@ -44,8 +44,11 @@ _kjs 'await kmove(800,400); global.workspace_manager.get_workspace_by_index(0).a
 # the strip shows after the maximize test above only when the stage window does not cover it
 _kjs 'const w=global.display.focus_window; if(w?.is_maximized()) w.unmaximize(); await sl(1200); return 1' >/dev/null
 assert "pre: strip visible on workspace 1" "stripShown()"
-_kjs 'const wm=global.workspace_manager; let ws=wm.get_workspace_by_index(1); if(!ws) ws=wm.append_new_workspace(false, global.get_current_time()); for(const x of ["A","B"]) aw(sid(x)).meta_window.change_workspace(ws); await sl(1000); globalThis.__smSeen=[]; const s=strip().get_parent(); ws.activate(global.get_current_time()); for(let i=0;i<40;i++){ await sl(16); globalThis.__smSeen.push(Math.round(s.translation_x)); } await sl(600); wm.get_workspace_by_index(0).activate(global.get_current_time()); await sl(900); for(const x of ["A","B"]) aw(sid(x)).meta_window.change_workspace(wm.get_workspace_by_index(0)); await sl(1500); return 1' | grep -o "ERR.*" | head -1
-assert "SM-27 the strip moved over several frames (slid), not in one jump" "new Set(globalThis.__smSeen).size>=4"
+_kjs 'const wm=global.workspace_manager; let ws=wm.get_workspace_by_index(1); if(!ws) ws=wm.append_new_workspace(false, global.get_current_time()); for(const x of ["A","B"]) aw(sid(x)).meta_window.change_workspace(ws); await sl(1000); globalThis.__smSeen=[]; globalThis.__smDur=0; const s=strip().get_parent(); ws.activate(global.get_current_time()); for(let i=0;i<40;i++){ await sl(16); globalThis.__smSeen.push(Math.round(s.translation_x)); globalThis.__smDur=Math.max(globalThis.__smDur, s.get_transition("translation-x")?.get_duration()??0); } await sl(600); wm.get_workspace_by_index(0).activate(global.get_current_time()); await sl(900); for(const x of ["A","B"]) aw(sid(x)).meta_window.change_workspace(wm.get_workspace_by_index(0)); await sl(1500); return 1' | grep -o "ERR.*" | head -1
+# Frame pace differs per display (llvmpipe paints 4x the pixels at 2x: one stalled frame can finish a
+# 220 ms ease), so frames are not counted. A slide is an ease in flight: the strip starts away,
+# a timed translation transition (>=150 ms) runs on it, positions never go backwards
+assert "SM-27 the strip moved over several frames (slid), not in one jump" "(()=>{const q=globalThis.__smSeen; return Math.min(...q)<-50 && globalThis.__smDur>=150 && q.every((v,i)=>!i||v>=q[i-1]-1)})()"
 assert "SM-27 and it ended in place" "globalThis.__smSeen.at(-1)===0 || stripShown()"
 
 echo "-- SM-19 keyboard (strip only on reveal)"
