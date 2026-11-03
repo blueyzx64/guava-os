@@ -1,7 +1,14 @@
 # Liquid Glass
 
 ## What it does
-One translucent look for Guava's surfaces: a tint with a soft sheen, a thin rim and a shadow. Plain transparency, **no blur**, so it costs little. Registry id `liquid-glass` (key `liquid-glass`, on). Code: `lib/glass.js` (the service), `features/liquidGlass/`, CSS in `styles/base.css`.
+One glass for Guava's surfaces: what lies behind is blurred and its colour boosted, a tint with a soft sheen lies over it, with a thin rim and a shadow. Registry id `liquid-glass` (key `liquid-glass`, on). Code: `lib/glass.js` (the service), `lib/glassBlur.js` (the blur effect), `lib/glassParams.js` (the numbers), `features/liquidGlass/`, CSS in `styles/base.css`.
+
+## How it draws
+- One effect on the surface actor copies the backdrop from the screen at device pixels (sharp at any scale, fractional included), blurs it at a reduced size, boosts saturation, darkens it (dark glass) or lifts it (light glass), lays the tint over it and cuts the rounded corners. Text keeps 4.5:1 over a white or black backdrop.
+- **Menu bar and dock:** one static blur while only the wallpaper is behind them; they blur live while a window overlaps them and for 1.5 s after the wallpaper, the monitors or the overview change. A window moving elsewhere costs nothing.
+- **Menus, Control Center, overlays:** live blur, recomputed only when they repaint.
+- **Under load** live blur freezes on its last image (decorative work goes first) and comes back after 3 s of fast frames.
+- **Mission Control:** the menu bar's glass fades with the overview's own progress, frame for frame, also when interrupted. Clear to solid (with "solid when a window touches it") is one interruptible fade.
 
 ## Use
 - **Surfaces (`liquid-glass-surfaces`, default `panel`, `menus`, `dock`, `overlays`):** menu bar; menus, Control Center and calendar; dock; Spotlight, clipboard and the Stage Manager floor.
@@ -11,5 +18,6 @@ One translucent look for Guava's surfaces: a tint with a soft sheen, a thin rim 
 - Off gives every surface its solid theme colour.
 
 ## Limits
-- The glass is a fill on the surface actor itself (`guava-glass-*` classes), so it follows rounded corners. App windows stay opaque.
+- The glass lives on the surface actor itself (an effect plus `guava-glass-*` classes), so it follows rounded corners. App windows stay opaque.
+- Screenshots and screencasts show the last blur of a surface.
 - Another extension that blurs the same surfaces overlaps with it; use one of them per surface. Guava never changes that extension.

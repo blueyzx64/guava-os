@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // gjs -m tests/glassParams.test.js
-// lib/glassParams.js: the faux Liquid Glass look (fill, edge, rim, variants) for every surface.
+// lib/glassParams.js: the Liquid Glass look (fill, edge, rim, variants) for every surface.
 import {
-    ALPHA_RANGE, SETTING_FIELDS, TINT, WALLPAPER_MIX, fillStyle, glassClasses, hostClasses,
+    ALPHA_RANGE, BLUR_ALPHA_RANGE, LoadGovernor, SETTING_FIELDS, captureMargin, captureMode, downscaleFor,
+    effectColors, TINT, WALLPAPER_MIX, fillStyle, glassClasses, hostClasses,
     hostStyle, readSnapshot, resolve, roleFor, sliderAlpha,
     stripFragments, wantsSurface, worstCaseContrast, wrapFragment,
 } from '../lib/glassParams.js';
@@ -168,6 +169,63 @@ test('readSnapshot reads typed keys, defaults for missing ones', () => {
     eq(readSnapshot(null).liquid, true);
 });
 
+
+test('blur: a lighter tint over a blurred, darkened or lifted backdrop, still 4.5:1', () => {
+    for (const dark of [true, false]) {
+        for (const wallpaper of [null, [255, 255, 255], [0, 0, 0]]) {
+            for (const surface of ['panel', 'dock', 'menus', 'overlays']) {
+                const l = resolve(snap({ tint: 0 }), env({ dark, wallpaper, blur: true }), surface);
+                ok(l.blur && l.blur.sigma > 0, `${surface} has blur`);
+                ok(worstCaseContrast(l) >= 4.5, `${surface} ${dark} ${wallpaper}: ${worstCaseContrast(l).toFixed(2)}`);
+                const faux = resolve(snap({ tint: 0 }), env({ dark, wallpaper }), surface);
+                ok(l.alpha < faux.alpha, `${surface} ${dark}: blur ${l.alpha} < faux ${faux.alpha}`);
+            }
+        }
+    }
+    eq(sliderAlpha(0, 'bar', true), BLUR_ALPHA_RANGE.bar[0]);
+});
+
+test('blur off under Reduce Transparency and contrast; the effect makes St transparent', () => {
+    eq(resolve(snap({ reduceTransparency: true }), env({ blur: true }), 'menus').blur, null);
+    eq(resolve(snap({ increaseContrast: true }), env({ blur: true }), 'menus').blur, null);
+    const l = resolve(snap(), env({ blur: true }), 'menus');
+    ok(fillStyle(l, null, true).includes('background-color: transparent;'), 'transparent');
+    ok(!fillStyle(l, null, true).includes('gradient-end'), 'no St gradient');
+    const c = effectColors(l);
+    eq(c.top.length, 4);
+    ok(c.top[0] <= 1 && c.bottom[3] <= 1, 'floats');
+});
+
+test('capture: static for bar and dock, live for floating; margin; downscale keeps detail', () => {
+    eq(captureMode('panel'), 'auto');
+    eq(captureMode('dock'), 'auto');
+    eq(captureMode('menus'), 'live');
+    eq(captureMargin('panel', 20), 0);
+    eq(captureMargin('menus', 20.2), 21);
+    eq(downscaleFor(4, 400, 300), 1);
+    eq(downscaleFor(44, 400, 300), 8);
+    eq(downscaleFor(36, 2560, 64), 8, 'thin bar still downscales');
+    eq(downscaleFor(36, 2560, 8), 2, 'never below 4 px a side');
+});
+
+test('governor: sustained slow frames freeze live blur, fast frames bring it back', () => {
+    const g = new LoadGovernor({ window: 8, recoverMs: 1000 });
+    let t = 0;
+    for (let i = 0; i < 20; i++)
+        g.frame(t += 16, 16.7);
+    ok(!g.frozen, 'fast frames');
+    for (let i = 0; i < 4; i++)
+        g.frame(t += 60, 16.7);
+    ok(!g.frozen, 'a few slow frames are not load');
+    for (let i = 0; i < 10; i++)
+        g.frame(t += 60, 16.7);
+    ok(g.frozen, 'sustained slow frames freeze');
+    g.frame(t += 2000, 16.7);
+    ok(g.frozen, 'an idle gap is no evidence');
+    for (let i = 0; i < 70; i++)
+        g.frame(t += 16, 16.7);
+    ok(!g.frozen, 'recovers after 1 s of fast frames');
+});
 
 if (failed) {
     print(`${failed} test(s) failed`);

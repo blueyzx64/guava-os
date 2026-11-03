@@ -230,7 +230,7 @@ Shell or as extensions a feature had to work alongside:
 |---|---|
 | [Hide Top Bar](https://github.com/mlutfy/hidetopbar) | Panel hiding and pressure barriers |
 | [Clipboard Indicator](https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator) | Reading the clipboard in the Shell |
-| [Blur my Shell](https://github.com/aunetx/blur-my-shell) | Blur in the Shell; Liquid Glass is built to coexist with it |
+| [Blur my Shell](https://github.com/aunetx/blur-my-shell) (GPL-3.0) | Liquid Glass reads the backdrop from the stage view framebuffer as its backdrop capture does (`lib/glassBlur.js`); built to coexist with it |
 | [Dash to Dock](https://extensions.gnome.org/extension/307/dash-to-dock/) | The dock hand-off |
 | [Desktop Icons NG](https://extensions.gnome.org/extension/2087/desktop-icons-ng-ding/) | The desktop icon and widget layers |
 | [AppIndicator Support](https://extensions.gnome.org/extension/615/) | The menu bar's status icon host |
