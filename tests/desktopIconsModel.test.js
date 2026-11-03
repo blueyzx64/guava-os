@@ -2,7 +2,7 @@
 import {
     Selection, bandRect, desktopInFront, blockedCells, cellAt, cellRect, dingEnabled, flowCell, flowOrder, gridFor, inGrid, isDoubleClick, isDrag,
     layoutCells, menuActions, metricsFor, moveCells, neighbour, parseArrangement, pruneArrangement,
-    rubberBandHits, serializeArrangement, showsAsDrive, sortEntries, stemLength, typeAhead, uniqueName, validateName,
+    renameBase, renameTarget, rubberBandHits, serializeArrangement, showsAsDrive, sortEntries, stemLength, typeAhead, uniqueName, validateName,
 } from '../features/desktopIcons/model.js';
 
 let failed = 0;
@@ -281,6 +281,21 @@ test('rename: trims, refuses empty, slashes, dots, long and taken names', () => 
     eq(validateName('x/y', 'a.txt', sib).error, 'slash');
     eq(validateName('b.txt', 'a.txt', sib).error, 'exists');
     eq(validateName('é'.repeat(200), 'a.txt', sib).error, 'long');
+});
+
+test('RV6-2: renaming a launcher edits its file name and keeps .desktop', () => {
+    const fx = { key: 'firefox.desktop', name: 'Firefox', kind: 'file', launcher: {} };
+    const other = { key: 'Firefox Beta.desktop', name: 'Firefox Beta', kind: 'file', launcher: {} };
+    const txt = { key: 'a.txt', name: 'a.txt', kind: 'file', launcher: null };
+    eq(renameBase(fx), 'firefox.desktop');
+    eq(renameBase(txt), 'a.txt');
+    const all = [fx, other, txt];
+    eq(renameTarget(fx, 'Firefox Beta', all), { ok: false, error: 'exists' }, 'collides by file name');
+    eq(renameTarget(fx, 'Browser', all), { ok: true, name: 'Browser.desktop', changed: true });
+    eq(renameTarget(fx, 'Browser.desktop', all), { ok: true, name: 'Browser.desktop', changed: true });
+    eq(renameTarget(fx, 'firefox.desktop', all).changed, false);
+    eq(renameTarget(txt, 'b', all), { ok: true, name: 'b', changed: true }, 'plain files are untouched');
+    eq(renameTarget(txt, '', all).error, 'empty');
 });
 
 test('new folder names count up like Finder', () => {

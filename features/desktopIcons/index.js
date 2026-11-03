@@ -38,8 +38,8 @@ import { RenameEditor } from './rename.js';
 import { DesktopSource } from './source.js';
 import {
     SORTS, Selection, TYPE_AHEAD_MS, blockedCells, desktopInFront, dingEnabled, flowOrder, gridFor, isSort,
-    layoutCells, menuActions, metricsFor, moveCells, neighbour, parseArrangement, pruneArrangement,
-    serializeArrangement, typeAhead, uniqueName, validateName,
+    layoutCells, menuActions, metricsFor, moveCells, neighbour, parseArrangement, pruneArrangement, renameBase, renameTarget,
+    serializeArrangement, typeAhead, uniqueName,
 } from './model.js';
 
 const KEY_LAYOUT = 'desktop-icons-layout';
@@ -383,6 +383,8 @@ export class DesktopIcons {
         const w = this.grid.cellW - 8;
         const editor = new RenameEditor({
             tile,
+            text: renameBase(entry),
+            isFolder: entry.kind === 'folder',
             box: { x: x + (tile.label.width - w) / 2, y: y - 2, width: w },
             accessibleName: this._('Name'),
             validate: text => this._nameProblem(entry, text),
@@ -394,8 +396,7 @@ export class DesktopIcons {
     }
 
     _nameProblem(entry, text) {
-        const siblings = this.entries.filter(e => e.kind !== 'drive').map(e => e.name);
-        const r = validateName(text, entry.name, siblings);
+        const r = renameTarget(entry, text, this.entries);
         if (r.ok)
             return null;
         return {
@@ -409,7 +410,7 @@ export class DesktopIcons {
 
     async _commitRename(entry, text) {
         this._rename = null;
-        const r = validateName(text, entry.name, []);
+        const r = renameTarget(entry, text, this.entries);
         if (!r.ok || !r.changed)
             return;
         // The icon keeps its place and its selection under the new name

@@ -7,7 +7,6 @@ import Gio from 'gi://Gio';
 import St from 'gi://St';
 
 import * as A11y from '../../lib/a11y.js';
-import { Glass } from '../../lib/glass.js';
 import { MprisWatcher } from '../../core/mprisWatcher.js';
 
 const ART_SIZE = 36;
@@ -15,13 +14,16 @@ const SYMBOLIC_ART_SIZE = 20;
 const FADE_MS = 150;
 
 export class NowPlaying {
-    constructor({ gettext, cleanup }) {
+    constructor({ gettext, cleanup, motion }) {
         this._gettext = gettext;
+        this._motion = motion;
         this._cleanup = cleanup;
         this._watch = null;
         this._players = [];
         this._tokens = new Map();   // player -> token of its 'changed' handler
         this._destroyed = false;
+        this._artKey = null;        // what the art slot shows now (url + app icon), to not reload it
+        this._artGicon = null;
 
         this.actor = new St.BoxLayout({
             style_class: 'quick-toggle button guava-cc-now-playing',
@@ -114,6 +116,11 @@ export class NowPlaying {
         // the app icon is the fallback if the art cannot load.
         const url = player.trackCoverUrl;
         const appIcon = player.app?.get_icon() ?? null;
+        // 'changed' fires for every property of the player: a new FileIcon each time would
+        // reload (and re-download) the same cover
+        const key = `${url ?? ''}|${appIcon?.to_string?.() ?? ''}`;
+        if (key === this._artKey && this._artGicon)
+            return this._artGicon;
         const plain = appIcon ?? new Gio.ThemedIcon({ name: 'audio-x-generic-symbolic' });
         this._art.fallback_gicon = plain;
         const cover = typeof url === 'string' && /^(file|https?):\/\//.test(url);
@@ -124,24 +131,29 @@ export class NowPlaying {
             this._art.add_style_class_name('guava-cc-np-art-symbolic');
         else
             this._art.remove_style_class_name('guava-cc-np-art-symbolic');
-        return cover ? new Gio.FileIcon({ file: Gio.File.new_for_uri(url) }) : plain;
+        this._artKey = key;
+        this._artGicon = cover ? new Gio.FileIcon({ file: Gio.File.new_for_uri(url) }) : plain;
+        return this._artGicon;
     }
 
     _show(show) {
         if (this.actor.visible === show)
             return;
+        this._fade?.cancel();
+        this._fade = null;
         this.actor.remove_all_transitions();
         this.actor.visible = show;
-        if (!show || !Glass.motion) {
-            this.actor.opacity = 255;
+        this.actor.opacity = 255;
+        if (!show || !this._motion)
             return;
-        }
+        // Honours reduced motion (the animation is skipped to its end)
         this.actor.opacity = 0;
-        this.actor.ease({ opacity: 255, duration: FADE_MS, mode: Clutter.AnimationMode.EASE_OUT_QUAD });
+        this._fade = this._motion.ease(this.actor, { opacity: 255 }, { duration: FADE_MS, curve: 'standard' }, this._cleanup);
     }
 
     destroy() {
         this._destroyed = true;
+        this._fade?.cancel();
         for (const [player, token] of this._tokens)
             player.disconnect(token);
         this._tokens.clear();

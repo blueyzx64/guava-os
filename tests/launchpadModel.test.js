@@ -3,7 +3,7 @@ import { normalizeAccel } from '../lib/keybindingsModel.js';
 import {
     COLUMNS, ROWS, addToFolder, buildItems, cleanFolderName, createFolder, dropAction, flatpakAppId,
     folderMembers, folderNameFor, freeAccels, gridMetrics, jiggleParams, layoutIndex, moveId, navigate, pageCount, pageOf,
-    paginate, removeFromFolder, searchApps, serializeLayout, uninstallRule,
+    paginate, removeFromFolder, searchApps, serializeLayout, uninstallRule, SwipePager,
 } from '../features/launchpad/model.js';
 
 let failed = 0;
@@ -177,10 +177,27 @@ test('searchApps: prefix, word prefix, substring, keywords; accents folded', () 
 });
 
 test('flatpakAppId: X-Flatpak first, then the export path', () => {
-    eq(flatpakAppId({ desktopId: 'org.x.App.desktop', path: '/usr/share/applications/org.x.App.desktop', xFlatpak: 'org.x.App' }), 'org.x.App');
+    eq(flatpakAppId({ desktopId: 'org.x.App.desktop', path: '/var/lib/flatpak/exports/share/applications/org.x.App.desktop', xFlatpak: 'org.x.App' }), 'org.x.App');
+    // RV6-4: a decoy outside the Flatpak exports cannot name another app; ids are validated
+    eq(flatpakAppId({ desktopId: 'decoy.desktop', path: '/home/u/.local/share/applications/decoy.desktop', xFlatpak: 'org.x.App' }), null);
+    eq(flatpakAppId({ desktopId: 'a.desktop', path: '/var/lib/flatpak/exports/share/applications/a.desktop', xFlatpak: 'x; rm' }), null);
+    eq(flatpakAppId({ desktopId: 'a.desktop', path: '/var/lib/flatpak/exports/share/applications/a.desktop', xFlatpak: 'nodots' }), null);
     eq(flatpakAppId({ desktopId: 'org.x.App.desktop', path: '/var/lib/flatpak/exports/share/applications/org.x.App.desktop', xFlatpak: null }), 'org.x.App');
     eq(flatpakAppId({ desktopId: 'org.x.App.desktop', path: '/home/u/.local/share/flatpak/exports/share/applications/org.x.App.desktop' }), 'org.x.App');
     eq(flatpakAppId({ desktopId: 'nautilus.desktop', path: '/usr/share/applications/nautilus.desktop', xFlatpak: '' }), null);
+});
+
+test('SwipePager: a slow swipe adds up to one turn, its tail turns nothing more', () => {
+    const p = new SwipePager(1, 180);
+    let t = 1000;
+    const turns = [];
+    for (let i = 0; i < 12; i++, t += 16)
+        turns.push(p.push(0.2, t));                  // 12 small events, 192 ms of swipe
+    eq(turns.filter(Boolean), [1], 'one turn for the whole swipe');
+    for (let i = 0; i < 20; i++, t += 16)
+        eq(p.push(3, t), 0, 'kinetic tail');
+    t += 400;
+    eq(p.push(-1.2, t), -1, 'a new swipe after a pause turns again, backwards');
 });
 
 test('uninstallRule: Flatpak apps only, else nothing', () => {

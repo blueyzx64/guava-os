@@ -16,7 +16,7 @@ import { Caret } from '../../lib/caret.js';
 import { Keybindings, MODAL_MODES } from '../../lib/keybindings.js';
 import { ModalSurface } from '../../lib/modalSurface.js';
 import {
-    CLIPBOARD_RESTORE_MS, FOCUS_SETTLE_MS, commitText, restoreClipboard, saveClipboard, sendPasteChord,
+    CLIPBOARD_RESTORE_MS, FOCUS_SETTLE_MS, borrowClipboard, commitText, restoreClipboard, saveClipboard, sendPasteChord,
     setClipboardText,
 } from '../../lib/paste.js';
 import { GuavaSettings } from '../../lib/settings.js';
@@ -146,14 +146,18 @@ export class EmojiPicker {
         const saved = await saveClipboard(this._cancellable);
         if (this._cancellable.is_cancelled())
             return;
+        const release = borrowClipboard();
         setClipboardText(char);
         if (!sendPasteChord(prev)) {
             restoreClipboard(saved);
+            release();
             return;
         }
         this._lastInsert = { char, method: 'paste' };
+        this._cleanup.add(release);       // disabled before the timeout: still end the borrow
         this._cleanup.timeout(CLIPBOARD_RESTORE_MS, () => {
             restoreClipboard(saved);
+            release();
             return GLib.SOURCE_REMOVE;
         }, { name: 'emoji-clipboard-restore' });
     }

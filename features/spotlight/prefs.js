@@ -9,7 +9,7 @@ import Gtk from 'gi://Gtk';
 import { ENGINES } from './model.js';
 import { GUAVA_ACTIONS, actionChoices } from './actionsModel.js';
 import { addQuickKey, parseQuickKeys, removeQuickKey, validAlias } from './queryModel.js';
-import { shortcutRow, switchRow, watchKey } from '../../prefs/widgets.js';
+import { onWindowClose, shortcutRow, switchRow, watchKey } from '../../prefs/widgets.js';
 
 const N_ = s => s;
 
@@ -62,7 +62,7 @@ function engineRows(settings, _) {
             settings.set_string(key, text);
     });
     const id = settings.connect(`changed::${key}`, sync);
-    combo.connect('destroy', () => settings.disconnect(id));
+    onWindowClose(combo, () => settings.disconnect(id));
     return [combo, custom];
 }
 

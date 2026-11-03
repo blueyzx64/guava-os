@@ -11,6 +11,7 @@ import Gtk from 'gi://Gtk';
 import { ExtensionPreferences, gettext as _ } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 import { buildNavigation } from './prefs/window.js';
+import { watchWindowClose } from './prefs/widgets.js';
 import { plainTextTree } from './prefs/plainText.js';
 import { SECTIONS } from './prefs/pages/index.js';
 import { presentAssistant } from './prefs/setupAssistant.js';
@@ -42,6 +43,7 @@ export default class GuavaPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
         window._settings = settings;
+        watchWindowClose(window);
         const title = _('Guava OS');
         window.title = title;
         window.set_default_size(DEFAULT_WIDTH, DEFAULT_HEIGHT);

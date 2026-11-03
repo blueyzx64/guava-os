@@ -49,8 +49,11 @@ test('save, load, modes 0600/0700, clear', async () => {
     eq(GLib.file_test(GLib.build_filenamev([dir, 'images', orphan]), GLib.FileTest.EXISTS), false, 'orphan gone');
     eq(GLib.file_test(stray, GLib.FileTest.EXISTS), true, 'user file kept');
 
+    const bad = GLib.build_filenamev([dir, 'history.json.bad-123']);
+    GLib.file_set_contents(bad, 'old copies of the history');
     await store.clearAll();
     eq(GLib.file_test(GLib.build_filenamev([dir, 'history.json']), GLib.FileTest.EXISTS), false);
+    eq(GLib.file_test(bad, GLib.FileTest.EXISTS), false, 'quarantined copy cleared too (RV6-3)');
     eq(GLib.file_test(GLib.build_filenamev([dir, 'images', name]), GLib.FileTest.EXISTS), false);
     eq(GLib.file_test(stray, GLib.FileTest.EXISTS), true, 'user file kept after clear');
 });

@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Rows every preferences page builds from: one implementation each, shared by prefs/pages/
 // and features/<name>/prefs.js. Adw/Gtk/Gio only (the prefs process; never Shell modules).
-// Every row cleans up its own settings handler when it is destroyed.
+// A row's settings handler is disconnected when its window asks to close (onWindowClose), never
+// from a widget 'destroy' handler: those run while the process shuts down, when GJS refuses
+// to run JS ("Attempting to run a JS callback during shutdown").
 
 import Adw from 'gi://Adw';
 import Gdk from 'gi://Gdk';
@@ -10,10 +12,54 @@ import Gtk from 'gi://Gtk';
 
 import { KNOWN_DEFAULTS, findConflicts, normalizeAccel } from '../lib/keybindingsModel.js';
 
-/** Connect `fn` to settings `changed::key` until `widget` is destroyed. */
+const closers = new Set();
+
+/**
+ * Run `undo` when the window that holds `widget` closes (see watchWindowClose). Use it for
+ * what must be undone with the page (a settings handler, a file monitor).
+ *
+ * @param {Gtk.Widget} widget
+ * @param {() => void} undo
+ */
+export function onWindowClose(widget, undo) {
+    closers.add({ widget, undo });
+}
+
+function rootOf(widget) {
+    try {
+        return widget.get_root();
+    } catch (_e) {
+        return null;
+    }
+}
+
+/** Undo what the widgets of `window` registered (and of widgets that never got a window). */
+export function releaseWindow(window) {
+    for (const entry of [...closers]) {
+        const root = rootOf(entry.widget);
+        if (root !== window && root !== null)
+            continue;
+        closers.delete(entry);
+        try {
+            entry.undo();
+        } catch (e) {
+            console.debug(`[Guava] prefs: cleanup failed: ${e.message}`);
+        }
+    }
+}
+
+/** Call once per prefs window: its close releases everything onWindowClose() collected. */
+export function watchWindowClose(window) {
+    window.connect('close-request', () => {
+        releaseWindow(window);
+        return false;
+    });
+}
+
+/** Connect `fn` to settings `changed::key` until the window of `widget` closes. */
 export function watchKey(settings, key, widget, fn) {
     const id = settings.connect(`changed::${key}`, fn);
-    widget.connect('destroy', () => settings.disconnect(id));
+    onWindowClose(widget, () => settings.disconnect(id));
     return id;
 }
 

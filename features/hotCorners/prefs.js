@@ -4,7 +4,7 @@
 import Adw from 'gi://Adw';
 
 import { DESKTOP_ACTIONS } from '../../core/desktopActionsModel.js';
-import { comboRow } from '../../prefs/widgets.js';
+import { comboRow, onWindowClose } from '../../prefs/widgets.js';
 import { CORNERS, MODIFIERS, actionKey, modifierKey } from './model.js';
 
 /** @returns {Adw.PreferencesGroup[]} */
@@ -46,7 +46,7 @@ export function buildPrefs({ settings, _ }) {
         };
         sync();
         const id = settings.connect(`changed::${actionKey(corner)}`, sync);
-        row.connect('destroy', () => settings.disconnect(id));
+        onWindowClose(row, () => settings.disconnect(id));
         row.add_row(action);
         row.add_row(modifier);
         group.add(row);

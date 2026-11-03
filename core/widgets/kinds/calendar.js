@@ -3,9 +3,10 @@
 // calendar server); the large size adds the month.
 
 import Clutter from 'gi://Clutter';
+import Shell from 'gi://Shell';
 import St from 'gi://St';
 
-import { monthGrid, upcomingEvents } from '../data.js';
+import { monthGrid, upcomingEvents, weekdayOrder } from '../data.js';
 import { N_, box, label, openApp, spacer } from './common.js';
 
 const fmtTime = d => d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
@@ -78,10 +79,12 @@ export default {
             monthKey = key;
             grid.destroy_all_children();
             const lm = grid.layout_manager;
-            const weeks = monthGrid(now.getFullYear(), now.getMonth(), now, 1);
-            const names = [];
-            for (let i = 0; i < 7; i++)
-                names.push(new Date(2024, 0, 1 + i).toLocaleDateString([], { weekday: 'narrow' }));
+            // The locale's first day of the week (Sunday in the US, Monday in most of Europe)
+            const weekStart = Shell.util_get_week_start();
+            const weeks = monthGrid(now.getFullYear(), now.getMonth(), now, weekStart);
+            // 2024-01-07 was a Sunday
+            const names = weekdayOrder(weekStart).map(wd =>
+                new Date(2024, 0, 7 + wd).toLocaleDateString([], { weekday: 'narrow' }));
             names.forEach((n, i) => lm.attach(label(n, 'guava-widget-month-head', { x_align: Clutter.ActorAlign.CENTER }), i, 0, 1, 1));
             weeks.forEach((w, r) => w.forEach((d, c) => {
                 const cls = `guava-widget-month-day${d.inMonth ? '' : ' guava-widget-dim'}${d.today ? ' guava-widget-today' : ''}`;

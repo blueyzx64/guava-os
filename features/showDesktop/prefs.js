@@ -6,7 +6,7 @@ import Adw from 'gi://Adw';
 import Gtk from 'gi://Gtk';
 import Gio from 'gi://Gio';
 
-import { comboRow, shortcutRow } from '../../prefs/widgets.js';
+import { comboRow, onWindowClose, shortcutRow } from '../../prefs/widgets.js';
 
 
 
@@ -49,7 +49,7 @@ export function buildPrefs({ settings, extension }) {
             settings.set_string('show-desktop-speed', value);
     });
     const id = settings.connect('changed::show-desktop-speed', syncSpeed);
-    speed.connect('destroy', () => settings.disconnect(id));
+    onWindowClose(speed, () => settings.disconnect(id));
     main.add(speed);
     main.add(comboRow(settings, {
         title: _('Click wallpaper to reveal desktop'),

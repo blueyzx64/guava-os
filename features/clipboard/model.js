@@ -3,6 +3,8 @@
 // plain `gjs -m` (tests/clipboardModel.test.js). index.js feeds it facts (offered mime
 // types, focused app, sizes, a content hash) and acts on what it returns.
 
+import { SECRET_HINT_MIMES } from '../../lib/pasteModel.js';
+
 export const MiB = 1024 * 1024;
 
 export const DEFAULTS = Object.freeze({
@@ -24,7 +26,7 @@ export const MIN_ITEMS = 1;
 export const MAX_ITEMS = 500;
 
 /** Mime types a password manager adds to mark a secret (KeePassXC, Klipper/CopyQ convention). */
-export const SECRET_MIMES = Object.freeze(['x-kde-passwordManagerHint']);
+export const SECRET_MIMES = SECRET_HINT_MIMES;
 
 /**
  * Lowercased app ids / WM classes of password managers. Matched against the focused window

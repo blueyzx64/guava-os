@@ -90,6 +90,12 @@ export function upcomingEvents(events, now, limit) {
     return out.slice(0, limit);
 }
 
+/** The weekdays (0 = Sunday) in the order a week shows them, starting on `weekStart`. */
+export function weekdayOrder(weekStart) {
+    const start = ((Math.trunc(weekStart) || 0) % 7 + 7) % 7;
+    return [0, 1, 2, 3, 4, 5, 6].map(i => (i + start) % 7);
+}
+
 /**
  * The days of a month grid (weeks of 7), starting on `weekStart` (0 = Sunday).
  *

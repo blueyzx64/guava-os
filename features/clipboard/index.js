@@ -20,7 +20,7 @@ import { PanelLayout } from '../../core/panelLayout.js';
 import { MENU_CLOSE_ARGS } from '../../lib/compat.js';
 import { CleanupRegistry } from '../../lib/disposables.js';
 import { Keybindings, MODAL_MODES } from '../../lib/keybindings.js';
-import { FOCUS_SETTLE_MS, sendPasteChord } from '../../lib/paste.js';
+import { FOCUS_SETTLE_MS, isClipboardBorrowed, sendPasteChord } from '../../lib/paste.js';
 import { GuavaSettings } from '../../lib/settings.js';
 import {
     DEFAULTS, History, TEXT_MIME, checkDimensions, checkSize, imageDimensions, imageFileName,
@@ -258,7 +258,8 @@ export class ClipboardHistory {
         if (type !== Meta.SelectionType.SELECTION_CLIPBOARD)
             return;
         this._ownerSerial++;
-        if (!this._canRecord()) {
+        // Guava's own borrow of the clipboard (emoji paste, then the old content back)
+        if (isClipboardBorrowed() || !this._canRecord()) {
             this._selfHash = null;
             return;
         }

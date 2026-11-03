@@ -1,7 +1,7 @@
 // Run: gjs -m tests/widgetsData.test.js
 import {
     handAngles, msToNextMinute, offsetLabel, cityFromTimezone, worldLabel, highLow, upcomingEvents, monthGrid, batteryList, batteryLevel,
-    parseCpu, cpuUsage, parseMemory, formatBytes, mediaState,
+    parseCpu, cpuUsage, parseMemory, formatBytes, mediaState, weekdayOrder,
 } from '../core/widgets/data.js';
 
 let failed = 0;
@@ -53,6 +53,14 @@ test('month grid starts on the week start and marks today', () => {
     eq(flat.filter(d => d.inMonth).length, 31);
     for (const w of g)
         eq(w.length, 7);
+});
+test('weeks start on the locale week start, not always Monday', () => {
+    eq(weekdayOrder(0), [0, 1, 2, 3, 4, 5, 6]);
+    eq(weekdayOrder(1), [1, 2, 3, 4, 5, 6, 0]);
+    eq(weekdayOrder(6), [6, 0, 1, 2, 3, 4, 5]);
+    eq(weekdayOrder(undefined), [0, 1, 2, 3, 4, 5, 6]);
+    const g = monthGrid(2026, 9, new Date(2026, 9, 27), 0);     // October 2026 starts on a Thursday
+    eq(g[0][4].day, 1, 'Sunday-first: the 1st is the fifth cell');
 });
 test('battery list: laptop first, then devices by name; no line power', () => {
     const list = batteryList([

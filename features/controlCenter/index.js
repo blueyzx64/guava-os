@@ -263,7 +263,7 @@ export class ControlCenter {
             settings, gettext, extensionDir: this._ctx.extension?.dir,
         }), 'guava-toggles');
 
-        this._nowPlaying = new NowPlaying({ gettext, cleanup: this._cleanup });
+        this._nowPlaying = new NowPlaying({ gettext, cleanup: this._cleanup, motion: this._ctx.motion });
         add(this._nowPlaying.actor, 'now-playing');
 
         const edit = new St.Button({

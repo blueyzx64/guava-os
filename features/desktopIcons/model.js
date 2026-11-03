@@ -520,6 +520,31 @@ export function validateName(raw, current, siblings) {
     return { ok: true, name, changed: true };
 }
 
+/**
+ * The text Rename starts with. A launcher shows the app's Name= on the desktop, but renaming
+ * renames the file, so the editor shows the real file name (with its .desktop suffix).
+ */
+export function renameBase(entry) {
+    return entry.launcher ? entry.key : entry.name;
+}
+
+/**
+ * Validate and finalise a Rename. A launcher keeps its .desktop suffix (without it the file stops
+ * being a launcher); names are compared with the real file names, not the shown ones.
+ *
+ * @param {{key: string, name: string, launcher: ?object}} entry
+ * @param {string} raw what was typed
+ * @param {Array<{key: string, kind: string}>} entries everything on the desktop
+ * @returns {{ok: true, name: string, changed: boolean}|{ok: false, error: string}}
+ */
+export function renameTarget(entry, raw, entries) {
+    let text = raw.trim();
+    if (entry.launcher && text && !text.endsWith('.desktop'))
+        text += '.desktop';
+    const siblings = entries.filter(e => e.kind !== 'drive').map(e => e.key);
+    return validateName(text, renameBase(entry), siblings);
+}
+
 /** "untitled folder", then "untitled folder 2", ... that no sibling uses. */
 export function uniqueName(base, siblings) {
     const taken = new Set(siblings);

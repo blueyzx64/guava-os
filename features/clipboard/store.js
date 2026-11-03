@@ -312,7 +312,11 @@ export class ClipboardStore {
             if (await this._inspect() !== 'ok')
                 return;
             const names = await this.listImages();
-            await this._deleteAll([...names.map(n => this.imageFile(n)), this._index]);
+            // The quarantined copies of a corrupt index hold old text too
+            const bad = (await this._listNames(this._dir)).filter(n => BAD_RE.test(n));
+            await this._deleteAll([
+                ...names.map(n => this.imageFile(n)), ...bad.map(n => this._dir.get_child(n)), this._index,
+            ]);
         });
     }
 

@@ -5,7 +5,7 @@ import Adw from 'gi://Adw';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 
-
+import { onWindowClose } from '../../prefs/widgets.js';
 
 /**
  * @param {{settings: Gio.Settings, window: Adw.PreferencesWindow, extension: object}} args
@@ -102,7 +102,7 @@ export function buildPrefs({ settings, extension }) {
     const ids = ['changed::notch', 'changed::notch-live-activities', 'changed::notch-hover-expand']
         .map(sig => settings.connect(sig, sync));
     sync();
-    group.connect('destroy', () => ids.forEach(id => settings.disconnect(id)));
+    onWindowClose(group, () => ids.forEach(id => settings.disconnect(id)));
 
     return [group, acts, tray];
 }

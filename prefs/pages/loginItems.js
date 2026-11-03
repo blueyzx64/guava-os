@@ -12,6 +12,7 @@ import Gtk from 'gi://Gtk';
 
 import { DesktopAppInfo } from '../../lib/gioCompat.js';
 import { list, readText } from '../../lib/fileOps.js';
+import { onWindowClose } from '../widgets.js';
 import { GUAVA_MARK, backgroundItems, loginItems } from '../../lib/loginItemsModel.js';
 import { setAutostart } from '../../features/dock/autostart.js';
 
@@ -174,7 +175,7 @@ export function build({ _ }) {
     try {
         const monitor = Gio.File.new_for_path(userDir()).monitor_directory(Gio.FileMonitorFlags.WATCH_MOVES, null);
         const id = monitor.connect('changed', () => refresh());
-        page.connect('destroy', () => {
+        onWindowClose(page, () => {
             monitor.disconnect(id);
             monitor.cancel();
         });

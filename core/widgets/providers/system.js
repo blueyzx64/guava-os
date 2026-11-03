@@ -4,6 +4,7 @@
 // asynchronously, so the compositor never waits on them.
 
 import Gio from 'gi://Gio';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import { cpuUsage, parseCpu, parseMemory } from '../data.js';
 import { Provider } from './base.js';
@@ -34,19 +35,25 @@ export class SystemProvider extends Provider {
         cleanup.add(() => cancel.cancel());
         this._prev = null;
         this._history = [];
+        this._sampling = false;
         this._sample(cancel);
         cleanup.timeout(INTERVAL_MS, () => {
-            this._sample(cancel);
+            // Not while locked (nothing shows the widget), and never two reads at once
+            if (!this._sampling && !Main.sessionMode.isLocked)
+                this._sample(cancel);
             return true;
         }, { name: 'guava-widgets-system' });
     }
 
     async _sample(cancel) {
         let stat, mem;
+        this._sampling = true;
         try {
             [stat, mem] = await Promise.all([readText('/proc/stat', cancel), readText('/proc/meminfo', cancel)]);
         } catch (_e) {
             return; // cancelled, or no /proc: keep the last values
+        } finally {
+            this._sampling = false;
         }
         if (cancel.is_cancelled())
             return;

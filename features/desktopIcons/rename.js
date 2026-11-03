@@ -15,13 +15,15 @@ export class RenameEditor {
     /**
      * @param {object} p
      * @param {import('./tile.js').IconTile} p.tile the icon being renamed
+     * @param {string} p.text the name to start from
+     * @param {boolean} p.isFolder
      * @param {{x: number, y: number, width: number, height: number}} p.box where the field goes (stage px)
      * @param {string} p.accessibleName
      * @param {(text: string) => ?string} p.validate null when the name is fine, else the problem to show
      * @param {(text: string) => void} p.commit
      * @param {() => void} p.cancel
      */
-    constructor({ tile, box, accessibleName, validate, commit, cancel }) {
+    constructor({ tile, text, isFolder, box, accessibleName, validate, commit, cancel }) {
         this._tile = tile;
         this._validate = validate;
         this._commit = commit;
@@ -36,7 +38,7 @@ export class RenameEditor {
         this._scrim.set_size(global.stage.width, global.stage.height);
         this._entry = new St.Entry({
             style_class: 'guava-di-rename',
-            text: tile.entry.name,
+            text,
             accessible_name: accessibleName,
             can_focus: true,
             x: box.x, y: box.y, width: box.width,
@@ -62,7 +64,7 @@ export class RenameEditor {
         this._entry.clutter_text.connect('key-press-event', (_t, event) => this._key(event));
         this._entry.clutter_text.connect('text-changed', () => this._check());
         this._entry.grab_key_focus();
-        this._entry.clutter_text.set_selection(0, stemLength(tile.entry.name, tile.entry.kind === 'folder'));
+        this._entry.clutter_text.set_selection(0, stemLength(text, isFolder));
     }
 
     _check() {

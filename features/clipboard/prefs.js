@@ -6,7 +6,7 @@ import Adw from 'gi://Adw';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 
-import { shortcutRow, switchRow } from '../../prefs/widgets.js';
+import { onWindowClose, shortcutRow, switchRow } from '../../prefs/widgets.js';
 
 
 
@@ -40,7 +40,7 @@ function _excludedRow(settings, _) {
         if (!same(list, parse(row.text)))
             row.text = list.join(', ');
     });
-    row.connect('destroy', () => settings.disconnect(id));
+    onWindowClose(row, () => settings.disconnect(id));
     return row;
 }
 

@@ -140,6 +140,43 @@ export function buildItems(apps, folders, layout) {
 export const pageCount = (count, perPage) => Math.max(1, Math.ceil(count / Math.max(1, perPage)));
 export const pageOf = (index, perPage) => Math.floor(Math.max(0, index) / Math.max(1, perPage));
 
+/**
+ * Turns the smooth scroll events of a touchpad swipe into page turns: small deltas add up to
+ * one turn, and the rest of the swipe (its kinetic tail) turns nothing more. A new swipe is
+ * told by a pause in the events.
+ */
+export class SwipePager {
+    constructor(threshold = 1, pauseMs = 180) {
+        this._threshold = threshold;
+        this._pauseMs = pauseMs;
+        this._sum = 0;
+        this._last = -Infinity;
+        this._spent = false;
+    }
+
+    /**
+     * @param {number} delta the event's main-axis scroll delta
+     * @param {number} timeMs the event's time
+     * @returns {number} -1, 0 or 1: pages to turn
+     */
+    push(delta, timeMs) {
+        if (timeMs - this._last > this._pauseMs) {
+            this._sum = 0;
+            this._spent = false;
+        }
+        this._last = timeMs;
+        if (this._spent)
+            return 0;
+        this._sum += delta;
+        if (Math.abs(this._sum) < this._threshold)
+            return 0;
+        const step = Math.sign(this._sum);
+        this._sum = 0;
+        this._spent = true;
+        return step;
+    }
+}
+
 /** Split a list into pages of perPage. Always at least one (maybe empty) page. */
 export function paginate(list, perPage) {
     const pages = [];
@@ -335,6 +372,7 @@ export function searchApps(query, apps) {
 // ---- jiggle mode and delete (ⓧ) -------------------------------------------------------------
 
 /** Where Flatpak exports desktop files (system and per-user installations). */
+const FLATPAK_ID = /^[A-Za-z_][A-Za-z0-9_-]*(\.[A-Za-z_][A-Za-z0-9_-]*)+$/;
 const FLATPAK_EXPORTS = /\/flatpak\/exports\/share\/applications\/[^/]+\.desktop$/;
 
 /**
@@ -345,12 +383,13 @@ const FLATPAK_EXPORTS = /\/flatpak\/exports\/share\/applications\/[^/]+\.desktop
  * @returns {?string}
  */
 export function flatpakAppId({ desktopId, path, xFlatpak }) {
+    // Only an entry Flatpak itself exported counts: ~/.local/share/applications is writable by
+    // any app, and a decoy there could name another app's id
+    if (!path || !FLATPAK_EXPORTS.test(path))
+        return null;
     const declared = String(xFlatpak ?? '').trim();
-    if (declared)
-        return declared;
-    if (path && FLATPAK_EXPORTS.test(path))
-        return String(desktopId ?? '').replace(/\.desktop$/, '') || null;
-    return null;
+    const id = declared || String(desktopId ?? '').replace(/\.desktop$/, '');
+    return FLATPAK_ID.test(id) ? id : null;
 }
 
 /**

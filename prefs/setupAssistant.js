@@ -12,7 +12,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
-import { switchRow } from './widgets.js';
+import { onWindowClose, switchRow } from './widgets.js';
 import { ACCENTS, ONBOARDING_KEY, STEPS, appearanceChoice, appearanceWrites } from '../features/onboarding/model.js';
 
 const INTERFACE_SCHEMA = 'org.gnome.desktop.interface';
@@ -28,7 +28,7 @@ function choiceGroup(settings, key, values, labels, _) {
             settings.set_string(key, group.active_name);
     });
     const id = settings.connect(`changed::${key}`, sync);
-    group.connect('destroy', () => settings.disconnect(id));
+    onWindowClose(group, () => settings.disconnect(id));
     return group;
 }
 
@@ -62,7 +62,7 @@ function appearanceGroup(settings, _) {
     });
     const ids = [settings.connect('changed::appearance-auto', sync)];
     const ifaceId = iface?.connect('changed::color-scheme', sync);
-    group.connect('destroy', () => {
+    onWindowClose(group, () => {
         ids.forEach(id => settings.disconnect(id));
         if (ifaceId)
             iface.disconnect(ifaceId);
@@ -96,7 +96,7 @@ function accentRow(settings, key, title, _) {
     };
     sync();
     const id = settings.connect(`changed::${key}`, sync);
-    box.connect('destroy', () => settings.disconnect(id));
+    onWindowClose(box, () => settings.disconnect(id));
     const wrap = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 8 });
     wrap.append(new Gtk.Label({ label: _(title), css_classes: ['heading'] }));
     wrap.append(box);

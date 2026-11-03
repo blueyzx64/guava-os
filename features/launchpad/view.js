@@ -34,7 +34,7 @@ import { decodeWallpaper, resolveWallpaper } from '../../lib/wallpaperDecode.js'
 import { parseHexColor, wallpaperSource } from '../../lib/wallpaperModel.js';
 import {
     cleanFolderName, dropAction, gridMetrics, jiggleParams, moveId, navigate, pageCount, pageOf,
-    searchApps,
+    SwipePager, searchApps,
 } from './model.js';
 
 // The backdrop picture: small enough to look blurred once stretched over the screen
@@ -308,6 +308,7 @@ export class LaunchpadView {
         this._building = 0;
         this._press = 0;
         this._scrollLock = false;
+        this._swipe = new SwipePager();
         this._grab = null;
         this._build();
     }
@@ -442,6 +443,9 @@ export class LaunchpadView {
                     return;
                 backdropCache = { key, pixbuf };
             }
+            // Closed while the (cached or just decoded) picture was on its way
+            if (cancellable.is_cancelled())
+                return;
             const image = St.ImageContent.new_with_preferred_size(pixbuf.get_width(), pixbuf.get_height());
             const context = global.stage.context.get_backend().get_cogl_context();
             image.set_bytes(context, pixbuf.read_pixel_bytes(),
@@ -601,9 +605,7 @@ export class LaunchpadView {
         let step = 0;
         if (dir === Clutter.ScrollDirection.SMOOTH) {
             const [dx, dy] = event.get_scroll_delta();
-            const d = Math.abs(dx) > Math.abs(dy) ? dx : dy;
-            if (Math.abs(d) >= 0.5)
-                step = Math.sign(d);
+            step = this._swipe.push(Math.abs(dx) > Math.abs(dy) ? dx : dy, event.get_time());
         } else if (dir === Clutter.ScrollDirection.DOWN || dir === Clutter.ScrollDirection.RIGHT) {
             step = 1;
         } else if (dir === Clutter.ScrollDirection.UP || dir === Clutter.ScrollDirection.LEFT) {
