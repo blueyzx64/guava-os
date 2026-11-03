@@ -78,6 +78,15 @@ export class FullscreenSpace {
         this._scheduleEnsure();
     }
 
+    /**
+     * API: the user's own St slow-down factor while this feature borrows it for a slide, else
+     * null. The minimize effect uses it to keep its speed (ctx.features.instance(...)).
+     * @returns {number|null}
+     */
+    baseSlowDown() {
+        return this._slow?.original ?? null;
+    }
+
     disable() {
         if (!this._on)
             return;

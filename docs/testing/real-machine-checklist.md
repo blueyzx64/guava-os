@@ -48,10 +48,13 @@ plus a screenshot or a short screen recording (Ctrl+Shift+Alt+R).
       `~/.config/environment.d/60-guava-freetype.conf`.
 
 ### 2.2 Smoothness on your hardware
+- [ ] The Genie for every minimize, also right after entering full screen (during the slide to its
+      own Space) and when the dock brings back a window from another Space: always the Genie, at
+      the same speed, never a plain scale or a window that just vanishes.
 - [ ] Mission Control, Launchpad, the Genie, tiling snaps, the Stage Manager strip and the notch
       animate smoothly, and a second input mid-animation turns them around smoothly (no snap).
 - [ ] Under heavy load (a big build), decorative work backs off first: the live glass refreshes
-      less often, dock magnification stops, the Genie becomes a plain scale. Window management,
+      less often and dock magnification stops; the Genie stays the Genie. Window management,
       the dock and the menu bar stay responsive.
 
 ### 2.3 Lock screen (your account)
@@ -83,7 +86,6 @@ plus a screenshot or a short screen recording (Ctrl+Shift+Alt+R).
 | Qt apps on native Wayland get no app menu in the menu bar | Measured: Qt 6 on Wayland never offers its menu to anyone on GNOME (no KDE protocol in Mutter). Generic menus instead. |
 | Firefox's and libadwaita's ☰ menus are not in the menu bar yet | Their only route is the accessibility bus. Guava turns it on (your choice), but the providers that read it stay off until they prove stable; the harness could not read Text Editor's popover. |
 | A double-click right next to the window buttons goes full screen | It cannot be told apart from a click on the green button (documented trade-off). |
-| Minimizing a full-screen window during its slide to its own Space (0.6–1.3 s after entering) can skip the Genie | Mutter sends no minimize signal while a workspace switch runs. Before and after the slide it plays. |
 | With "Workspaces span displays" on, a full-screen window on a second monitor moves the whole workspace | Mutter has one workspace set for all monitors in that mode; GNOME's default (workspaces on the primary only) is handled. |
 | A menu straddling two monitors with different scales re-captures its blur every frame | Costs performance only, and only in that layout; the fix is risky. |
 | The login overview zoom still starts before Guava loads | GNOME starts it before extensions are enabled; Guava hides it as soon as it runs. |

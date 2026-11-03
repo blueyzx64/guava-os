@@ -66,8 +66,9 @@ export function chooseMode({ effect, env, normal, flagged, hasTarget, overview }
         return 'fade';
     if (!hasTarget)
         return 'stock';
-    // The Genie warps the window mesh every frame: a Shell over its frame budget plays Scale instead
-    return effect === 'scale' || env.degraded ? 'scale' : 'genie';
+    // The chosen effect always plays, also while the Shell is loaded (env.degraded): switching
+    // effects mid-session reads as a bug, and the Genie's per-frame cost is a fixed mesh
+    return effect === 'scale' ? 'scale' : 'genie';
 }
 
 /**

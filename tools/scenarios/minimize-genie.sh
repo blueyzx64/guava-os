@@ -43,11 +43,9 @@ const turns=(s,ts)=>{let t=0,d=0,big=-1;for(let i=1;i<s.length;i++){const k=s[i]
 J() { _kjs "$H $1"; }
 E=org.gnome.TextEditor
 
-# The Genie is the full-quality path: a Shell over its frame budget (env.degraded) plays Scale instead
-# (chooseMode, covered in minimizeEffectModel.test.js). llvmpipe paints 4x the pixels at scale 2 and
-# trips that budget in every frame, so the scenario would test Scale, not the Genie. Report the real
-# load, then pin degraded=false for the effect (the budget would flip it back on each repaint).
-J "const m=me._ctx.motion; globalThis.__real=m.env; Object.defineProperty(m,'env',{configurable:true,get:()=>({...globalThis.__real,...Object.getPrototypeOf(m).__lookupGetter__('env').call(m),degraded:false})}); return 'real motion env (pinned degraded=false from here) '+JSON.stringify(globalThis.__real)"
+# The Genie stays the Genie under load (env.degraded, chooseMode in minimizeEffectModel.test.js):
+# llvmpipe at scale 2 is over its frame budget in every frame, and the effect must not change
+J "return 'real motion env '+JSON.stringify(me._ctx.motion.env)"
 echo "-- warm-up"
 J "const w=anyw('$E'); w.activate(global.get_current_time()); await sl(400); w.minimize(); await sl(900); w.unminimize(); await sl(900); return 1" >/dev/null
 
@@ -73,10 +71,8 @@ assert "genie-restore-from-dock-tile" "globalThis.__tile && !__anyw('$E').minimi
 echo "-- B1 maximized and full-screen windows"
 J "globalThis.__s0=st(); const w=anyw('$E'); w.maximize(); await sl(900); let r=rec(); w.minimize(); await sl(900); r.stop(); globalThis.__mx=r.s.find(p=>p>0&&p<1)??null; w.unminimize(); await sl(900); w.unmaximize(); await sl(700); w.make_fullscreen(); const fsx=inst('move-window-to-new-workspace'); await until(()=>fsx._wins.get(w)?.isolated&&!fsx._slow&&!fsx._pin,30000); await sl(500); r=rec(); w.minimize(); await sl(900); r.stop(); globalThis.__fs=r.s.find(p=>p>0&&p<1)??null; w.unminimize(); await sl(900); w.unmake_fullscreen(); await sl(900); return 1" >/dev/null
 assert "genie-maximized" "globalThis.__mx>0 && globalThis.__mx<1"
-# B24: the Genie runs for a full-screen window once its Space has settled (4.5 s: isolation delay
-# plus the slowed workspace switch of features/fullscreenSpace). Inside that switch Mutter hides the
-# window with no 'minimize' signal at all (meta_window_actor_hide returns early while the compositor
-# switches workspace), so no extension can animate it.
+# A full-screen window once its Space has settled; minimizing during the slide itself (no
+# 'minimize' signal from Mutter then) is genie-during-slide.sh
 assert "genie-fullscreen" "globalThis.__fs>0 && globalThis.__fs<1"
 assert "genie-fullscreen-ends-clean" "__clean() && !__anyw('$E').minimized"
 
@@ -113,7 +109,6 @@ echo "-- B1 frame times"
 perf_start
 J "const w=anyw('$E'); w.minimize(); await sl(900); w.unminimize(); await sl(900); return 1" >/dev/null
 perf_stop genie-min-restore
-J "delete me._ctx.motion.env; return 'unpinned, real degraded now '+me._ctx.motion.env.degraded"
 J "return 'stats '+JSON.stringify(me.stats)"
 shot minimize-genie-end
 assert_summary
