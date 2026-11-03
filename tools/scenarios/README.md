@@ -48,3 +48,12 @@ overload (`b28.degraded_under_load` fails at 0). Live glass blur recaptures at m
 take more than 50 ms, `ctx.motion.env.degraded` turns true and `motion-changed` fires. Requests marked
 `decorative: true` then become a crossfade, and features with costly ornaments drop them until it clears
 (it clears when fewer than 10 % of the frames are slow). Core interactions never degrade.
+
+## Login parse cost (B34)
+
+| File | Role |
+|---|---|
+| `parse-cost.js` | `gjs -m tools/scenarios/parse-cost.js [--top N] [--graph entry.js ...]`: SpiderMonkey syntax-parse time per module (host, idle). All 2.7 MB of the extension parse in ~50 ms: syntax is not the login cost. |
+| `login-modules.sh` | Real Shell: import cost of 76 pure model modules (re-import with `?query`), ~0.17 ms per KB (file read + compile + evaluate). The login path is ~1.5 MB, so ~250 ms. |
+
+The login trace summary has `stallAt` (`ms@time`) to place each main-loop stall.

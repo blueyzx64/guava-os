@@ -137,6 +137,8 @@ export function summarize(trace, timings = null) {
         stalls50: stalls.length,
         maxStall: stalls.reduce((m, s) => Math.max(m, s[1]), 0),
         stallTotalMs: stalls.reduce((a, s) => a + s[1], 0),
+        // where the stalls are: `ms@time` (process clock), to tell parse/start work from the Shell's own
+        stallAt: stalls.map(s => `${s[1]}@${at(s[0])}`),
         workarea: { changes: work.length, last: at(work.length ? work[work.length - 1][0] : null),
             final: work.length ? work[work.length - 1][2] : null,
             steps: work.map(e => `${(e[2] ?? []).join(',')}@${at(e[0])}`) },
