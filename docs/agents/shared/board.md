@@ -38,3 +38,5 @@
 | B34 | Login: ready 2604 vs limit 2090 ms, stall total 1357 vs 1256 ms; bound by module parsing (~500 ms) | L18 measured -> L19 (notch + desktop-icons first render) | a1aae77 |
 | B35 | 250 ms misses: clock/Notification Center 366, notch hover 657, Mission Control first open 495; overview.p95 55 vs stock 21; burst stalls 5 vs 3; Genie + MC previews use env.degraded | L19 | merged; final suite: MC first open 416 ms still over | 9c4425c |
 | B36 | Final suite (quiet machine, 9c4425c): 35 PASS 5 FAIL: login.ready 2390/1940, overview.p95 49.5/34.5, overview-load.p95 61/52, degraded never trips under load, Mission Control first open 416 ms > 250 | next wave | todo | |
+| B37 | Repo restructure to src/ layout (D-025) | O | done | c561c19 |
+| A1 | Hand-over audit: checks that failed open, hidden errors, 6 reviews (5 high, 24 medium), 6 fix lanes, X11/multi-monitor/scale harness | O + RV1-6 + F1-F6 | merged; final verification running | c561c19 |

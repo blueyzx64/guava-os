@@ -6,6 +6,16 @@
 
 ## Hand-over audit (what "0 errors" was hiding)
 
+- **A harness change can look like a code regression:** installing gnome-backgrounds (a real JPEG
+  XL wallpaper) added ~0.6 s to every login measurement. Re-run the old commit's tree on today's
+  harness before blaming a commit (P1). Background helpers that run at login (the wallpaper
+  decode) go under `nice -n 19`.
+- **Plain GTK4 header bars (and mutter-x11-frames, which X11 titlebars use) take GTK's built-in
+  theme:** `windowcontrols button > image { min-width: 30px }` made the traffic lights 34 px wide,
+  40 px apart. GTK applies specificity before provider priority: match the theme's selectors.
+- **A scenario that prints its own "ASSERT PASS" lines counts 0 asserts:** use `assert`, and check
+  the summary is not `pass=0 fail=0`.
+
 - **A green check is only as good as the check.** Three of ours failed open: `check-pack.sh`
   checked nothing without git (a failure inside `< <(...)` does not stop a bash script); the
   harness error counter stopped at the blank line GLib puts before a CRITICAL's JS stack, so

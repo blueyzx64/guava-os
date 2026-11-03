@@ -93,4 +93,36 @@ plus a screenshot or a short screen recording (Ctrl+Shift+Alt+R).
 
 ## 4. Performance
 
-<!-- filled in after the final performance runs -->
+Measured with `tools/scenarios/run-perf.sh` on software rendering (llvmpipe), against a stock
+GNOME login in the same run. Absolute times on your GPU will be lower; what matters here is the
+comparison with stock GNOME and the 250 ms response rule.
+
+**Response time (input → first visible frame, slowest 5%; limit 250 ms):**
+
+| Action | Guava | Stock GNOME |
+|---|---|---|
+| Notch hover | 73–98 ms | — |
+| Dock click | 65–107 ms | — |
+| Window drag start | 66–77 ms | 64–67 ms |
+| App menu in the menu bar | 90–164 ms | — |
+| Control Center | 114–167 ms | 59–64 ms |
+| App switcher (Super+Tab) | 131–158 ms | 190–209 ms |
+| Launchpad | 139–196 ms | — |
+| Spotlight (Super tap) | 157–233 ms | 77–113 ms |
+| Notification Center (clock) | 208–252 ms (2 of 3 runs under 250) | 119–168 ms |
+| **Mission Control, first open** | **308–349 ms** | — (later opens ~50–80 ms) |
+
+**Against stock GNOME:** idle is clean (0 paints, 1–2 wakeups/s), window drags and the overview
+stay within the limits, no jumps, reversals or flicker in any measured animation.
+
+**Still over the limits on this software renderer:**
+- **Login:** ready ~2.5–2.9 s against stock's ~1.9 s (limit +0.6 s). Guava's own start costs
+  ~2.4 s here; the default JPEG XL wallpaper decode now runs at low priority (it competed with
+  the Shell). The chrome appears in its final place (0 jumps), only later than stock's.
+- **Mission Control's first open** after login: the overview's first paint compiles shaders and
+  uploads textures. Later opens are fast.
+- **Bursts** (six windows opening and closing, overview spam): 5–6 stalls over 50 ms against a
+  limit of 4.5, varying between runs.
+
+On your machine: tell me if logging in, the first Mission Control open or a burst of windows feels
+slow. These are the three places where a real GPU decides whether the gap matters.
