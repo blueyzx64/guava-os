@@ -105,6 +105,7 @@ export class NotchView {
         this._layout = null;         // shelfLayout() as last reported
         this._hoverIntent = { enabled: true, delayMs: 300 };
         this._hoverTimer = 0;
+        this._barTokens = null;      // followBar(): the panelBox signals while the notch slides with it
         this._anim = new CleanupRegistry();   // owner of running animations, disposed with the view
 
         this.placeholder = new St.Widget({
@@ -189,6 +190,50 @@ export class NotchView {
             },
         });
         this._place(SIZES.idle, false);
+        this._sink();
+    }
+
+    // The island's place in the stage: just above the top bar, like a part of it. addTopChrome
+    // puts it at the top of uiGroup, which is above the modal dialogs, the on-screen keyboard
+    // and the screenshot UI the Shell added before any extension ran (layout.js init), so the
+    // notch used to draw over them. Only an open dashboard (with its outside-click layer) goes
+    // to the top, for as long as it is open (_syncOutside).
+    _sink() {
+        const ui = Main.layoutManager.uiGroup;
+        const bar = Main.layoutManager.panelBox;
+        if (this._destroyed || this._island.get_parent() !== ui || bar?.get_parent() !== ui)
+            return;
+        ui.set_child_above_sibling(this._island, bar);
+        for (const ear of this._ears ?? [])
+            ui.set_child_below_sibling(ear, this._island);
+    }
+
+    /**
+     * Slide and fade with the top bar: it is being revealed over a full-screen window
+     * (features/menuBar/fullscreenReveal.js animates the panelBox), and the notch is a part of it.
+     * @param {boolean} on
+     */
+    followBar(on) {
+        if (this._destroyed || on === !!this._barTokens)
+            return;
+        const box = Main.layoutManager.panelBox;
+        if (on) {
+            const sync = () => {
+                this._island.translation_y = box.translation_y;
+                this._island.opacity = box.opacity;
+            };
+            this._barTokens = ['notify::translation-y', 'notify::opacity'].map(s => this._cleanup.connect(box, s, sync));
+            sync();
+            // The pointer passes through to the bar: the reveal slides the bar away when the
+            // pointer leaves Main.panel, which never sees it while the island takes it
+            this._island.reactive = false;
+            return;
+        }
+        this._barTokens.forEach(t => this._cleanup.release(t));
+        this._barTokens = null;
+        this._island.reactive = !this._shelfDrag;
+        this._island.translation_y = 0;
+        this._island.opacity = 255;
     }
 
     // A release that ends a press on the notch itself (not on a button): a click on the card
@@ -271,10 +316,13 @@ export class NotchView {
     _syncOutside() {
         const shown = this._open && this._island.visible;
         // Not during a drag from the shelf: the windows must be under the pointer for the drop
-        if (shown && !this._dragging)
+        if (shown && !this._dragging) {
             this._outside.start(this._shelfDrag ? this._dashboardRect() : null);
-        else
+        } else {
             this._outside.stop();
+            if (!this._open)
+                this._sink();
+        }
         if (shown && this._pinned)
             this._watchKeys();
         else
@@ -390,7 +438,7 @@ export class NotchView {
         if (on === this._shelfDrag)
             return;
         this._shelfDrag = on;
-        this._island.reactive = !on;
+        this._island.reactive = !on && !this._barTokens;
         this._dash?.current?.shelf?.tiles.forEach(t => {
             t.actor.reactive = !on;
         });
@@ -436,6 +484,7 @@ export class NotchView {
             // Shown, hidden and faded with the island
             this._island.bind_property('visible', ear, 'visible', GObject.BindingFlags.SYNC_CREATE);
             this._island.bind_property('opacity', ear, 'opacity', GObject.BindingFlags.SYNC_CREATE);
+            this._island.bind_property('translation-y', ear, 'translation-y', GObject.BindingFlags.SYNC_CREATE);
             return ear;
         });
         // A theme or Glass change to the island's fill repaints the ears in the same colour
@@ -561,6 +610,11 @@ export class NotchView {
         this._dropDash();
         this._liveMs = null;
         this._stopTimers();
+        // A fade-in that never ran (the island was hidden, so its timeline never ticked) is still
+        // owned by _anim: cancel it while the page exists, or disposing _anim on disable later
+        // touches a destroyed actor
+        this._pageFade?.cancel();
+        this._pageFade = null;
         if (old)
             this._retire(old, shapeChanged);
         let page;
@@ -589,7 +643,7 @@ export class NotchView {
             // reads as coming out of the notch.
             page.opacity = 0;
             page.translation_y = growing ? -6 : 0;
-            this._motion.ease(page, { opacity: 255, translation_y: 0 }, {
+            this._pageFade = this._motion.ease(page, { opacity: 255, translation_y: 0 }, {
                 duration: 'short', curve: 'standard', delay: growing ? CONTENT_DELAY_MS : 40,
             }, this._anim);
         }

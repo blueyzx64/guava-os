@@ -188,6 +188,8 @@ export class NotchFeature {
         // The active Focus mode's icon (features/focus) shows on the Widgets tab's Focus toggle
         this._ctx.events.on('focus-changed', () => this._sync(), cleanup);
         cleanup.connect(global.display, 'in-fullscreen-changed', () => this._syncExternal());
+        // The bar revealed over a full-screen window brings the notch with it
+        cleanup.connect(Main.layoutManager.panelBox, 'notify::visible', () => this._sync());
         // The overview shows the helper's window among the real ones: close the dashboard (and so the helper) first
         cleanup.connect(Main.overview, 'showing', () => this._dispatch({ type: 'collapse' }));
         this._syncExternal(true);
@@ -384,8 +386,12 @@ export class NotchFeature {
             } : null,
         });
 
-        // Only the pill over a fullscreen window; no bar there.
-        this._view.setShown(wants || !fullscreen);
+        // Over a full-screen window there is no bar, so only something transient shows, unless
+        // the bar slides in (the menu bar's full-screen reveal): then the notch is part of it and
+        // slides and fades with it.
+        const barShown = !!Main.layoutManager.panelBox?.visible;
+        this._view.setShown(wants || !fullscreen || barShown);
+        this._view.followBar(fullscreen && !wants && barShown);
         // A pill drawn over a fullscreen window needs the compositor to stop direct scanout
         const overFullscreen = wants && fullscreen;
         if (overFullscreen !== this._overFullscreen) {
