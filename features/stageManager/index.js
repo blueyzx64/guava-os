@@ -191,19 +191,24 @@ export class StageManager {
     }
 
     /**
-     * Open an app into the current stage: a running app's window joins the set, else the
-     * app's next window does.
+     * Open an app into the current stage (Option-click on the Dock or Launchpad, as macOS): the
+     * set of a running app that waits in the strip joins the stage, an app already on the stage
+     * is just focused, an app that is not running opens its window into the stage set.
      * @param {string} appId
      */
     openIntoStage(appId) {
         const app = this._appSystem.lookup_app(appId);
         if (!this._model || !app)
             return;
-        this._send({ type: 'join-next', appId });
-        if (app.get_n_windows() > 0)
+        const waiting = this._model.waitingSetOf(appId);
+        if (waiting !== null) {
+            this._send({ type: 'activate', set: waiting, add: true });
+        } else if (app.get_n_windows() > 0) {
             app.activate();
-        else
+        } else {
+            this._send({ type: 'join-next', appId });
             app.open_new_window(-1);
+        }
     }
 
     // ---- events in ----------------------------------------------------------------------------

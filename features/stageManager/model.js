@@ -152,6 +152,21 @@ export class StageModel {
         return out;
     }
 
+    /**
+     * The set of an app that waits in the strip of the active workspace: its id, or null when the
+     * app has no window there or is on the stage already.
+     */
+    waitingSetOf(appId) {
+        if (!appId)
+            return null;
+        const space = this._space(this._active);
+        for (const id of space.strip) {
+            if (this._sets.get(id).ids.some(w => this._win.get(w)?.appId === appId))
+                return id;
+        }
+        return null;
+    }
+
     isManaged(id) {
         return this._setOf.has(id);
     }

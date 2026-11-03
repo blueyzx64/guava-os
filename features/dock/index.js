@@ -39,6 +39,7 @@ import * as Layout from 'resource:///org/gnome/shell/ui/layout.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
 import { CleanupRegistry } from '../../lib/disposables.js';
+import { opensIntoStage } from '../../lib/clickModel.js';
 import { GuavaSettings } from '../../lib/settings.js';
 import { WindowState } from '../../core/windowState.js';
 import { LauncherEntryWatcher } from '../../lib/launcherEntry.js';
@@ -416,6 +417,13 @@ export class Dock {
     clickApp(item, button) {
         const model = this._desktop.model;
         const id = item.spec.id;
+        // Option-click: open into the current Stage Manager stage (SM-29)
+        const stage = this._ctx.features?.instance?.('stage-manager');
+        if (opensIntoStage({ button, alt: altHeld(), stageActive: typeof stage?.openIntoStage === 'function' })) {
+            this._noteRecent(id);
+            stage.openIntoStage(id);
+            return;
+        }
         const windows = model.windows({ appId: id });
         const action = clickAction({
             windows,

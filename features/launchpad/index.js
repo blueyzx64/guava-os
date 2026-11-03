@@ -102,6 +102,18 @@ export class Launchpad {
         return true;
     }
 
+    /**
+     * Option-click on a tile: open the app into the current Stage Manager stage (SM-29).
+     * @returns {boolean} false when Stage Manager is not running (the caller opens the app as usual)
+     */
+    openIntoStage(appId) {
+        const stage = this._ctx.features?.instance?.('stage-manager');
+        if (typeof stage?.openIntoStage !== 'function')
+            return false;
+        stage.openIntoStage(appId);
+        return true;
+    }
+
     /** @param {{immediate?: boolean}} [opts] */
     close({ immediate = false } = {}) {
         const view = this.view;

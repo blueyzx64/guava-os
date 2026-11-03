@@ -727,7 +727,10 @@ export class LaunchpadView {
     // ---- clicks ------------------------------------------------------------------------------
 
     activate(tile) {
-        if (tile.kind !== 'folder' && this.jiggling)
+        // Holding Option makes the icons jiggle (macOS); a click then opens the app into the current
+        // Stage Manager stage (SM-29). Jiggle mode from a long press: clicks do nothing.
+        const optionHeld = this.jiggling && this._jiggleByAlt;
+        if (tile.kind !== 'folder' && this.jiggling && !optionHeld)
             return;
         if (tile.kind === 'folder') {
             this.openFolder(tile);
@@ -735,6 +738,14 @@ export class LaunchpadView {
         }
         const app = this.store.app(tile.id);
         if (!app)
+            return;
+        const [, , mods] = global.get_pointer();
+        const alt = optionHeld || (mods & Clutter.ModifierType.MOD1_MASK) !== 0;
+        if (alt && this.host.openIntoStage(tile.id)) {
+            this.host.close();
+            return;
+        }
+        if (optionHeld)
             return;
         this.host.close();
         app.activate();
