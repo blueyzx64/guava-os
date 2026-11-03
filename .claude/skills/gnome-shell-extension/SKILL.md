@@ -32,7 +32,8 @@ to it). C sources (50.6 tag, `src/` only): `/home/user/.swarm/guava-os/refs/gnom
 | `Main.layoutManager._startingUp` is true until `startup-complete`; extensions enabled at login run before it. | `ui/layout.js` |
 
 Consequences for Guava:
-- **Lock/unlock costs a full Guava teardown and start** (~40 features). `extension.js:56-60,141`
+- **Lock/unlock costs a full Guava teardown and start** (~40 features; harness: `disable()`
+  blocks the main loop 233–270 ms, all features settled after 274–556 ms, llvmpipe). `extension.js:56-60,141`
   keeps owned GNOME keys across the lock so nothing flashes, but the CPU cost and every actor
   rebuild remain. Measure it (`guava-harness` skill, `GUAVA_TIMING` probe) before arguing for
   `unlock-dialog` mode; if adopted, review rules require a comment in `disable()` explaining why,
