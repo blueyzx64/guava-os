@@ -148,6 +148,13 @@ for (const [file, text] of src) {
     }
 }
 
+// The harness skips errors that carry GUAVA-TEST-EXPECTED (a scenario throwing on purpose). Shipped
+// code must never contain it, or a real error could hide behind it.
+for (const [file, text] of src) {
+    if (text.includes('GUAVA-TEST-EXPECTED'))
+        problems.push(`${rel(file)}: contains the harness's expected-error marker GUAVA-TEST-EXPECTED`);
+}
+
 if (problems.length) {
     console.log([...new Set(problems)].join('\n'));
     console.log(`check-refs: ${new Set(problems).size} problem(s)`);
