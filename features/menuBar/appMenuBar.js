@@ -33,6 +33,7 @@ import { GUAVA_ACCEL_SLOTS, menuEntries, searchMenus, WM_ACCEL_SLOTS } from '../
 import { GtkMenusProvider } from '../../core/appMenus/gtkMenus.js';
 import { DBusMenuProvider } from '../../core/appMenus/dbusMenu.js';
 import { AtspiProvider } from '../../core/appMenus/atspi.js';
+import { SettingOwner } from '../../core/originals.js';
 import { fitMenus } from './model.js';
 import { LazyMenu, menuHeading, menuItem } from './menuItems.js';
 import { MenuGlass } from '../../lib/menuGlass.js';
@@ -169,8 +170,9 @@ export class AppMenuBar {
      * @param {{native: boolean, atspi: boolean, popovers: boolean}} [opts.providers] which
      *   menu bar providers to run
      */
-    constructor(ctx, cleanup, { keys, providers = {} }) {
+    constructor(ctx, cleanup, { keys, providers = {}, accessibility = false }) {
         this._ctx = ctx;
+        this._accessibility = accessibility;
         this._cleanup = cleanup;
         this._keys = keys;
         this._providerOpts = providers;
@@ -206,6 +208,17 @@ export class AppMenuBar {
         return this._target;
     }
 
+    // Firefox, Chromium and libadwaita popovers expose their menus only when GNOME's toolkit
+    // accessibility is on (D-014). Guava owns the key while this part runs; the user's own
+    // value comes back when it stops.
+    _ownAccessibility(cleanup) {
+        const owner = new SettingOwner(this._ctx.originals,
+            new Gio.Settings({ schema_id: 'org.gnome.desktop.interface' }), 'toolkit-accessibility',
+            { type: 'b', value: true });
+        owner.sync(true);
+        cleanup.add(() => owner.release());
+    }
+
     start() {
         const ctx = this._ctx;
         const cleanup = this._cleanup;
@@ -219,6 +232,8 @@ export class AppMenuBar {
         if (atspi)
             this._service.registerProvider(cleanup, new AtspiProvider({ popovers }));
         this._service.onChanged(cleanup, (windowId, how) => this._onProviderChanged(windowId, how));
+        if (this._accessibility)
+            this._ownAccessibility(cleanup);
         this._wm = new Gio.Settings({ schema_id: 'org.gnome.desktop.wm.keybindings' });
         this._mutter = new Gio.Settings({ schema_id: 'org.gnome.mutter.keybindings' });
 

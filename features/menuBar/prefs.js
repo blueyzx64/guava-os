@@ -43,6 +43,10 @@ export function buildPrefs({ settings, extension }) {
     bar.add(switchRow(settings, _('Alt-Click the Clock for Do Not Disturb'),
         _('Clicking the clock opens the calendar and notifications'), 'menubar-clock-option-dnd'));
 
+    bar.add(switchRow(settings, _('Let Every App Share Its Menus'),
+        _('Turns on GNOME accessibility while Guava runs, so Firefox, Chromium and apps without a menu bar can show their menus here. Apps already open may need a restart. Your own setting comes back when this is off'),
+        'appmenus-accessibility'));
+
     const lab = new Adw.PreferencesGroup({
         title: _('Experimental'),
         description: _('Menus read from the accessibility tree. Apps must expose it (GTK always does; Firefox, Chromium and Qt only with accessibility turned on).'),

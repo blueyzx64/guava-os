@@ -139,10 +139,12 @@ export class MenuBar {
                     atspi: ks.bool('menubar-atspi-menus'),
                     popovers: ks.bool('menubar-atspi-popovers'),
                 },
+                accessibility: ks.bool('appmenus-accessibility'),
             });
             apps.start();
             return apps;
-        }, ['menubar-app-menu', 'menubar-native-menus', 'menubar-atspi-menus', 'menubar-atspi-popovers']);
+        }, ['menubar-app-menu', 'menubar-native-menus', 'menubar-atspi-menus', 'menubar-atspi-popovers',
+            'appmenus-accessibility']);
         part('look', () => ks.bool('menubar-transparent'), reg => {
             const look = new AdaptiveBar(this._ctx, reg, { solidOnWindow: ks.bool('menubar-solid-on-window') });
             look.start();

@@ -52,6 +52,11 @@
         <summary>Apps' own menus</summary>
         <description>Show the menus an app exports in place of the generic File, Edit and View: GTK menu bars (org.gtk.Menus) and DBusMenu menu bars from Qt, Electron, LibreOffice and other X11 apps. While on, Guava runs the com.canonical.AppMenu.Registrar service unless another program already does.</description>
       </key>
+      <key name="appmenus-accessibility" type="b">
+        <default>true</default>
+        <summary>Turn on accessibility so every app's menus can reach the menu bar</summary>
+        <description>While on, Guava turns on GNOME's toolkit accessibility (org.gnome.desktop.interface toolkit-accessibility) so Firefox, Chromium and libadwaita apps expose their menus to the menu bar. Your own value comes back when this is turned off or Guava is disabled. Apps started earlier may need a restart to pick it up.</description>
+      </key>
       <key name="menubar-atspi-menus" type="b">
         <default>false</default>
         <summary>Read menus through accessibility (experimental)</summary>
