@@ -25,6 +25,24 @@
 - **A harness run copies `GUAVA_SRC` when its turn comes:** edit in a separate worktree while
   runs are queued.
 
+- **Mutter 50 ignores the position of `move_resize_frame(true, …)` on X11 windows** (it applies
+  the size): use `lib/compat.js` `moveResizeFrame()`. Found only by running a real X11 client
+  (`tools/scenarios/x11-windows.sh`, xterm with Xwayland's `XAUTHORITY`); Wayland test apps hid it.
+- **Without systemd, xdg-desktop-portal waits 25 s for RealtimeKit,** stalling every GTK service
+  start (the prefs window looked slow). The harness disables the rtkit service file.
+- **Reading outside a paint's redraw clip gives last frame's pixels:** a backdrop capture must
+  keep a persistent texture and blit only the clip, or glass blurs itself and drifts.
+- **`ease()` on a hidden actor calls `show()`:** a one-shot hide at lock is not enough; guard
+  `notify::visible` for as long as the lock lasts (`lib/lockModel.js` SurfaceLedger).
+- **A PopupMenu closes when its source actor hides,** and key focus moves into a menu before
+  `activeMenu` is set: defer "is a menu open?" checks to an idle.
+- **Mutter emits no `workspace-changed` on windows behind a removed middle workspace;** they just
+  report index − 1. Never cache window → workspace index.
+- **A `Meta.Barrier` on an edge shared with another monitor blocks the pointer** from crossing.
+- **GTK `destroy` handlers in the prefs process run at shutdown:** undo on the window's
+  `close-request` instead.
+- **gdbus prints `(uint32 N,)`:** `grep -o '[0-9]\+' | head -1` yields 32. Take the last number.
+
 ## Windows (Mutter 50)
 
 - **Tell an app's own maximize request from the Shell's** (B12, green button):
