@@ -178,3 +178,7 @@
 - **`kwin()` in the harness sees mapped windows only:** look a minimized window up by wm-class over all actors.
 - **A window actor can fly without stretching a small bitmap:** scale it about its frame corner so the frame
   follows a travelling rect (features/windows/tileMotion.js); grow = resize first, shrink = resize on arrival.
+- **A cold overview open can be warmed without `Overview.show()`:** the overview group at opacity 1, `controls.prepareToEnterOverview()`,
+  `_thumbnailsBox._createThumbnails()` and `_stateAdjustment.value = WINDOW_PICKER` paint the real first frame and emit no `showing`
+  (the ThumbnailsBox builds its thumbnails on `showing`, so a warm without `_createThumbnails` helps nothing: the Spaces bar wallpapers
+  were ~70 ms of the 280). features/missionControl/warm.js.

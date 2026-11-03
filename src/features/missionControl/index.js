@@ -38,6 +38,7 @@ import { Keybindings, MODAL_MODES } from '../../lib/keybindings.js';
 import { ModalSurface } from '../../lib/modalSurface.js';
 import { SettingOwner } from '../../core/originals.js';
 import { SpacesBar } from './spaces.js';
+import { warmOverviewPaint } from './warm.js';
 import { ExposeStrip, STRIP_HEIGHT } from './expose.js';
 import {
     MODE, exposeView, fullscreenAppOf, groupedOrder, mruOrder, skipStartupOverview, spacePreviewsLive, touchRecent,
@@ -74,6 +75,7 @@ export class MissionControl {
         this._recent = [];
         this.startupSkipped = false;
         this.startupState = null;
+        this.warmup = null;           // how the first-open warm-up ended (warm.js), for the scenarios
     }
 
     enable() {
@@ -105,6 +107,9 @@ export class MissionControl {
         c.connect(Main.overview, 'hidden', () => this._onHidden());
         c.connect(global.workspace_manager, 'active-workspace-changed', () => this._touchActive());
         this._touchActive();
+        warmOverviewPaint(c, this._ctx.motion, r => {
+            this.warmup = r;
+        });
         c.add(() => {
             this._view = ALL;
             this._pending = null;

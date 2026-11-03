@@ -212,3 +212,25 @@ export function centringShift({ maxWidth, thumbnailWidth, spacing, collapse, ava
  * @returns {boolean}
  */
 export const spacePreviewsLive = env => !env?.degraded;
+
+/** The warm-up waits for this much input silence, retries this often, and this many times. */
+export const WARM_IDLE_MS = 1500;
+export const WARM_RETRY_MS = 3000;
+export const WARM_MAX_TRIES = 20;
+
+/**
+ * Whether the first-open warm-up (warm.js) may run now. It paints the overview once, invisibly,
+ * so it waits for a finished, quiet login and gives up after a while (the real first open then
+ * pays, as it always did).
+ *
+ * @param {{warmed: boolean, startingUp: boolean, overviewVisible: boolean, modal: boolean,
+ *   degraded: boolean, idleMs: number, tries: number}} s
+ * @returns {'go'|'wait'|'skip'}
+ */
+export function warmVerdict({ warmed, startingUp, overviewVisible, modal, degraded, idleMs, tries }) {
+    if (warmed || tries >= WARM_MAX_TRIES)
+        return 'skip';
+    if (startingUp || overviewVisible || modal || degraded || idleMs < WARM_IDLE_MS)
+        return 'wait';
+    return 'go';
+}
