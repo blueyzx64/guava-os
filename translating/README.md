@@ -2,37 +2,14 @@
 
 ## How to Contribute Translations
 
-- Edit the relevant `po/<lang>.po` file and create a PR.
-- To add a new language, copy `guava.pot` to `po/<lang>.po`, translate the strings, and submit a PR.
-- Run `./compile-translations.sh` to validate and regenerate `.mo` files for local testing.
+Guava OS ships in English for now: no translation has been contributed yet.
 
-## Translation Status
-
-| Language | Code | Status | Completion |
-| -------- | ---- | ------ | ---------- |
-| Chinese (Simplified) | zh_CN | 🟢 Complete | 192/192 (100%) |
-| German | de | 🟢 Complete | 192/192 (100%) |
-| Spanish | es | 🟢 Complete | 192/192 (100%) |
-| Estonian | et | 🟢 Complete | 192/192 (100%) |
-| Persian | fa | 🟢 Complete | 192/192 (100%) |
-| Finnish | fi | 🟢 Complete | 192/192 (100%) |
-| French | fr | 🟢 Complete | 192/192 (100%) |
-| Italian | it | 🟢 Complete | 192/192 (100%) |
-| Korean | ko | 🟢 Complete | 192/192 (100%) |
-| Lithuanian | lt | 🟢 Complete | 192/192 (100%) |
-| Latvian | lv | 🟢 Complete | 192/192 (100%) |
-| Norwegian Bokmål | nb | 🟢 Complete | 192/192 (100%) |
-| Dutch | nl | 🟢 Complete | 192/192 (100%) |
-| Polish | pl | 🟢 Complete | 192/192 (100%) |
-| Portuguese | pt | 🟢 Complete | 192/192 (100%) |
-| Swedish | sv | 🟢 Complete | 192/192 (100%) |
-| Ukrainian | uk | 🟢 Complete | 192/192 (100%) |
-
-*Stats generated on 2026‑10‑01 via `msgfmt --statistics`.*
-
-## Note
-
-> Current translations are imported from the Kiwi Menu project. Native speakers are encouraged to proofread and polish any phrasing.
+- To add a language, copy `translating/guava.pot` to `po/<lang>.po` (for example `po/de.po`),
+  translate the strings, and open a pull request. Native speakers only, please: machine
+  translations are not accepted.
+- `make pot` regenerates `guava.pot` from the sources; merge it into your file with
+  `msgmerge --update po/<lang>.po translating/guava.pot`.
+- Run `./compile-translations.sh` to validate your file and build `.mo` files for local testing.
 
 ## Compiling translations for testing
 
