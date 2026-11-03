@@ -6,7 +6,14 @@
 //   anim.cancel();                      // stops where it is; onDone(false)
 //   ctx.motion.spring(actor, 'translation_y', 0, { spring: 'bouncy' }, cleanup);
 //   ctx.motion.tween(actor, { duration: 'extraLong', curve: 'linear' }, p => ..., cleanup);
-//   ctx.motion.env;                     // {reducedMotion, animations}
+//   ctx.motion.env;                     // {reducedMotion, animations, degraded}
+//   ctx.motion.ease(glass, {...}, { duration: 'long', decorative: true });  // degrades under load
+//
+// Load: a FrameBudget (motionModel.js) watches the interval between painted frames (one
+// after-paint handler; no timer, so an idle Shell wakes up for nothing). When most recent
+// frames blow the budget, env.degraded turns true and 'motion-changed' fires: decorative
+// requests become short crossfades, and features with costly ornaments (live blur,
+// magnification, live previews) read env.degraded to drop them until it clears.
 //
 // Every animation goes through motionModel.resolve(), so animations-off and reduced motion
 // are honoured here and nowhere else: features never read those settings themselves. With
@@ -20,11 +27,12 @@
 // slow-down-factor), lib/compat.js watchReducedMotion.
 
 import Clutter from 'gi://Clutter';
+import GLib from 'gi://GLib';
 import St from 'gi://St';
 
 import { CleanupRegistry } from '../lib/disposables.js';
 import { watchReducedMotion } from '../lib/compat.js';
-import { resolve, splitProps, springKeyframes } from './motionModel.js';
+import { FrameBudget, mustShowFirst, resolve, splitProps, springPlan } from './motionModel.js';
 
 const NOOP_HANDLE = Object.freeze({ cancel() {}, get running() { return false; } });
 
@@ -35,8 +43,11 @@ export class Motion {
     /** @param {import('./events.js').EventHub} events */
     constructor(events) {
         this._events = events;
-        this._env = { reducedMotion: false, animations: true };
+        this._env = { reducedMotion: false, animations: true, degraded: false };
         this._cleanup = null;
+        // actor -> Map(prop -> running spring {handle, velocityNow}): a new spring on the same
+        // property takes over from the running one, at its position and velocity
+        this._springs = new WeakMap();
     }
 
     /** Start following the system preferences (extension enable). */
@@ -46,9 +57,11 @@ export class Motion {
         const cleanup = new CleanupRegistry();
         this._cleanup = cleanup;
         const st = St.Settings.get();
+        const budget = new FrameBudget();
         const sync = () => {
-            const next = { reducedMotion: this._reduced, animations: !!st.enable_animations };
-            if (next.reducedMotion === this._env.reducedMotion && next.animations === this._env.animations)
+            const next = { reducedMotion: this._reduced, animations: !!st.enable_animations, degraded: budget.degraded };
+            if (next.reducedMotion === this._env.reducedMotion && next.animations === this._env.animations &&
+                next.degraded === this._env.degraded)
                 return;
             this._env = next;
             this._events.emit('motion-changed', { ...next });
@@ -59,6 +72,15 @@ export class Motion {
             sync();
         });
         cleanup.connect(st, 'notify::enable-animations', sync);
+        let last = 0;
+        cleanup.connect(global.stage, 'after-paint', () => {
+            const now = GLib.get_monotonic_time();
+            const interval = (now - last) / 1000;
+            last = now;
+            // Several views paint in one frame: only frame-to-frame intervals count
+            if (interval > 1 && budget.push(interval))
+                sync();
+        });
         sync();
     }
 
@@ -104,6 +126,9 @@ export class Motion {
             request.onDone?.(true);
             return NOOP_HANDLE;
         }
+        // A fade-in on a hidden actor: show it first or Clutter skips the transition
+        if (mustShowFirst(animate, actor.visible))
+            actor.show();
         let running = true;
         let token = 0;
         const finish = finished => {
@@ -205,7 +230,9 @@ export class Motion {
 
     /**
      * Spring one numeric property to `to`. Under reduced motion or with animations off it
-     * becomes ease() (a short fade for opacity, a jump for transforms).
+     * becomes ease() (a short fade for opacity, a jump for transforms). A spring still running
+     * on the same property is taken over (it ends with onDone(false)): the new one starts at
+     * its position and velocity, so retargeting mid-flight never jerks.
      *
      * @param {Clutter.Actor} actor
      * @param {string} prop e.g. 'translation_y', 'scale_x', 'opacity'
@@ -215,21 +242,33 @@ export class Motion {
      * @returns {{cancel: Function, running: boolean}}
      */
     spring(actor, prop, to, request = {}, owner = null) {
+        // A spring already moving this property hands over its velocity (and stops): the
+        // motion bends towards the new target instead of stopping dead or two timelines
+        // fighting over one property
+        const live = this._springs.get(actor)?.get(prop);
+        const velocity = live?.handle.running ? live.velocityNow() : 0;
+        live?.handle.cancel();
+
         const plan = resolve({ spring: request.spring ?? 'snappy' }, this._env);
         if (!plan.spring)
             return this.ease(actor, { [prop]: to }, { duration: plan.duration, onDone: request.onDone }, owner);
 
-        const { duration, keys, values } = springKeyframes(plan.spring);
         const from = actor[prop];
-        const span = to - from;
-        const last = keys.length - 1;
+        const { duration, values, stateAt } = springPlan(plan.spring, from, to, velocity);
         actor.remove_transition(transitionName(prop));
-        const timeline = new Clutter.Timeline({
-            actor,
-            duration: Math.round(duration * (St.Settings.get().slow_down_factor || 1)),
-        });
+        if (duration === 0) {
+            actor[prop] = to;
+            request.onDone?.(true);
+            return NOOP_HANDLE;
+        }
+        const slow = St.Settings.get().slow_down_factor || 1;
+        const timeline = new Clutter.Timeline({ actor, duration: Math.round(duration * slow) });
+        const last = values.length - 1;
         let running = true;
         let token = 0;
+        let props = this._springs.get(actor);
+        if (!props)
+            this._springs.set(actor, props = new Map());
         const finish = finished => {
             if (!running)
                 return;
@@ -239,6 +278,8 @@ export class Motion {
             if (destroyId)
                 actor.disconnect(destroyId);
             timeline.stop();
+            if (props.get(prop)?.handle === handle)
+                props.delete(prop);
             if (token)
                 owner?.release?.(token);
             request.onDone?.(finished);
@@ -248,8 +289,7 @@ export class Motion {
             // Keys are evenly spaced: index straight into the table, then interpolate
             const pos = p * last;
             const i = Math.min(last - 1, Math.floor(pos));
-            const v = values[i] + (values[i + 1] - values[i]) * (pos - i);
-            actor[prop] = from + span * v;
+            actor[prop] = values[i] + (values[i + 1] - values[i]) * (pos - i);
         });
         const doneId = timeline.connect('completed', () => {
             actor[prop] = to;
@@ -266,6 +306,8 @@ export class Motion {
                 return running;
             },
         };
+        // Velocity in property units per second of model time (slow-down-factor stretches both)
+        props.set(prop, { handle, velocityNow: () => stateAt(timeline.get_elapsed_time() / slow).velocity / slow });
         token = owner?.add(() => handle.cancel()) ?? 0;
         timeline.start();
         return handle;
@@ -273,7 +315,7 @@ export class Motion {
 
     /**
      * Spring several numeric properties of one actor at once (a rect: x, y, width, height).
-     * Cancel the returned handle before springing the same properties again.
+     * Springing the same properties again takes over from these (see spring()).
      *
      * @param {Clutter.Actor} actor
      * @param {Object<string, number>} targets property -> end value
