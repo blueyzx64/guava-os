@@ -22,7 +22,7 @@ else
   _kjs "globalThis.__t1 = globalThis.__tint(); return 1" >/dev/null
   assert jxl-light-tint-is-a-colour "Array.isArray(globalThis.__t1) && globalThis.__t1.length === 3 && globalThis.__t1.every(Number.isFinite)"
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark
-  sleep 6
+  wait_for "Array.isArray(globalThis.__tint()) && globalThis.__tint().some((c,i)=>Math.abs(c-globalThis.__t1[i])>4)" 30
   _kjs "globalThis.__t2 = globalThis.__tint(); return 1" >/dev/null
   assert jxl-dark-tint-differs-from-light "Array.isArray(globalThis.__t2) && globalThis.__t2.some((c,i)=>Math.abs(c-globalThis.__t1[i])>4)"
   # a day/night XML background that lists them
@@ -32,8 +32,11 @@ else
 <static><duration>864000.0</duration><file>/usr/share/backgrounds/gnome/adwaita-l.jxl</file></static></background>
 XML
   gsettings set org.gnome.desktop.interface color-scheme default
+  gsettings set org.gnome.desktop.background picture-options none
+  wait_for "globalThis.__tint()?.[0] === 16" 30
+  gsettings set org.gnome.desktop.background picture-options zoom
   gsettings set org.gnome.desktop.background picture-uri "file://$W/slides.xml"
-  sleep 6
+  wait_for "Array.isArray(globalThis.__tint()) && globalThis.__tint()[0] !== 16" 30
   _kjs "globalThis.__t3 = globalThis.__tint(); return 1" >/dev/null
   assert xml-wallpaper-tint-read "Array.isArray(globalThis.__t3) && globalThis.__t3.length === 3"
   _kjs "return 'TINTS light=' + JSON.stringify(globalThis.__t1) + ' dark=' + JSON.stringify(globalThis.__t2) + ' xml=' + JSON.stringify(globalThis.__t3)" | grep -o 'TINTS [^"]*'

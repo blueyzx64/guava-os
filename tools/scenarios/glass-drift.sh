@@ -45,6 +45,7 @@ sleep 2
 FX='const fx=a=>a?.get_effect?.("guava-glass")??null; const cc=()=>Main.panel.statusArea.quickSettings.menu;
 const glassActors=()=>{const out=[];const walk=a=>{if(fx(a))out.push(a);for(const c of a.get_children())walk(c);};walk(global.stage);return out;};
 const rect=a=>{const [x,y]=a.get_transformed_position();const [w,h]=a.get_transformed_size();const s=global.display.get_monitor_scale(Main.layoutManager.primaryIndex);return [Math.round(x*s),Math.round(y*s),Math.round(w*s),Math.round(h*s)];};
+const MON=global.display.get_monitor_geometry(0), MW=MON.width, MH=MON.height;
 const EXT=Main.extensionManager.lookup("guava-os@blueyzx64").dir.get_path();'
 # cmp_shots A B X Y W H NAME MAXMEAN: pixel difference of a region between two screenshots
 cmp_shots() {
@@ -60,7 +61,6 @@ cmp_shots() {
 rect_of() { _kjs "$FX return 'RECT ' + $1" | grep -o 'RECT [0-9 ]*' | head -1 | sed 's/RECT //'; }
 _kjs 'Main.overview.show(); await sl(900); Main.overview.hide(); await sl(1800); return 1' >/dev/null
 launch_app "gnome-text-editor" org.gnome.TextEditor 40
-_kjs 'const w=kwin("org.gnome.TextEditor"); w.move_frame(true, 400, 200); await sl(800); return 1' >/dev/null
 
 echo "-- RV2-1: no drift under partial redraws (menu)"
 _kjs "$FX cc().open(); await sl(1500); return 1" >/dev/null
@@ -79,30 +79,36 @@ _kjs "$FX cc().close(); await sl(600); return 1" >/dev/null
 # A test surface in the dock's mode ('auto': one static blur while only the wallpaper is behind it) in
 # a spot the real dock and bar never use, so autohide and relayout cannot recapture it by accident
 _kjs "$FX const {Glass} = await import('file://'+EXT+'/lib/glass.js');
-const t = new St.Widget({name:'f1-test', x:700, y:450, width:400, height:120}); Main.uiGroup.add_child(t);
+const t = new St.Widget({name:'f1-test', x:Math.round(MW*0.7), y:Math.round(MH*0.56), width:Math.round(MW*0.28), height:Math.round(MH*0.15)}); Main.uiGroup.add_child(t);
 globalThis.__T = t; globalThis.__TH = Glass.attach(t, {surface:'dock', role:'content'}); await sl(2000);
-const w=kwin('org.gnome.TextEditor'); w.move_resize_frame(true, 60, 100, 500, 300); await sl(2500); return 1" >/dev/null
+const w=kwin('org.gnome.TextEditor'); w.move_resize_frame(true, Math.round(MW*0.02), Math.round(MH*0.12), Math.round(MW*0.3), Math.round(MH*0.4)); await sl(2500); return 1" >/dev/null
 TR=$(rect_of "rect(globalThis.__T).join(' ')")
 echo "test surface rect: $TR"
 assert test-surface-has-glass "(()=>{ $FX const f=fx(globalThis.__T); return f?.enabled && f._mode==='auto' && !!f._out; })()"
 
 echo "-- RV2-3: a window that overlapped an 'auto' surface leaves; its blur shows the wallpaper again"
+# does the window, at its smallest, clear the test surface? (a 640 px wide monitor at scale 2 has no room)
+CLEAR=$(_kjs "$FX const wa = kwin('org.gnome.TextEditor').get_compositor_private(), t = globalThis.__T; const [x,y]=wa.get_transformed_position(), [w,h]=wa.get_transformed_size(), [ax,ay]=t.get_transformed_position(), [aw,ah]=t.get_transformed_size(); return 'CLEAR=' + ((x<ax+aw&&ax<x+w&&y<ay+ah&&ay<y+h) ? 0 : 1)" | grep -o 'CLEAR=[01]' | head -1)
+if [ "$CLEAR" = "CLEAR=1" ]; then
 shot ghost-before
 _kjs "$FX const t = globalThis.__T; const wa = kwin('org.gnome.TextEditor').get_compositor_private();
 const seen={t:0}; globalThis.__seen=seen;
 seen.id=global.stage.connect('after-paint',()=>{ if(!wa.visible||!wa.mapped||wa.opacity===0) return; const [x,y]=wa.get_transformed_position(), [w,h]=wa.get_transformed_size(), [ax,ay]=t.get_transformed_position(), [aw,ah]=t.get_transformed_size(); if (x<ax+aw&&ax<x+w&&y<ay+ah&&ay<y+h) seen.t=GLib.get_monotonic_time()/1000; });
-kwin('org.gnome.TextEditor').move_frame(true, 800, 350); await sl(1800); return 1" >/dev/null
+kwin('org.gnome.TextEditor').move_frame(true, Math.round(MW*0.5), Math.round(MH*0.44)); await sl(1800); return 1" >/dev/null
 assert window-was-behind-the-surface "globalThis.__seen.t > 0"
 shot ghost-over
 # one jump away, after sitting there: nothing animates, so only the edge (a window was behind,
 # now none is) can bring the blur back to the wallpaper
-_kjs 'kwin("org.gnome.TextEditor").move_frame(true, 60, 100); await sl(1500); return 1' >/dev/null
+_kjs "$FX kwin('org.gnome.TextEditor').move_frame(true, Math.round(MW*0.02), Math.round(MH*0.12)); await sl(1500); return 1" >/dev/null
 _kjs "$FX const f=fx(globalThis.__T); return 'EDGE since-last-seen=' + Math.round(f._lastCapture - globalThis.__seen.t) + 'ms valid=' + f._valid + ' wasBehind=' + f._wasBehind + ' captures=' + f.stats.captures + ' END'" | grep -o 'EDGE .* END'
 assert surface-captures-after-the-window-left "(()=>{ $FX const f=fx(globalThis.__T); return f._lastCapture > globalThis.__seen.t && f._valid; })()"
 shot ghost-after
 set -- $TR
 cmp_shots ghost-before ghost-after $1 $2 $3 $4 no-ghost-after-window-leaves 0.3
 _kjs 'global.stage.disconnect(globalThis.__seen.id); return 1' >/dev/null
+else
+  echo "SKIP RV2-3: the window cannot clear the test surface on this display"
+fi
 
 echo "-- RV2-4: colour-scheme flip and background change recapture the static blur"
 gsettings set org.gnome.desktop.background picture-uri-dark "file://$W/walld.png"
