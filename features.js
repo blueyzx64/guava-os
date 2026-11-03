@@ -16,7 +16,7 @@
 // `lockScreen: true` (D-018, D-022): the feature runs on the lock screen. Without it, a feature is
 // suspended while the screen is locked (its surfaces hidden and inert, nothing torn down;
 // lib/lockModel.js). With it, it stays active, reads ctx.session.locked and gets the optional
-// instance.lock() / instance.unlock(). See docs/features/system-ui.md. No entry uses it yet.
+// instance.lock() / instance.unlock(). See docs/features/system-ui.md. Used by lock-screen.
 //
 // Shared-resource rules, defined once here:
 //   - button-layout: app-buttons owns it (the user's value is restored on disable).
@@ -318,5 +318,11 @@ export const FEATURES = [
         // it has never been offered, opens the preferences, then stops
         id: 'onboarding', later: true, when: ctx => ctx.settings.get_string('onboarding') === 'new',
         load: async () => (await import('./features/onboarding/index.js')).Onboarding,
+    },
+    {
+        // The lock screen like macOS (D-022): restyles GNOME's lock dialog and keeps running while
+        // locked (lockScreen). later: nothing shows until the screen locks.
+        id: 'lock-screen', setting: 'lockscreen-style', lockScreen: true, later: true,
+        load: async () => (await import('./features/lockScreen/index.js')).LockScreen,
     },
 ];

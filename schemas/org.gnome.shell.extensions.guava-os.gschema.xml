@@ -1484,6 +1484,70 @@
         <description>Show the active Focus mode's icon in the top bar.</description>
       </key>
 
+      <!-- Lock screen like macOS (features/lockScreen, D-022) -->
+      <key name="lockscreen-style" type="b">
+        <default>true</default>
+        <summary>Style the lock screen like macOS</summary>
+        <description>Restyles GNOME's own lock screen: large clock, the desktop wallpaper, and the user and password field at the bottom centre. Sign-in itself is GNOME's and never changes.</description>
+      </key>
+      <key name="lockscreen-large-clock" type="s">
+        <choices>
+          <choice value="lock-screen"/>
+          <choice value="never"/>
+        </choices>
+        <default>'lock-screen'</default>
+        <summary>Show large clock</summary>
+        <description>'lock-screen' shows the date and a large time on the lock screen; 'never' hides them.</description>
+      </key>
+      <key name="lockscreen-wallpaper" type="s">
+        <choices>
+          <choice value="sharp"/>
+          <choice value="blurred"/>
+        </choices>
+        <default>'sharp'</default>
+        <summary>Lock screen wallpaper</summary>
+        <description>'sharp' shows the desktop wallpaper as it is (macOS); 'blurred' keeps GNOME's blurred and dimmed wallpaper.</description>
+      </key>
+      <key name="lockscreen-show-user" type="b">
+        <default>true</default>
+        <summary>Show user name and photo on the lock screen</summary>
+        <description>Show your photo and name above the password field.</description>
+      </key>
+      <key name="lockscreen-message-on" type="b">
+        <default>false</default>
+        <summary>Show a message when the screen is locked</summary>
+        <description>Show the text of lockscreen-message on the lock screen.</description>
+      </key>
+      <key name="lockscreen-message" type="s">
+        <default>''</default>
+        <summary>Lock screen message</summary>
+        <description>Up to 140 characters, shown when lockscreen-message-on is on. Anyone can read it without unlocking.</description>
+      </key>
+      <key name="lockscreen-power-buttons" type="b">
+        <default>false</default>
+        <summary>Show Sleep, Restart and Shut Down buttons on the lock screen</summary>
+        <description>Restart and Shut Down ask for a second press.</description>
+      </key>
+      <key name="lockscreen-now-playing" type="b">
+        <default>true</default>
+        <summary>Show Now Playing controls on the lock screen</summary>
+        <description>Play, pause and skip for the media that is playing. Only the media controls: no other app data.</description>
+      </key>
+      <key name="lockscreen-notifications" type="s">
+        <choices>
+          <choice value="count"/>
+          <choice value="never"/>
+        </choices>
+        <default>'count'</default>
+        <summary>Notifications on the lock screen</summary>
+        <description>'count' lists the apps with unread notifications and how many, never the text; 'never' lists nothing.</description>
+      </key>
+      <key name="lockscreen-password-hint" type="b">
+        <default>false</default>
+        <summary>Show the password hint on the lock screen</summary>
+        <description>After three wrong attempts, show the password hint of your account (set in the system's user settings), if it has one.</description>
+      </key>
+
       <!-- On-screen display (core/osd.js, features/osd) -->
       <key name="osd-location" type="s">
         <choices>

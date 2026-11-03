@@ -2354,6 +2354,176 @@ StWidget.guava-glass.guava-glass-contrast {
     box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.5);
 }
 
+/* ==== features/lockScreen/style.css ==== */
+
+/* feature: lock-screen */
+/* Colours repeat the tokens in model.js (tests/lockScreenModel.test.js checks them): white text over
+   the scrim is >= 3:1 on any wallpaper (large text only); small text always sits on the capsule
+   fill, >= 7:1. */
+
+.guava-lock-scrim {
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+.guava-lock-dialog.guava-lock-blurred .guava-lock-scrim {
+    background-color: rgba(0, 0, 0, 0.18);
+}
+
+/* clock */
+.guava-lock-clock {
+    spacing: 0;
+}
+
+.guava-lock-date {
+    font-size: 26px;
+    font-weight: 600;
+    color: #ffffff;
+    text-align: center;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.35);
+}
+
+.guava-lock-time {
+    font-size: 128px;
+    font-weight: 300;
+    color: #ffffff;
+    text-align: center;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.3);
+}
+
+/* user, password capsule */
+.guava-lock-teaser {
+    spacing: 14px;
+}
+
+.guava-lock-dialog .user-widget-label,
+.guava-lock-dialog .user-widget .user-widget-label {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+}
+
+.guava-lock-capsule,
+.guava-lock-dialog .login-dialog-prompt-entry {
+    width: 260px;
+    min-height: 22px;
+    border-radius: 24px;
+    padding: 8px 20px;
+    background-color: rgba(20, 20, 24, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+    caret-color: #ffffff;
+    selection-background-color: rgba(255, 255, 255, 0.35);
+    selected-color: #ffffff;
+    font-size: 15px;
+    text-align: center;
+}
+
+.guava-lock-capsule:hover {
+    background-color: rgba(20, 20, 24, 0.8);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.guava-lock-capsule:focus,
+.guava-lock-dialog .login-dialog-prompt-entry:focus {
+    border-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+
+.guava-lock-capsule:error,
+.guava-lock-dialog .login-dialog-prompt-entry:error {
+    border-color: #ff6961;
+}
+
+.guava-lock-dialog .login-dialog-prompt-entry .hint-text {
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.guava-lock-dialog .login-dialog-message,
+.guava-lock-dialog .guava-lock-hint {
+    min-height: 20px;
+    color: #ffffff;
+    background-color: rgba(20, 20, 24, 0.72);
+    border-radius: 14px;
+    padding: 6px 14px;
+    font-size: 14px;
+}
+
+.guava-lock-dialog .user-icon {
+    icon-size: 96px;
+}
+
+.guava-lock-dialog .guava-lock-hint,
+.guava-lock-message {
+    color: #ffffff;
+    background-color: rgba(20, 20, 24, 0.72);
+    border-radius: 16px;
+    padding: 8px 16px;
+    font-size: 15px;
+    text-align: center;
+}
+
+.guava-lock-hint {
+    max-width: 320px;
+}
+
+/* Sleep, Restart, Shut Down */
+.guava-lock-power {
+    spacing: 14px;
+}
+
+.guava-lock-power-button {
+    min-width: 76px;
+    padding: 10px 14px;
+    border-radius: 18px;
+    background-color: rgba(20, 20, 24, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+}
+
+.guava-lock-power-button:hover {
+    background-color: rgba(20, 20, 24, 0.8);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.guava-lock-power-button:focus {
+    border-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+
+.guava-lock-power-content {
+    spacing: 6px;
+}
+
+.guava-lock-power-icon {
+    icon-size: 22px;
+    color: #ffffff;
+}
+
+.guava-lock-power-caption {
+    font-size: 13px;
+    color: #ffffff;
+}
+
+/* notifications and media: names and counts on the capsule fill */
+.guava-lock-dialog .unlock-dialog-notification-source,
+.guava-lock-dialog .message {
+    background-color: rgba(20, 20, 24, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 18px;
+    padding: 10px 14px;
+    margin: 4px 0;
+    color: #ffffff;
+}
+
+.guava-lock-dialog .unlock-dialog-notification-label,
+.guava-lock-dialog .unlock-dialog-notification-count-text,
+.guava-lock-dialog .message .message-title,
+.guava-lock-dialog .message .message-body,
+.guava-lock-dialog .message .event-time {
+    color: #ffffff;
+}
+
 /* ==== features/menuBar/style.css ==== */
 
 /* feature: menu-bar (logo menu, app menus, transparent bar, privacy dots, dialogs) */

@@ -26,6 +26,7 @@ One page per area: what it does, how to use it, its settings with defaults, its 
 | Appearance | [appearance.md](appearance.md) | `appearance`, `popup-menu-styling` |
 | Liquid Glass | [liquid-glass.md](liquid-glass.md) | `liquid-glass` |
 | Setup Assistant | [onboarding.md](onboarding.md) | `onboarding` |
+| Lock screen like macOS | [lock-screen.md](lock-screen.md) | `lock-screen` |
 
 Related: [code map](../architecture/code-map.md), [how to write a feature](../architecture/conventions.md).
 

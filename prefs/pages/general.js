@@ -4,7 +4,8 @@
 import Adw from 'gi://Adw';
 import Gtk from 'gi://Gtk';
 
-import { addSwitchRows } from '../widgets.js';
+import { addFeatureGroups, addSwitchRows } from '../widgets.js';
+import * as lockScreenPrefs from '../../features/lockScreen/prefs.js';
 
 /**
  * Keys Reset Everything leaves alone, read from the schema so a new cache cannot be missed:
@@ -19,7 +20,8 @@ const keepOnReset = (schema, key) => {
 
 export const PAGE = { id: 'general', icon: 'preferences-system-symbolic' };
 
-export function build({ settings, window, _ }) {
+export function build(args) {
+    const { settings, window, _ } = args;
     const page = new Adw.PreferencesPage({ title: _('General'), icon_name: PAGE.icon });
 
     const gestures = new Adw.PreferencesGroup({ title: _('Overview and gestures') });
@@ -28,6 +30,8 @@ export function build({ settings, window, _ }) {
         { key: 'disable-hot-corner', title: _('Disable Hot Corner'), subtitle: _('Pointing at the top-left corner does not open the overview') },
     ]);
     page.add(gestures);
+
+    addFeatureGroups(page, lockScreenPrefs, args);
 
     const reset = new Adw.PreferencesGroup();
     const button = new Gtk.Button({

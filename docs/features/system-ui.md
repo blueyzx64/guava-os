@@ -26,6 +26,6 @@ A feature entry in `features.js` opts in with `lockScreen: true`. The registry k
 - `instance.lock()` and `instance.unlock()` (both optional) on each change, and again at `enable()` time if the screen is already locked (`lock()` is called right after `enable()`);
 - the core events `session-locked` and `session-unlocked` on `ctx.events`.
 
-A `lockScreen` feature owns what it shows: it must stay inert for everything but its own UI, add its actors to the lock dialog group (`Main.screenShield`, `Main.layoutManager.screenShieldGroup`) rather than `addChrome`, and follow EGO rules for `unlock-dialog` (no keyboard handling outside its own UI, no selective disabling). No feature uses the hook yet; the customizable lock screen (L16) will.
+A `lockScreen` feature owns what it shows: it must stay inert for everything but its own UI, add its actors to the lock dialog group (`Main.screenShield`, `Main.layoutManager.screenShieldGroup`) rather than `addChrome`, and follow EGO rules for `unlock-dialog` (no keyboard handling outside its own UI, no selective disabling). The one feature that uses it is `lock-screen` (`docs/features/lock-screen.md`): it styles GNOME's own lock dialog and adds nothing else.
 
 Test: `tools/scenarios/lock-screen.sh` pushes and pops the `unlock-dialog` mode on `Main.sessionMode` (the harness has no real lock screen), checks that Guava stays enabled, its surfaces hide and return, and prints the lock and unlock cost. Unit: `tests/lockModel.test.js`.
