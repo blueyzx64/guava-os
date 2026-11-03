@@ -150,3 +150,21 @@ From gjs.guide/extensions/review-guidelines:
 - "Before the next frame": `global.compositor.get_laters().add(Meta.LaterType.BEFORE_REDRAW, fn)`
   (`features/dock/index.js:373`); remove on dispose.
 - Remote desktop and software rendering **inhibit animations** (`ui/main.js:1027-1056`).
+
+## References (from Kiwi)
+
+- `references/extension-anatomy.md`: file layout, enable/disable lifecycle, schemas and metadata; open when adding or moving extension files.
+- `references/version-matrix.md`: Shell API differences per GNOME version; open before using an API that may have changed.
+- `references/windows-workspaces-and-actors.md`: window, workspace and actor APIs; open for window state or actor work.
+- `references/layout-chrome-and-panel-hiding.md`: hiding or moving Shell chrome (panel, Activities, layout); open before touching Main.layoutManager or panel visibility.
+- `references/panel-and-quick-settings.md`: top-bar items and Quick Settings modules; open when adding or changing panel or Control Center items.
+- `references/notifications-and-message-tray.md`: message tray, notifications and Do Not Disturb; open for banner or notification work.
+- `references/input-keybindings-and-modals.md`: keybindings, modal grabs and keyboard focus; open for shortcuts or modal surfaces.
+- `references/clipboard.md`: clipboard selections, MIME types and history; open for copy/paste or Quick Paste code.
+- `references/blur-shaders-and-effects.md`: Shell.BlurEffect, shader effects and their cost; open for blur or GLSL work.
+- `references/styling-st-css.md`: St theme CSS and stylesheet variants; open when changing stylesheets or theme-dependent styling.
+- `references/prefs-adwaita.md`: prefs.js preferences UI in libadwaita; open when building or changing the prefs window.
+- `references/testing-and-debugging.md`: running tests, Looking Glass and log inspection; open when debugging a live Shell.
+- `references/review-guidelines-and-pitfalls.md`: EGO review rules and common rejection causes; open before submitting a release.
+- `references/anti-patterns-in-gnome-extensions.md`: patterns to avoid in extension code, with examples; open during code review.
+- `references/testing-strategy.md`: which logic to test at which level (unit, model, shell); open when planning tests.
