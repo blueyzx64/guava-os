@@ -540,9 +540,11 @@ export class StageMachine {
     _reclassify(id, now) {
         const w = this._windows.get(id);
         const member = this._member.has(id);
-        // A member that goes full screen stays in its entry (and on its stage)
-        const want = member && w.fullscreen && w.type === 'normal' && !w.parent
-            ? exemptReason(w, this._primary) === null
+        // A member that goes full screen or is pinned (Always on Top) stays in its entry and on
+        // its stage: leaving would stage and focus the next entry, so the Window menu's next
+        // toggle would act on that window instead (B7). A window that opens above stays exempt.
+        const want = member && (w.fullscreen || w.above) && w.type === 'normal' && !w.parent
+            ? exemptReason({ ...w, above: false }, this._primary) === null
             : this._isManagedNow(w);
         if (member && !want)
             this._leave(id, now, {});
@@ -846,7 +848,7 @@ export class StageMachine {
         }
         for (const [id, w] of this._windows) {
             const kind = this.kindOf(id);
-            if (kind === 'managed' && !this._isManagedNow(w) && !w.fullscreen)
+            if (kind === 'managed' && !this._isManagedNow(w) && !w.fullscreen && !w.above)
                 bad.push(`window ${id} managed but should not be`);
             if (kind === 'exempt' && this.isHidden(id))
                 bad.push(`exempt window ${id} hidden`);

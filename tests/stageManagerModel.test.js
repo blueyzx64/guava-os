@@ -285,6 +285,21 @@ test('full screen: a window that opens full screen stays out; a stage window kee
     eq(t.strip(), ['editor']);
 });
 
+test('always on top: a stage window that is pinned keeps its entry and the focus (B7)', () => {
+    const t = desk();
+    t.open('editor');
+    t.open('files');
+    t.later(QUIET_MS);
+    eq(t.stage(), ['files']);
+    t.send({ type: 'change', window: { id: t.id('files'), above: true } });
+    eq(t.stage(), ['files'], 'pinning must not switch the stage');
+    eq(t.focusFx(), undefined, 'pinning must not move the focus');
+    eq(t.sm.kindOf(t.id('files')), 'managed');
+    t.send({ type: 'change', window: { id: t.id('files'), above: false } });
+    eq(t.stage(), ['files']);
+    eq(t.strip(), ['editor']);
+});
+
 test('show desktop: the stage goes to the strip and comes back; a strip click or new window ends it', () => {
     const t = desk();
     t.open('editor');
