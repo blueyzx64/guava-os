@@ -20,6 +20,8 @@ $LS"
 G() { _kjs "$1"; }
 
 assert "L16 feature lock-screen is running" "!!ls() && ls()._ctx"
+# No GDM here: the prompt's reauthentication channel cannot open and the Shell logs an error from it. Not under test.
+G "const u=await import('resource:///org/gnome/shell/gdm/util.js'); u.ShellUserVerifier.prototype._openReauthenticationChannel=function(){}; return 1" >/dev/null
 
 BEFORE=$(G "return gvOutside().length" | grep -o "[0-9]*" | head -1)
 echo "LOCK Guava surfaces visible before: $BEFORE"
@@ -56,10 +58,10 @@ echo "LOCK field vs capsule y: $(G 'const e=dlg()._authPrompt._passwordEntry; re
 assert "L16 clock stays while the prompt is shown" "sd().parts.clock.visible && sd().parts.clock.opacity===255"
 shot lock-prompt
 echo "-- a failed attempt returns to the capsule and flags it"
-G "dlg().emit('failed'); dlg()._showClock(); return 1" >/dev/null
+G "dlg()._authPrompt.emit('failed'); dlg()._showClock(); return 1" >/dev/null
 sleep 1
 assert "L16 back on the capsule after a failure" "sd()._teaserBox.visible && sd()._failures===1"
-G "dlg().emit('failed'); dlg().emit('failed'); return 1" >/dev/null
+G "dlg()._authPrompt.emit('failed'); dlg()._authPrompt.emit('failed'); return 1" >/dev/null
 sleep 0.3
 assert "L16 no hint while the option is off" "sd()._hint.opacity===0 && sd()._hint.text===''"
 
@@ -108,7 +110,7 @@ setkey lockscreen-now-playing true
 
 echo "-- reduced motion: no shake, the error flag still shows"
 G "St.Settings.get().gtk_enable_animations; return 1" >/dev/null
-G "dlg().emit('failed'); return 1" >/dev/null
+G "dlg()._authPrompt.emit('failed'); return 1" >/dev/null
 sleep 0.2
 assert "L16 failed attempt flags the capsule" "sd()._capsule.has_style_pseudo_class('error')"
 

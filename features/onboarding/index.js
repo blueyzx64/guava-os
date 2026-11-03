@@ -43,7 +43,11 @@ export class Onboarding {
         if (decision !== 'offer')
             return;
         settings.set_string(ONBOARDING_KEY, 'requested');
-        extension.openPreferences();
+        // The Shell asks the prefs service over D-Bus and waits for its answer (25 s at most). A slow or
+        // failed start is logged, not left as an unhandled rejection; the key stays 'requested', so the
+        // assistant still shows the next time the window opens
+        Promise.resolve(extension.openPreferences()).catch(e =>
+            console.warn(`[Guava] onboarding: could not open the preferences window: ${e.message}`));
     }
 
     // The overview closing, or a window getting the focus (no modal holds it then)

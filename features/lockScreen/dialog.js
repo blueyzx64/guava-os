@@ -136,7 +136,7 @@ export class StyledDialog {
         } catch (e) {
             // Half-styled is worse than stock: undo what was done (the clock comes back, the scrim and
             // the overrides go) and report that the lock screen is left stock
-            console.error('[Guava] lock screen: styling failed midway, undone:', e);
+            console.warn('[Guava] lock screen: styling failed midway, undone:', e);
             this._rollback();
             return false;
         }
@@ -351,8 +351,11 @@ export class StyledDialog {
     /** Styling of the real prompt once the Shell has made it (it is made on first use). */
     _prompt() {
         const p = this._d._authPrompt;
-        if (!p || p.has_style_class_name?.('guava-lock-prompt'))
+        // Per StyledDialog, not by the prompt's style class: a restyle (an option changed while locked)
+        // makes a new StyledDialog for the same prompt, and the old one's signal handlers went with it
+        if (!p || this._prompted === p)
             return;
+        this._prompted = p;
         const _ = this._ctx.gettext;
         p.add_style_class_name('guava-lock-prompt');
         // Only a wrong password counts: the dialog's own 'failed' also fires when the prompt is
