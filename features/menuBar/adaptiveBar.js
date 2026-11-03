@@ -98,9 +98,9 @@ export class AdaptiveBar {
         cleanup.connect(Main.layoutManager, 'monitors-changed', resample);
         cleanup.connect(Main.layoutManager.panelBox, 'notify::height', resample);
 
-        // The panel's glass fill (liquid-glass) must give way while the bar is clear: a fill
-        // shows only while every handle on it is visible. 'blur' draws nothing of its own, so
-        // with liquid-glass off this handle changes nothing.
+        // The panel's glass (liquid-glass) fades out while the bar is clear: presence multiplies
+        // across the handles on the panel. 'blur' draws nothing of its own, so with liquid-glass
+        // off this handle changes nothing.
         this._glass = Glass.attach(panel, { surface: 'panel', layers: 'blur' });
         cleanup.add(() => this._glass.destroy());
         // Reduce Transparency, Increase Contrast or high contrast: always the solid bar
@@ -109,6 +109,9 @@ export class AdaptiveBar {
             this._opaque = !!(env.opaque || env.highContrast);
             this._apply();
         });
+        // Judge the windows as the overview starts to close (their real frames, the workspace
+        // already chosen), so the bar's own fade runs together with the overview's, not after it
+        cleanup.connect(Main.overview, 'hiding', () => this._checkWindows(true));
         cleanup.connect(Main.overview, 'hidden', () => this._checkWindows());
 
         // Windows touching the bar
@@ -168,10 +171,10 @@ export class AdaptiveBar {
         }, { name: 'menu bar window check' });
     }
 
-    _checkWindows() {
-        // The overview spreads the windows out: judging them now would flip the bar mid-transition.
-        // 'hidden' checks again.
-        if (Main.overview.visible)
+    _checkWindows(closing = false) {
+        // While the overview is open, window events (a workspace switch in it) would flip the bar
+        // behind it; 'hiding' judges them once the overview starts to close
+        if (Main.overview.visible && !closing)
             return;
         const lm = Main.layoutManager;
         const primary = lm.primaryIndex;
@@ -212,7 +215,26 @@ export class AdaptiveBar {
         set(CLASSES.light, clear && this._text.darkText);
         set(CLASSES.dark, clear && !this._text.darkText);
         set(CLASSES.scrim, clear && this._text.scrim);
-        this._glass?.setVisible(!clear);
+        this._fadeGlass(clear ? 0 : 1);
+    }
+
+    // Clear <-> solid fades the glass (one interruptible ease: a new target starts from where
+    // the glass is now). The overview's own fade multiplies in (features/liquidGlass).
+    _fadeGlass(target) {
+        const glass = this._glass;
+        if (!glass || this._glassTarget === target)
+            return;
+        const first = this._glassTarget === undefined;
+        this._glassTarget = target;
+        this._glassFade?.cancel();
+        this._glassFade = null;
+        const from = glass.presence;
+        if (first || from === target) {
+            glass.setPresence(target);
+            return;
+        }
+        this._glassFade = this._ctx.motion.tween(Main.panel, { duration: 'medium', curve: 'standard' },
+            p => glass.setPresence(from + (target - from) * p), this._cleanup);
     }
 
     // ---- wallpaper --------------------------------------------------------------------------

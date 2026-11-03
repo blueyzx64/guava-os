@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Liquid Glass: applies lib/glass.js to the stock Shell surfaces Guava restyles.
 //
-// The look lives on the surface actor itself (lib/glass.js: classes and a fill fragment, no
-// blur, no extra layer), so every surface keeps its own rounded shape:
+// The look lives on the surface actor itself (lib/glass.js: classes and the blur effect), so
+// every surface keeps its own rounded shape:
 // - panel   : the top bar (the menu bar feature may take it over).
 // - menus   : Control Center and the calendar card, through Glass.attachMenu(): the menu box
 //             is the glass, its BoxPointer bin carries the drop shadow.
@@ -70,18 +70,28 @@ export class LiquidGlass {
         const handle = Glass.attach(panel, { surface: 'panel' });
 
         const reg = this._cleanup;
-        const sync = (inOverview = Main.overview.visible) => {
-            const inFullscreen = Main.layoutManager.primaryMonitor?.inFullscreen ?? false;
-            // Hidden: the panel falls back to its theme colour
-            handle.setVisible(!inOverview && !inFullscreen);
+        const sync = () => {
+            // Hidden over full screen: the panel falls back to its theme colour
+            handle.setVisible(!(Main.layoutManager.primaryMonitor?.inFullscreen ?? false));
+        };
+        // Mission Control: the glass fades with the overview's own progress (its state
+        // adjustment: 0 hidden, 1 window picker), so the bar follows every frame of the
+        // animation, a gesture, and an open interrupted by a close, with nothing of its own to
+        // run or retarget.
+        const adjustment = Main.overview._overview?.controls?._stateAdjustment ?? null;
+        const follow = () => {
+            const v = adjustment ? adjustment.value : (Main.overview.visible ? 1 : 0);
+            handle.setPresence(1 - Math.min(1, Math.max(0, v)));
         };
         const tokens = [
-            // The panel is transparent in the overview and solid over fullscreen windows
-            reg.connect(Main.overview, 'showing', () => sync(true)),
-            reg.connect(Main.overview, 'hiding', () => sync(false)),
-            reg.connect(global.display, 'in-fullscreen-changed', () => sync()),
+            reg.connect(global.display, 'in-fullscreen-changed', sync),
+            adjustment ? reg.connect(adjustment, 'notify::value', follow)
+                : reg.connect(Main.overview, 'showing', follow),
         ];
+        if (!adjustment)
+            tokens.push(reg.connect(Main.overview, 'hidden', follow));
         sync();
+        follow();
         this._panel = { handle, tokens };
     }
 
