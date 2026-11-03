@@ -11,6 +11,7 @@
 //   scaleFrame(...)          the Scale effect's actor properties at a given progress
 //   edgeTarget(...)          where a window goes when the dock shows no icon for it
 //   retarget(...)            where an effect cut in on resumes, and for how long
+//   textureBox(...)          the stage rect an offscreen effect's texture covers
 //
 // The Genie ("magic lamp"): the edge of the window nearest the dock pinches into a funnel
 // whose sides are smooth S-curves, then the whole window slides down the funnel into the
@@ -267,4 +268,28 @@ export function retarget(progress, restoring, fullMs) {
     const from = progress === null || progress === undefined || Number.isNaN(progress)
         ? 1 - to : clamp01(progress);
     return { from, to, duration: Math.round(Math.max(0, fullMs) * Math.abs(to - from)) };
+}
+
+/**
+ * The stage rect a Clutter.OffscreenEffect's texture covers. Clutter pads the actor's box for
+ * effects (_clutter_actor_box_enlarge_for_effects: right edge ceil(x2 + 0.75), width rounded
+ * plus 3), in device pixels or in logical ones scaled after; the texture size tells which.
+ *
+ * @param {{x,y,width,height}} box the actor's stage rect (whole logical pixels)
+ * @param {number} texWidth
+ * @param {number} texHeight
+ * @param {number} scale the actor's resource scale
+ * @returns {{x,y,width,height}} in logical stage pixels
+ */
+export function textureBox(box, texWidth, texHeight, scale) {
+    const s = Math.max(1, Math.ceil(scale));
+    const axis = (pos, len, tex) => {
+        // Padded in device pixels: tex = len * s + 3; padded before scaling: tex = (len + 3) * s
+        const unit = Math.abs(tex - (len * s + 3)) <= Math.abs(tex - (len + 3) * s) ? 1 / s : 1;
+        const end = Math.ceil((pos + len) / unit + 0.75) * unit;
+        return { pos: end - tex / s, len: tex / s };
+    };
+    const x = axis(box.x, box.width, texWidth);
+    const y = axis(box.y, box.height, texHeight);
+    return { x: x.pos, y: y.pos, width: x.len, height: y.len };
 }

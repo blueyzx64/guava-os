@@ -9,18 +9,18 @@
 // a clone of the window: the funnel never leaves the container's box, which is what Clutter's
 // offscreen effects can draw into (on GNOME 50 the window actor itself cuts the funnel off at
 // the window's own edges). The texture is at the monitor's scale (rounded up) and covers the
-// container's paint box, which Clutter pads by a few pixels for effects: the strips map through
+// container's box padded by Clutter for effects (model.textureBox): the strips map through
 // that box, so at rest every texel lands on one device pixel (sharp at any scale).
 //
 // Shell API: Clutter.OffscreenEffect (get_pipeline, get_target_size, vfunc_paint_target),
-// Clutter.Actor.get_paint_box,
+// Clutter.Actor.get_resource_scale,
 // Clutter.PipelineNode (add_texture_rectangle), Cogl.Pipeline.set_color (premultiplied); checked on GNOME 50.
 
 import Clutter from 'gi://Clutter';
 import Cogl from 'gi://Cogl';
 import GObject from 'gi://GObject';
 
-import { genieRow } from './model.js';
+import { genieRow, textureBox } from './model.js';
 
 // At most this many strips: about one per pixel of a window's height, enough for an edge
 // without steps
@@ -78,12 +78,13 @@ export const GenieEffect = GObject.registerClass({
         const f = this._frame;
         // The texture covers the actor's paint box, which Clutter enlarges for effects (a few
         // pixels past the container): map through it so every texel lands on one pixel
-        const box = this._paintBox();
+        const actor = this.get_actor();
+        const box = textureBox(this._reach, texWidth, texHeight, actor.get_resource_scale());
         const kx = texWidth / box.width;
         const ky = texHeight / box.height;
         this.map = { x: box.x, y: box.y, width: box.width, height: box.height, texWidth, texHeight };
         const pipeline = this.get_pipeline();
-        const a = this.get_actor().get_paint_opacity() / 255;
+        const a = actor.get_paint_opacity() / 255;
         this._color.init_from_4f(a, a, a, a);
         pipeline.set_color(this._color);
         const strips = Clutter.PipelineNode.new(pipeline);
@@ -134,13 +135,5 @@ export const GenieEffect = GObject.registerClass({
                 strips.add_texture_rectangle(rect, t0 / acrossFull, u0, t1 / acrossFull, u1);
             }
         }
-    }
-
-    // The stage rect the texture covers (the container's box when Clutter gives none)
-    _paintBox() {
-        const [ok, pb] = this.get_actor()?.get_paint_box() ?? [false, null];
-        if (ok && pb.x2 > pb.x1 && pb.y2 > pb.y1)
-            return { x: pb.x1, y: pb.y1, width: pb.x2 - pb.x1, height: pb.y2 - pb.y1 };
-        return this._reach;
     }
 });

@@ -2,7 +2,7 @@
 // features/minimizeEffect/model.js: the Genie mesh and the effect choice.
 import {
     chooseMode, edgeTarget, genieFrame, genieOpacity, genieRow, genieVertex, readConfig, retarget, scaleFrame,
-    scaleTarget,
+    scaleTarget, textureBox,
 } from '../features/minimizeEffect/model.js';
 
 let failed = 0;
@@ -201,6 +201,15 @@ test('scaleFrame: from the window to the target, continuous', () => {
     near(e.scale, end.scale, 'scale', 1e-9);
     eq(e.opacity, 0);
     near(scaleFrame(WIN, end, 0.5).scale, (1 + end.scale) / 2, 'half', 1e-9);
+});
+
+test('textureBox: the padded box Clutter renders the Genie into (B1: was taken as the container, blurry)', () => {
+    // Measured in GNOME Shell 50.6: a 750x697 container at 265,90 gets a 753x700 texture
+    eq(textureBox({ x: 265, y: 90, width: 750, height: 697 }, 753, 700, 1), { x: 263, y: 88, width: 753, height: 700 });
+    // 200%: padded in device pixels, one texel per device pixel
+    eq(textureBox({ x: 10, y: 10, width: 100, height: 50 }, 203, 103, 2), { x: 9, y: 9, width: 101.5, height: 51.5 });
+    // padded before scaling
+    eq(textureBox({ x: 10, y: 10, width: 100, height: 50 }, 206, 106, 2), { x: 8, y: 8, width: 103, height: 53 });
 });
 
 if (failed)
