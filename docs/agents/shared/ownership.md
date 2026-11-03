@@ -10,3 +10,4 @@
 | Research: extensions + GNOME + skills | R1 | .claude/skills/** (drafts in $SWARM/agents/R1/) | skills |
 | Research: LordOS + fonts | R2 | none ($SWARM/agents/R2/) | reuse map |
 Hot spots (claim for minutes): core/events.js, schemas/*.xml, stylesheet.css (generated), po/, translating/.
+| Stage Manager rewrite | L8 | features/stageManager/**, tests/stageManager*.test.js, docs/features/stage-manager.md, tools/scenarios/stage-manager*.sh | B16, B25 |

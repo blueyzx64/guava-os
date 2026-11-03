@@ -23,3 +23,6 @@ Upstream extensions: clone into /home/user/.swarm/guava-os/refs/<name> (shallow)
 
 Rules: claim before edit (tools/agents/claim.sh), own memory file only, ASK O for anything
 outside your lane, never write shared/, never push. Root cause before fix. Test before fix.
+
+Token rules (workflow.md "Limits and tokenomics"): max 6 sonnet leads, 12 haiku workers. Terse
+(caveman) prose, narrow reads, narrow tests, final report <= 150 words.
