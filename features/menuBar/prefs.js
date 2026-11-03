@@ -5,6 +5,7 @@
 
 import Adw from 'gi://Adw';
 
+import { buildSetupGroups } from '../../prefs/appMenusSetup.js';
 import { comboRow, shortcutRow, switchRow } from '../../prefs/widgets.js';
 
 /**
@@ -63,5 +64,7 @@ export function buildPrefs({ settings, extension }) {
     keys.add(shortcutRow(settings, _, { key: 'menubar-focus-shortcut', title: _('Use the Menu Bar with the Keyboard'), example: '<Control>F2' }));
     keys.add(shortcutRow(settings, _, { key: 'menubar-force-quit-shortcut', title: _('Force Quit Applications'), example: '<Super><Alt>Escape' }));
 
-    return [bar, keys, lab];
+    const setup = buildSetupGroups(_);
+
+    return [bar, keys, ...setup, lab];
 }
