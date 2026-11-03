@@ -219,7 +219,6 @@ Guava OS is based on **[Kiwi (is not Apple)](https://github.com/blueyzx64/kiwi-i
 which began as **[kiwi-kemma](https://github.com/kem-a/kiwi-kemma)** by Arnis Kemlers
 ([kem-a](https://github.com/kem-a)). Thanks to everyone who built them; their work is the root
 Guava OS grew from. More from the Kiwi author: [Kiwi Menu](https://github.com/kem-a/Kiwi-Menu),
-[AppManager](https://github.com/kem-a/AppManager),
 [Catalina Reloaded icons](https://github.com/kem-a/Catalina-reloaded) and
 [GDM Wallpaper](https://github.com/kem-a/gnome-gdm-wallpaper).
 

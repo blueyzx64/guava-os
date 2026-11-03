@@ -182,7 +182,6 @@ export function build({ settings, extension, window, _, breakpoints, title: exte
 
     const moreProjects = [
         { title: _('Kiwi Menu'), subtitle: _('MacOS style menu for GNOME'), url: 'https://github.com/kem-a/Kiwi-Menu' },
-        { title: _('AppManager'), subtitle: _('MacOS style AppImage installer and management application'), url: 'https://github.com/kem-a/AppManager' },
         { title: _('Catalina Reloaded Icon Pack'), subtitle: _('macOS Tahoe icon theme for Linux'), url: 'https://github.com/kem-a/Catalina-reloaded' },
         { title: _('GDM Wallpaper'), subtitle: _('Set custom GDM login screen wallpaper'), url: 'https://github.com/kem-a/gnome-gdm-wallpaper' },
     ];
