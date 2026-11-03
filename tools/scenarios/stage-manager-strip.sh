@@ -39,15 +39,21 @@ _kjs 'await kpush(6); await sl(60); await kmove(800,400); await sl(1800); return
 track_stop
 assert "SM-18 strip ends hidden" "!stripShown()"
 
-echo "-- SM-19 keyboard"
+echo "-- SM-19 keyboard (strip only on reveal)"
+key super+Up
+sleep 1.5
+gs stage-manager-show-recent false
+sleep 1.5
+assert "SM-15 show-recent off: strip hidden" "!stripShown()"
 key super+alt+Page_Down
 sleep 0.7
 assert "SM-19 the cycle shortcut reveals the strip" "stripShown()"
 sleep 2.4
-assert "SM-19 and it goes again" "!stripShown() || !wst(sid('C')).max"
+assert "SM-19 and it goes again" "!stripShown()"
 sm_state
-key super+Down
+gs stage-manager-show-recent true
 sleep 1.5
+_kjs 'const w=aw(sid("C")).meta_window; if(w.is_maximized()) w.unmaximize(); await sl(1200); return 1' >/dev/null
 
 echo "-- SM-16 autohide: dragging a stage window over the strip area"
 _kjs 'const w=global.display.focus_window; const f=w.get_frame_rect(); await kdrag(f.x+f.width/2, f.y+16, f.width/2-40, f.y+16); await sl(1500); return 1' >/dev/null

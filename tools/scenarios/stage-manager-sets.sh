@@ -12,7 +12,8 @@ shot sm-sets-initial
 
 echo "-- SM-21 click a thumbnail"
 perf_start
-track_actor "(flight()||aw(sid('A')))" sm-swap-A
+# A's flight; before and after it, the same pose (its thumbnail, then its window), so the series has no gap
+track_actor "walk(global.stage,a=>a.name==='guava-stage-flight'&&a.source===aw(sid('A')))??walk(global.stage,a=>a instanceof Clutter.Clone&&a.source===aw(sid('A')))??aw(sid('A'))" sm-swap-A
 click_actor "cardOf('SM A')"
 sleep 1.6
 track_stop

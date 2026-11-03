@@ -22,8 +22,9 @@
 //   WindowState.watch(cleanup, (win, flag, on) => ...);
 //
 // Rules for consumers (the policy; the registry only stores):
-//   - the window controls ask WindowState.interceptMinimize(win) before win.minimize(), so
-//     Stage Manager can send the window to its strip instead.
+//   - the window controls ask WindowState.interceptMinimize(win) before win.minimize(). Nothing
+//     registers an interceptor since the Stage Manager rewrite (minimize goes to the Dock, SM-8);
+//     the hook goes when core/appMenus/commands.js stops asking.
 //   - fullscreen Spaces are paused by the feature registry (Stage Manager's conflictsWith),
 //     not by checking the flag; stageActive is for new code.
 //

@@ -80,7 +80,7 @@ export class Flights {
         if (!a || !b)
             return false;
 
-        const clone = new Clutter.Clone({ source: actor, reactive: false });
+        const clone = new Clutter.Clone({ name: 'guava-stage-flight', source: actor, reactive: false });
         clone.set_size(buffer.width, buffer.height);
         clone.set_pivot_point(a.pivotX, a.pivotY);
         clone.set_position(a.x, a.y);

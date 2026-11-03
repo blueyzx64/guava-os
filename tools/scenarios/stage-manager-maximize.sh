@@ -19,9 +19,13 @@ assert "SM-13 the strip is back" "stripShown()"
 echo "-- SM-12 the app's own maximize request"
 sm_cmd C max
 sleep 1.5
-assert "SM-12 client maximize keeps C on the stage" "wst(sid('C')).max && onStage(sid('C')) && inStrip(sid('B'))"
-sm_cmd C unmax
-sleep 1.2
+sm_state
+# B12: with windows-green-button-fullscreen (default on) the app's own maximize request is full screen
+assert "SM-12 client maximize keeps C on the stage" "(wst(sid('C')).max||wst(sid('C')).fs) && onStage(sid('C')) && inStrip(sid('B'))"
+_kjs 'const w=aw(sid("C")).meta_window; if(w.is_fullscreen()) w.unmake_fullscreen(); if(w.is_maximized()) w.unmaximize(); await sl(1800); return 1' >/dev/null
+_kjs 'const w=aw(sid("C")).meta_window; const f=w.get_frame_rect(); return "FRAME "+[f.x,f.y,f.width,f.height].join(",")+" max="+w.is_maximized()+" fs="+w.is_fullscreen()+" strip="+stripShown()+" vis="+!!strip()?.visible' | grep -o "FRAME.*" | head -1
+sm_state
+assert "SM-12 back to a window, strip back" "!wst(sid('C')).max && !wst(sid('C')).fs && stripShown()"
 
 echo "-- SM-12 switching away from and back to a zoomed window"
 key super+Up; sleep 1.5
@@ -51,7 +55,7 @@ if [ -n "$pt" ]; then
   assert "SM-12/14 green button: C zoomed or full screen, on the stage" "(wst(sid('C')).fs||wst(sid('C')).max) && onStage(sid('C'))"
   assert "SM-13/14 strip aside" "!stripShown()"
   assert "SM-12 others still hidden, not minimized" "inStrip(sid('A')) && inStrip(sid('B'))"
-  _kjs 'const w=aw(sid("C")).meta_window; if(w.is_fullscreen()) w.unmake_fullscreen(); if(w.get_maximized()) w.unmaximize(); await sl(1800); return 1' >/dev/null
+  _kjs 'const w=aw(sid("C")).meta_window; if(w.is_fullscreen()) w.unmake_fullscreen(); if(w.is_maximized()) w.unmaximize(); await sl(1800); return 1' >/dev/null
 else
   echo "SKIP green button (no maximize in the button layout)"
 fi

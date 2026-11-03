@@ -1,7 +1,7 @@
 // Run: gjs -m tests/stageManagerGeometry.test.js
 import {
-    METRICS, balancedFit, clonePose, dropHint, groupSide, halves, stageArea, edgeBarrier, edgeFade, layerRect, revealOffset, overlaps, slotAt, stackLayers,
-    stageRect, stripLayout, stripSide, stripVisible, scaleMs, tiltAngle, workspaceDirection,
+    METRICS, balancedFit, clonePose, edgeBarrier, layerRect, overlaps, stackLayers,
+    stageRect, stripLayout, stripSide, scaleMs, tiltAngle,
 } from '../features/stageManager/geometry.js';
 
 let failed = 0;
@@ -43,47 +43,16 @@ test('layout: slots centred in the band, inside the work area, floor around them
     eq(stripLayout({ workArea: wa, side: 'left', count: 0 }).floor, null);
 });
 
-test('layout: few entries fit; many shrink to the minimum, then the strip scrolls', () => {
+test('layout: six entries always fit the work area, shrinking to the minimum scale', () => {
     const few = stripLayout({ workArea: wa, side: 'left', count: 3 });
-    eq(few.scrollMax, 0);
-    const nine = stripLayout({ workArea: wa, side: 'left', count: 8 });
-    eq(nine.scrollMax, 0);
-    eq(nine.scale >= METRICS.minScale && nine.scale < 1, true);
-    const twelve = stripLayout({ workArea: wa, side: 'left', count: 12 });
-    eq(twelve.scale, METRICS.minScale);
-    eq(twelve.slots.length, 12);
-    eq(twelve.scrollMax > 0, true);
-    eq(twelve.floor, twelve.band);
-    const last = twelve.slots[11];
-    eq(last.y + last.height + METRICS.padBottom - twelve.scrollMax, wa.y + wa.height);
-});
-
-test('edge fade: 1 at rest, 0 once the near edge reaches the floor edge', () => {
-    const l = stripLayout({ workArea: wa, side: 'left', count: 12 });
-    eq(edgeFade(l.slots[0], 0, l.floor), 1);
-    eq(edgeFade(l.slots[11], l.scrollMax, l.floor), 1);
-    eq(edgeFade(l.slots[11], 0, l.floor), 0);
-    const mid = edgeFade(l.slots[0], 10, l.floor);
-    eq(mid > 0 && mid < 1, true);
-});
-
-test('reveal offset: brings a slot into view, clamped', () => {
-    const l = stripLayout({ workArea: wa, side: 'left', count: 12 });
-    eq(revealOffset(l.slots[0], 0, l.floor, l.scrollMax), 0);
-    eq(revealOffset(l.slots[11], 0, l.floor, l.scrollMax), l.scrollMax);
-    const mid = revealOffset(l.slots[8], 0, l.floor, l.scrollMax);
-    eq(mid > 0 && mid <= l.scrollMax, true);
-    eq(revealOffset(l.slots[0], l.scrollMax, l.floor, l.scrollMax), 0);
-});
-
-test('window drop hint: only on an entry, never in the tiling zone', () => {
-    const l = stripLayout({ workArea: wa, side: 'left', count: 3 });
-    const base = { floor: l.floor, workArea: wa, zone: 48 };
-    eq(dropHint({ x: 100, y: 300 }, { ...base, onEntry: true }), 'over');
-    eq(dropHint({ x: 100, y: 300 }, { ...base, onEntry: false }), 'near');
-    eq(dropHint({ x: 20, y: 300 }, { ...base, onEntry: true }), null);
-    eq(dropHint({ x: 600, y: 300 }, { ...base, onEntry: false }), null);
-    eq(dropHint({ x: 100, y: 40 }, { ...base, onEntry: true }), null);
+    eq(few.scale, 1);
+    const six = stripLayout({ workArea: wa, side: 'left', count: 6 });
+    eq(six.scale >= METRICS.minScale && six.scale < 1, true);
+    const last = six.slots[5];
+    eq(last.y + last.height <= wa.y + wa.height, true);
+    eq(six.slots[0].y >= wa.y + METRICS.padTop - 1, true);
+    const short = stripLayout({ workArea: { ...wa, height: 600 }, side: 'left', count: 6 });
+    eq(short.slots[5].y + short.slots[5].height <= 632, true);
 });
 
 test('balanced sizes: tall, wide and square windows get similar weight, aspect kept', () => {
@@ -129,43 +98,11 @@ test('edge barrier: on the outer edge, none where another monitor continues', ()
     eq(edgeBarrier(wa, mon, [{ x: -1920, y: 0, width: 1920, height: 1080 }], 'right').direction, 'negative');
 });
 
-test('strip visibility: show recent, auto-hide, reveal, suppression', () => {
-    const v = o => stripVisible({ showRecent: true, autohide: true, overlapped: false, revealed: false, suppressed: false, ...o });
-    eq(v({}), true);
-    eq(v({ overlapped: true }), false);
-    eq(v({ overlapped: true, revealed: true }), true);
-    eq(v({ overlapped: true, autohide: false }), true);
-    eq(v({ showRecent: false }), false);
-    eq(v({ showRecent: false, revealed: true }), true);
-    eq(v({ revealed: true, suppressed: true }), false);
-});
-
 test('small helpers', () => {
     eq(overlaps({ x: 0, y: 0, width: 10, height: 10 }, { x: 9, y: 9, width: 5, height: 5 }), true);
     eq(overlaps({ x: 0, y: 0, width: 10, height: 10 }, null), false);
     eq(scaleMs(400, 2), 200);
     eq(scaleMs(400, NaN), 400);
-    eq(workspaceDirection(0, 2), 1);
-    eq(workspaceDirection(1, 1), 0);
-    eq(slotAt([{ x: 0, y: 0, width: 10, height: 10 }], { x: 5, y: 5 }), 0);
-    eq(slotAt([{ x: 0, y: 0, width: 10, height: 10 }], { x: 15, y: 5 }), -1);
-});
-
-test('stageArea is the work area beside the strip; halves tile it with a gap', () => {
-    const floor = { x: 0, y: 100, width: 200, height: 500 };
-    eq(stageArea(wa, floor, 'left'), { x: 212, y: 44, width: 1056, height: 744 });
-    eq(stageArea(wa, { ...floor, x: 1080 }, 'right'), { x: 12, y: 44, width: 1056, height: 744 });
-    eq(stageArea(wa, null, 'left').x, 12);
-    const h = halves({ x: 212, y: 44, width: 1056, height: 744 });
-    eq(h.left, { x: 212, y: 44, width: 522, height: 744 });
-    eq(h.right, { x: 746, y: 44, width: 522, height: 744 });
-    eq(h.right.x - (h.left.x + h.left.width), 12);
-});
-
-test('groupSide: the half of the card under the pointer', () => {
-    const card = { x: 20, y: 100, width: 160, height: 120 };
-    eq(groupSide({ x: 60, y: 150 }, card), 'left');
-    eq(groupSide({ x: 140, y: 150 }, card), 'right');
 });
 
 if (failed) {

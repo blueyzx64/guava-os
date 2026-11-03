@@ -55,60 +55,30 @@ export function stripSide(preferred, dockEdge) {
 }
 
 /**
- * Where the strip band, its entries and the glass floor under them go. Entries shrink to
- * m.minScale to fit the height; past that the strip scrolls: the floor is the whole band
- * height and `scrollMax` is how far the content can move.
+ * Where the strip band, its entries and the floor under them go. Entries shrink to m.minScale
+ * to fit the height; at most six are listed, which always fits.
  * @param {{workArea: rect, side: 'left'|'right', count: number}} args
- * @returns {{band: rect, slots: rect[], floor: ?rect, scale: number, scrollMax: number}}
+ * @returns {{band: rect, slots: rect[], floor: ?rect, scale: number}}
  */
 export function stripLayout({ workArea, side, count }, m = METRICS) {
     const x0 = side === 'right' ? workArea.x + workArea.width - m.stripWidth : workArea.x;
     const band = { x: x0, y: workArea.y, width: m.stripWidth, height: workArea.height };
     const n = Math.max(0, Math.floor(count));
     if (n === 0)
-        return { band, slots: [], floor: null, scale: 1, scrollMax: 0 };
+        return { band, slots: [], floor: null, scale: 1 };
     const avail = Math.max(1, workArea.height - m.padTop - m.padBottom);
     const scale = clamp(avail / (n * m.thumbH + (n - 1) * m.gap), m.minScale, 1);
     const w = Math.round(m.thumbW * scale);
     const h = Math.round(m.thumbH * scale);
     const gap = Math.round(m.gap * scale);
     const total = n * h + (n - 1) * gap;
-    const scrolls = total > avail;
-    const top = scrolls ? workArea.y + m.padTop : Math.round(workArea.y + m.padTop + (avail - total) / 2);
+    const top = Math.round(workArea.y + m.padTop + (avail - total) / 2);
     const x = Math.round(x0 + (m.stripWidth - w) / 2);
     const slots = [];
     for (let i = 0; i < n; i++)
         slots.push({ x, y: top + i * (h + gap), width: w, height: h });
-    // The whole band, so the area reaches the screen edge
-    const floor = scrolls ? band : { x: x0, y: top - m.floorPad, width: m.stripWidth, height: total + 2 * m.floorPad };
-    const scrollMax = scrolls ? m.padTop + total + m.padBottom - workArea.height : 0;
-    return { band, slots, floor, scale, scrollMax };
-}
-
-/**
- * Opacity (0..1) of a slot while the strip is scrolled: 1 when its near edge is at least the
- * padding inside the floor (the rest position), fading to 0 as that edge reaches the floor's
- * top or bottom, so nothing is drawn over the top bar or the screen edge. No clipping, no
- * offscreen pass.
- * @param {rect} slot absolute, unscrolled
- * @param {number} offset scroll distance
- * @param {rect} floor the visible band
- */
-export function edgeFade(slot, offset, floor, m = METRICS) {
-    const top = slot.y - offset - floor.y;
-    const edge = Math.min(top, floor.height - (top + slot.height));
-    return clamp(edge / m.padTop, 0, 1);
-}
-
-/** The scroll offset that brings a slot fully into the padded view, from the current one. */
-export function revealOffset(slot, offset, floor, scrollMax, m = METRICS) {
-    const top = slot.y - floor.y;
-    let next = offset;
-    if (top - offset < m.padTop)
-        next = top - m.padTop;
-    else if (top + slot.height - offset > floor.height - m.padBottom)
-        next = top + slot.height - floor.height + m.padBottom;
-    return clamp(next, 0, scrollMax);
+    const floor = { x: x0, y: top - m.floorPad, width: m.stripWidth, height: total + 2 * m.floorPad };
+    return { band, slots, floor, scale };
 }
 
 /**
@@ -223,84 +193,9 @@ export function edgeBarrier(workArea, monitor, others, side) {
     return { x1: x, x2: x, y1, y2, direction: right ? 'negative' : 'positive' };
 }
 
-/**
- * Is the strip shown?
- * @param {object} s
- * @param {boolean} s.showRecent "Show recent apps": off keeps it hidden until revealed
- * @param {boolean} s.autohide steps aside while a stage window overlaps it
- * @param {boolean} s.overlapped a visible stage window overlaps the strip's floor
- * @param {boolean} s.revealed the pointer pushed the edge or is on the strip, or a drag needs it
- * @param {boolean} s.suppressed Mission Control, a full-screen window, nothing to list
- */
-export function stripVisible({ showRecent, autohide, overlapped, revealed, suppressed }) {
-    if (suppressed)
-        return false;
-    if (revealed)
-        return true;
-    if (!showRecent)
-        return false;
-    return !(autohide && overlapped);
-}
-
 /** A duration under the user's animation speed (1 normal, 2 twice as fast). */
 export function scaleMs(ms, speed = 1) {
     const s = Number.isFinite(speed) && speed > 0 ? clamp(speed, 0.25, 4) : 1;
     return Math.max(0, Math.round(ms / s));
 }
 
-/** +1 when moving to a later workspace, -1 back, 0 none. */
-export function workspaceDirection(from, to) {
-    if (!Number.isInteger(from) || !Number.isInteger(to) || from === to)
-        return 0;
-    return to > from ? 1 : -1;
-}
-
-/**
- * What a window dragged by its titlebar does to the strip, from the pointer.
- * 'over': on an entry (a drop joins it). 'near': in the strip's floor, so it stays out. null:
- * elsewhere, and always in the screen-edge zone where Mutter tiles or maximizes the window
- * (the drag must still be able to tile).
- * @param {{x, y}} point
- * @param {{floor: ?rect, onEntry: boolean, workArea: rect, zone: number}} ctx
- * @returns {?('over'|'near')}
- */
-export function dropHint(point, { floor, onEntry, workArea, zone }) {
-    const inZone = point.x < workArea.x + zone || point.x >= workArea.x + workArea.width - zone ||
-        point.y < workArea.y + zone;
-    if (inZone || !floor || !overlaps({ x: point.x, y: point.y, width: 1, height: 1 }, floor))
-        return null;
-    return onEntry ? 'over' : 'near';
-}
-
-/** Index of the slot under a point, or -1. */
-export function slotAt(slots, point) {
-    return slots.findIndex(s => point.x >= s.x && point.x < s.x + s.width &&
-        point.y >= s.y && point.y < s.y + s.height);
-}
-
-/**
- * The stage: the work area beside the strip's band, inset by `margin`. Entries dropped here
- * join the set; windows of a new set are tiled in its halves.
- * @param {rect} workArea
- * @param {?rect} floor the strip's floor (null: the whole work area)
- * @param {'left'|'right'} side the strip's side
- */
-export function stageArea(workArea, floor, side, margin = 12) {
-    const left = floor && side === 'left' ? floor.x + floor.width + margin : workArea.x + margin;
-    const right = floor && side !== 'left' ? floor.x - margin : workArea.x + workArea.width - margin;
-    return { x: left, y: workArea.y + margin, width: Math.max(1, right - left), height: Math.max(1, workArea.height - 2 * margin) };
-}
-
-/** The two halves of an area, `gap` apart, in whole pixels. */
-export function halves(area, gap = 12) {
-    const w = Math.floor((area.width - gap) / 2);
-    return {
-        left: { x: area.x, y: area.y, width: w, height: area.height },
-        right: { x: area.x + area.width - w, y: area.y, width: w, height: area.height },
-    };
-}
-
-/** Which half of a card the pointer is over: where a dragged entry will be placed. */
-export function groupSide(point, card) {
-    return point.x < card.x + card.width / 2 ? 'left' : 'right';
-}

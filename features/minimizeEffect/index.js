@@ -4,15 +4,14 @@
 // (or in the overview, as GNOME does) it goes at once.
 //
 // Where a window goes:
-//   1. a target provider (setTargetProvider: Stage Manager sends windows to its strip)
-//   2. the dock (ctx.features.instance('dock').minimizeTarget(win)): its app icon or the
+//   1. the dock (ctx.features.instance('dock').minimizeTarget(win)): its app icon or the
 //      minimized-window slot; on restore, the window's icon geometry (the dock keeps it on
 //      the window's own tile)
-//   3. the window's icon geometry, set by whatever dock runs
-//   4. the middle of the dock's edge of the window's monitor (model.edgeTarget): the dock is
+//   2. the window's icon geometry, set by whatever dock runs
+//   3. the middle of the dock's edge of the window's monitor (model.edgeTarget): the dock is
 //      hidden, off or not laid out yet, so every minimize gets the effect
-// For windows another feature set aside (core/windowState flags: Hide, Stage Manager's
-// own), GNOME's own effect runs: Guava animates only the windows it chose.
+// For windows another feature set aside (core/windowState flags: Hide), GNOME's own effect
+// runs: Guava animates only the windows it chose.
 //
 // Interruptible: Mutter emits 'kill-window-effects' right before a minimize or restore of a
 // window whose effect still runs. The cut-off effect completes for Mutter at once but keeps
@@ -20,9 +19,6 @@
 // the time that is left (model.retarget); a picture nobody claims goes on the next idle.
 //
 // API (ctx.features.instance('minimize-effect')):
-//   setTargetProvider(owner, fn)   fn(metaWindow) -> {rect, edge?} or null (edge: the side the
-//                                  target sits on, 'bottom' | 'left' | 'right'); `owner` is a
-//                                  CleanupRegistry that removes it. The last one added wins.
 //   targetFor(metaWindow)          the rect and edge an effect would use, or null
 //   stats                          {animations, frames, resumed}: read by the harness
 //
@@ -69,7 +65,6 @@ export class MinimizeEffect {
         this._ks.watch('dock-minimize-effect', () => {
             this._config = readConfig(this._ks);
         });
-        this._providers = [];
         this._running = new Map();   // window actor -> run (see _run)
         this._carried = new Map();   // window actor -> the picture of a run Mutter cut off
         // Measured in the harness: effects started, frames drawn, effects resumed mid-way
@@ -109,23 +104,7 @@ export class MinimizeEffect {
 
     // ---- API ---------------------------------------------------------------------------
 
-    setTargetProvider(owner, fn) {
-        this._providers.push(fn);
-        owner?.add(() => {
-            this._providers = this._providers.filter(p => p !== fn);
-        });
-    }
-
     targetFor(win, restoring = false) {
-        for (let i = this._providers.length - 1; i >= 0; i--) {
-            try {
-                const t = this._providers[i](win);
-                if (t?.rect)
-                    return { rect: t.rect, edge: t.edge ?? 'bottom', provided: true };
-            } catch (e) {
-                console.error('[Guava] minimize effect: target provider failed:', e.message);
-            }
-        }
         const dock = this._ctx.features.instance('dock');
         const edge = dock?.position ?? 'bottom';
         if (dock && !restoring) {
@@ -154,8 +133,7 @@ export class MinimizeEffect {
             effect: this._config.effect,
             env: this._ctx.motion.env,
             normal: !!win && ANIMATED_TYPES.includes(win.get_window_type()) && !Main.wm._skippedActors?.has(actor),
-            // A provider's target (Stage Manager's strip) is meant for exactly those windows
-            flagged: !!win && WindowState.flags(win).length > 0 && !target?.provided,
+            flagged: !!win && WindowState.flags(win).length > 0,
             hasTarget: !!target,
             overview,
         });

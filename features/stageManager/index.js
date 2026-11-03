@@ -1,23 +1,24 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Stage Manager (features.js id 'stage-manager'): the Shell adapter.
+// Stage Manager (features.js id 'stage-manager'): the Shell adapter. Spec: docs/features/stage-manager.md.
 //
-// The state lives in one pure state machine (model.js): which entry (an app's windows, or a
-// set the user built) is on the stage, the strip order per workspace, the desktop. This file
-// only turns Shell happenings into the machine's events and applies the effects it returns:
+// The state lives in one pure state machine (model.js): the sets, the stage and strip of each
+// workspace, whether the strip is slid in. This file turns Shell happenings into the machine's
+// events and applies what it answers:
 //   - the window model is core/desktop (window-added/-changed/-removed/-focused events);
+//   - windows off the stage are hidden with opacity and pick (windows.js), never minimized or
+//     unmapped, so turning Stage Manager off is one synchronous restore (SM-32);
+//   - after every event reconcile() compares the windows to the model's hiddenIds() and fixes
+//     any difference: a missed or reordered signal heals on the next event (SM-33);
+//   - minimize is Mutter's own (SM-8): a minimized window leaves its set, Stage Manager never
+//     calls minimize() or unminimize();
 //   - the strip claims its edge through core/layout ('stage-strip', reserve 'none': macOS does
-//     not reserve it), on the side opposite a dock on the left or right;
-//   - windows are hidden with opacity and pick (windows.js), never minimize();
-//   - every move is a flight of a clone (flights.js) through core/motion, cancellable;
-//   - the strip, the drop target and the flights are one container (view.js), destroyed on
-//     disable, after every window got its actor back.
+//     not reserve it), on the side opposite a side dock;
+//   - every move is a flight of a clone (flights.js) through core/motion, cancellable (SM-21, 22).
 //
-// Input: strip clicks (Shift adds to the set), entry drags onto the stage (adds), entry drags onto another entry (a set, tiled to the side chosen), stage
-// window drags dropped on a strip entry (joins it; never a resize, never the tiling edge zone), the wallpaper click
-// (stage-manager-wallpaper-click), Alt-click anywhere outside the windows (the dock, the app
-// grid: the next window opens into the current stage), the window controls' minimize
-// (WindowState.interceptMinimize), and the shortcuts (cycle sets, strip slot n, remove).
-// Show Desktop calls toggleDesktop() and reads isDesktopShown.
+// Input: strip clicks (Shift adds to the stage), the pointer on the edge or the strip, the edge
+// pressure barrier, a stage window dragged and dropped on the strip (stash), the wallpaper click
+// (Show Desktop), and the shortcuts (next / previous set, slot n, remove from set).
+// Public API: toggleDesktop(), isDesktopShown, openIntoStage(appId); WindowState flag 'staged'.
 //
 // Private API: none. Main.wm (public), global.display grab-op signals, Meta.BackgroundActor.
 
@@ -25,28 +26,27 @@ import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
 import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
-import St from 'gi://St';
 import { gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import { cornerSpec } from './thumbEffect.js';
 import { WindowState } from '../../core/windowState.js';
 import { Keybindings } from '../../lib/keybindings.js';
 import { GuavaSettings } from '../../lib/settings.js';
-import { Flights } from './flights.js';
 import { isClick } from '../../lib/clickModel.js';
-import { isMaximized, unmaximizeWindow } from '../../lib/compat.js';
-import { METRICS, dropHint, halves, overlaps, pointRect, scaleMs, stageRect, stripSide, workspaceDirection } from './geometry.js';
-import { StageMachine } from './model.js';
+import { isMaximized } from '../../lib/compat.js';
+import { Flights } from './flights.js';
+import { METRICS, overlaps, scaleMs, stageRect, stripSide } from './geometry.js';
+import { StageModel } from './model.js';
+import { cornerSpec } from './thumbEffect.js';
 import { StripView } from './view.js';
 import { WindowHider } from './windows.js';
 
 export const STRIP_CLAIM = 'stage-strip';
 
 // Keys read live; the rest need a restart (features.js restartOn)
-const VIEW_KEYS = ['stage-manager-side', 'stage-manager-tilt',
-    'stage-manager-autohide', 'stage-manager-show-recent', 'rounded-corners',
+const VIEW_KEYS = ['stage-manager-side', 'stage-manager-tilt', 'rounded-corners',
     'rounded-corners-radius', 'rounded-corners-which'];
+const CONFIG_KEYS = ['stage-manager-new-windows', 'stage-manager-autohide', 'stage-manager-show-recent'];
 const SHORTCUTS = [
     ['stage-manager-remove-shortcut', sm => sm._removeFocused()],
     ['stage-manager-next-shortcut', sm => sm._send({ type: 'cycle', dir: 1 })],
@@ -55,10 +55,6 @@ const SHORTCUTS = [
 ];
 // WindowState flags of other features whose windows Stage Manager leaves alone
 const SET_ASIDE = ['hidden', 'splitView'];
-// While a stage window is dragged, how often the pointer is checked against the strip
-const WINDOW_DRAG_SAMPLE_MS = 60;
-// Mutter tiles or maximizes a dragged window within drag-threshold x 6 of a screen edge
-const TILE_ZONE_FACTOR = 6;
 
 const rectOf = r => ({ x: r.x, y: r.y, width: r.width, height: r.height });
 const nowMs = () => Math.round(GLib.get_monotonic_time() / 1000);
@@ -67,16 +63,15 @@ export class StageManager {
     constructor(ctx, cleanup) {
         this._ctx = ctx;
         this._cleanup = cleanup;
-        this._machine = null;
+        this._model = null;
         this._timers = new Map();    // model timer key -> cleanup token
         this._pending = new Set();   // window ids not mapped yet (not told to the model)
         this._geometry = new Map();  // stage Meta.Window -> cleanup tokens (position/size)
-        this._focusIdle = 0;
         this._geometryIdle = 0;
+        this._focusIdle = 0;
+        this._overlapped = false;
         this._press = null;          // a primary press on the wallpaper
-        this._drag = null;           // a stage window dragged by its titlebar
-        this._overview = false;
-        this._minimized = new Set(); // ids the user minimized into the strip, still there
+        this._drag = null;           // a stage window being moved: {win, frame}
     }
 
     enable() {
@@ -90,9 +85,9 @@ export class StageManager {
         this._tracker = Shell.WindowTracker.get_default();
         this._appSystem = Shell.AppSystem.get_default();
 
-        this._machine = new StageMachine({
-            allAtOnce: ks.bool('stage-manager-group-by-app'),
-            newWindows: ks.string('stage-manager-new-windows'),
+        this._model = new StageModel(this._config());
+        cleanup.add(() => {
+            this._model = null;
         });
 
         const corners = () => cornerSpec({
@@ -105,23 +100,17 @@ export class StageManager {
             ms: d => this._ms(d),
             gettext: _,
             corners,
-            onActivate: (id, { add }) => this._send({ type: 'activate', entry: id, add }),
-            onDrop: id => this._send({ type: 'activate', entry: id, add: true }),
-            onGroup: (dragged, target, side) => this._send({ type: 'group', dragged, target, side }),
-            onLayout: () => this._syncGeometryWatch(),
+            onActivate: (set, { add }) => this._send({ type: 'activate', set, add }),
+            onEdge: on => this._send({ type: 'edge', on }),
+            onHover: on => this._send({ type: 'strip-hover', on }),
+            onPush: () => this._send({ type: 'push' }),
+            onReveal: () => this._send({ type: 'push' }),
         });
         this._view.setBackground(ks.bool('stage-manager-strip-background'));
         this._side = this._wantSide();
         this._claim = this._layout.claim(cleanup, {
             id: STRIP_CLAIM, edge: this._side, size: METRICS.stripWidth, reserve: 'none',
             actor: this._view.container,
-        });
-        // Runs after the hider gave every actor back: what the user minimized into the strip
-        // ends minimized, as it would have without Stage Manager
-        cleanup.add(() => {
-            for (const id of this._minimized)
-                this._desktop.metaWindow(id)?.minimize();
-            this._minimized.clear();
         });
         this._hider = new WindowHider(cleanup);
         this._flights = new Flights(cleanup, {
@@ -131,11 +120,7 @@ export class StageManager {
         cleanup.add(() => this._stopGeometryWatch());
 
         WindowState.setStageActive(true);
-        WindowState.setMinimizeInterceptor(win => this._interceptMinimize(win));
-        cleanup.add(() => {
-            WindowState.setMinimizeInterceptor(null);
-            WindowState.setStageActive(false);
-        });
+        cleanup.add(() => WindowState.setStageActive(false));
 
         const { events } = ctx;
         events.on('window-added', ({ window }) => this._added(window), cleanup);
@@ -150,8 +135,8 @@ export class StageManager {
         events.on('work-area-changed', () => this._layoutChanged(), cleanup);
         // A new window is told to the model when it maps, not when it is created
         cleanup.connect(global.window_manager, 'map', (_wm, actor) => this._mapped(actor.meta_window));
-        cleanup.connect(Main.overview, 'showing', () => this._setOverview(true));
-        cleanup.connect(Main.overview, 'hidden', () => this._setOverview(false));
+        cleanup.connect(Main.overview, 'showing', () => this._send({ type: 'overview', on: true }));
+        cleanup.connect(Main.overview, 'hidden', () => this._send({ type: 'overview', on: false }));
         cleanup.connect(global.stage, 'captured-event', (_s, event) => this._capturedEvent(event));
         cleanup.connect(global.display, 'grab-op-begin', (_d, win, op) => this._dragBegin(win, op));
         cleanup.connect(global.display, 'grab-op-end', (_d, win) => this._dragEnd(win));
@@ -160,21 +145,10 @@ export class StageManager {
             if (info)
                 this._changed(info);
         });
-        // Genie / Scale minimize aims at the strip (minimize-effect, while both run)
-        const provide = () => ctx.features?.instance?.('minimize-effect')?.setTargetProvider?.(cleanup,
-            win => this._minimizeTarget(win));
-        provide();
-        events.on('feature-changed', ({ id, active }) => {
-            if (id === 'minimize-effect' && active)
-                provide();
-        }, cleanup);
 
         ks.watch(VIEW_KEYS, () => this._layoutChanged());
+        ks.watch(CONFIG_KEYS, () => this._send({ type: 'config', config: this._config() }));
         ks.watch(['stage-manager-strip-background'], () => this._view.setBackground(ks.bool('stage-manager-strip-background')));
-        ks.watch(['stage-manager-new-windows'], () => this._send({
-            type: 'config',
-            newWindows: ks.string('stage-manager-new-windows'),
-        }));
         for (const [key, fn] of SHORTCUTS)
             Keybindings.add(cleanup, key, ctx.settings, () => fn(this));
 
@@ -185,16 +159,16 @@ export class StageManager {
         // Everything is in the cleanup registry
     }
 
-    // ---- public API (Show Desktop, Control Center, the dock) ----------------------------
+    // ---- public API (Show Desktop, Control Center, the dock) ----------------------------------
 
     /** True while the desktop of the active workspace is shown. */
     get isDesktopShown() {
-        return this._machine?.desktopShown() ?? false;
+        return this._model?.desktopShown() ?? false;
     }
 
     /** Show the desktop (the stage goes to the strip), or bring the stage back. */
     toggleDesktop() {
-        if (this._machine && !this._overview)
+        if (this._model && !Main.overview.visible)
             this._send({ type: 'toggle-desktop' });
         return this.isDesktopShown;
     }
@@ -206,7 +180,7 @@ export class StageManager {
      */
     openIntoStage(appId) {
         const app = this._appSystem.lookup_app(appId);
-        if (!this._machine || !app)
+        if (!this._model || !app)
             return;
         this._send({ type: 'join-next', appId });
         if (app.get_n_windows() > 0)
@@ -215,13 +189,22 @@ export class StageManager {
             app.open_new_window(-1);
     }
 
-    // ---- events in --------------------------------------------------------------------------
+    // ---- events in ----------------------------------------------------------------------------
+
+    _config() {
+        const ks = this._ks;
+        return {
+            allAtOnce: ks.bool('stage-manager-group-by-app'),
+            newWindows: ks.string('stage-manager-new-windows'),
+            showRecent: ks.bool('stage-manager-show-recent'),
+            autohide: ks.bool('stage-manager-autohide'),
+        };
+    }
 
     _send(event) {
-        if (!this._machine)
+        if (!this._model)
             return;
-        const fx = this._machine.dispatch({ now: nowMs(), ...event });
-        this._apply(fx);
+        this._apply(this._model.dispatch({ now: nowMs(), ...event }));
     }
 
     // The model's view of a window. The transient parent is read live (a portal dialog gets
@@ -246,7 +229,7 @@ export class StageManager {
             type: 'init', windows, focus: model.focusedWindow?.id ?? null,
             active: model.workspaces.active, primary: model.primaryMonitor,
         });
-        this._render();
+        this._view.setVisible(this._model.stripVisible, false);
     }
 
     _added(window) {
@@ -275,7 +258,6 @@ export class StageManager {
     }
 
     _removed(window) {
-        this._minimized.delete(window.id);
         if (this._pending.delete(window.id))
             return;
         const win = this._desktop.metaWindow(window.id);
@@ -301,7 +283,6 @@ export class StageManager {
     }
 
     _workspace(active) {
-        const from = this._machine.activeWorkspace;
         // A window first shown on this workspace has mapped now
         for (const id of [...this._pending]) {
             const actor = this._desktop.metaWindow(id)?.get_compositor_private();
@@ -309,171 +290,122 @@ export class StageManager {
                 this._mapped(actor.meta_window);
         }
         this._send({ type: 'workspace', active });
-        this._render(workspaceDirection(from, active));
-    }
-
-    // Where a window minimizes to: its strip slot, else the strip's edge
-    _minimizeTarget(win) {
-        const id = win?.get_stable_sequence?.();
-        if (!this._machine || id === undefined || this._machine.kindOf(id) !== 'managed')
-            return null;
-        const rect = this._view.thumbRect(win) ?? this._edgePoint(win);
-        return rect ? { rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height }, edge: this._side } : null;
-    }
-
-    _interceptMinimize(win) {
-        const id = win?.get_stable_sequence?.();
-        if (id === undefined || this._machine.kindOf(id) !== 'managed')
-            return false;
-        this._minimized.add(id);
-        this._send({ type: 'minimize', id });
-        return true;
     }
 
     _removeFocused() {
         const id = this._desktop.model.focusedWindow?.id;
-        if (id !== undefined)
-            this._send({ type: 'remove-from-set', id });
+        if (id !== undefined && this._model?.isManaged(id))
+            this._send({ type: 'unset', id });
     }
 
-    // ---- effects out ------------------------------------------------------------------------
+    // ---- effects out --------------------------------------------------------------------------
 
-    _apply(fx) {
-        const motion = this._ctx.motion.env.animations;
-        const hide = fx.find(f => f.type === 'hide');
-        const show = fx.find(f => f.type === 'show');
-        const tile = fx.find(f => f.type === 'tile');
-        // Where a new set's windows land: placed now (they are hidden), so the flights end there
-        const placed = tile ? this._tile(tile) : new Map();
-        // Where the windows coming back are now (their clones), before the strip is redrawn
-        const froms = new Map();
-        for (const id of show?.ids ?? []) {
-            const win = this._desktop.metaWindow(id);
-            if (win)
-                froms.set(win, this._flights.land(win) ?? this._view.thumbRect(win) ?? this._edgePoint(win));
+    _apply(effects) {
+        let thumbsBefore = null;
+        const animate = { hide: new Set(), show: new Set() };
+        for (const f of effects) {
+            if (f.type === 'strip')
+                thumbsBefore ??= this._view.thumbRects();
+            else if (f.type === 'hide' && f.animate)
+                f.ids.forEach(id => animate.hide.add(id));
+            else if (f.type === 'show' && f.animate)
+                f.ids.forEach(id => animate.show.add(id));
         }
-        const leaving = new Map();
-        for (const id of hide?.ids ?? []) {
-            const win = this._desktop.metaWindow(id);
-            if (win)
-                leaving.set(win, this._flights.land(win) ?? rectOf(win.get_frame_rect()));
-        }
-        if (fx.some(f => f.type === 'strip' && f.ws === this._machine.activeWorkspace))
+        if (effects.some(f => f.type === 'strip'))
             this._render();
-
-        for (const [win, from] of leaving) {
-            const animate = hide.animate && motion && this._onScreen(win);
-            this._hider.hide(win);
-            if (!animate)
-                continue;
-            const to = this._view.thumbRect(win) ?? this._edgePoint(win);
-            this._view.setFlying(win, true);
-            if (!this._flights.fly(win, { from, to, toStage: false }))
-                this._view.setFlying(win, false);
+        for (const f of effects) {
+            if (f.type === 'timer')
+                this._startTimer(f.key, f.ms);
+            else if (f.type === 'cancel')
+                this._stopTimer(f.key);
         }
-        for (const win of froms.keys())
-            this._minimized.delete(win.get_stable_sequence());
-        for (const [win, from] of froms) {
-            const animate = show.animate && motion && this._onScreen(win);
-            const opacity = this._hider.show(win, { keepTransparent: animate });
-            if (!this._isAttached(win))
-                win.raise();
-            if (animate)
-                this._flights.fly(win, { from, to: placed.get(win) ?? rectOf(win.get_frame_rect()), toStage: true, opacity: opacity ?? 255 });
-        }
-        for (const f of fx) {
-            switch (f.type) {
-            case 'unminimize':
-                this._minimized.add(f.id);
-                this._desktop.metaWindow(f.id)?.unminimize();
-                break;
-            case 'focus':
+        this._reconcile(animate, thumbsBefore);
+        for (const f of effects) {
+            if (f.type === 'focus')
                 this._focus(f.id);
-                break;
-            case 'timer':
-                this._timer(f.key, f.ms);
-                break;
-            case 'cancel':
-                this._cleanup.release(this._timers.get(f.key) ?? 0);
-                this._timers.delete(f.key);
-                break;
-            }
+            else if (f.type === 'strip-visible')
+                this._view.setVisible(f.visible);
         }
-        this._reconcile();
         this._syncGeometryWatch();
     }
 
-    // The windows of a new set take the two halves of the stage; one that is maximized is
-    // restored first. Returns the rect each was given.
-    _tile({ left, right }) {
-        const area = this._view.stageArea();
-        const placed = new Map();
-        if (!area)
-            return placed;
-        const rects = halves(area);
-        for (const [ids, rect] of [[left, rects.left], [right, rects.right]]) {
-            for (const id of ids) {
-                const win = this._desktop.metaWindow(id);
-                if (!win)
-                    continue;
-                if (isMaximized(win))
-                    unmaximizeWindow(win);
-                win.move_resize_frame(true, rect.x, rect.y, rect.width, rect.height);
-                placed.set(win, rect);
-            }
-        }
-        return placed;
-    }
-
-    _timer(key, ms) {
-        this._cleanup.release(this._timers.get(key) ?? 0);
+    _startTimer(key, ms) {
+        this._stopTimer(key);
         this._timers.set(key, this._cleanup.timeout(ms, () => {
             this._timers.delete(key);
             this._send({ type: 'timer', key });
             return GLib.SOURCE_REMOVE;
-        }, { name: 'stage-manager-timer' }));
+        }, { name: `stage-manager-${key}` }));
+    }
+
+    _stopTimer(key) {
+        const token = this._timers.get(key);
+        if (token === undefined)
+            return;
+        this._cleanup.release(token);
+        this._timers.delete(key);
     }
 
     _focus(id) {
-        if (id === null) {
-            global.display.unset_input_focus(global.get_current_time());
+        const win = id === null ? null : this._desktop.metaWindow(id);
+        if (!win || win.minimized || global.display.focus_window === win)
             return;
-        }
-        const win = this._desktop.metaWindow(id);
-        if (win && global.display.focus_window !== win)
-            Main.activateWindow(win);
+        win.activate(global.get_current_time());
     }
 
-    // The model is the truth: any window whose actor disagrees is set right, without motion
-    _reconcile() {
-        for (const id of this._machine.hidden()) {
-            const win = this._desktop.metaWindow(id);
-            if (win && !this._hider.isHidden(win))
-                this._hider.hide(win);
-        }
-        for (const win of this._hider.hiddenWindows()) {
-            if (!this._machine.isHidden(win.get_stable_sequence()) && !this._flights.isFlying(win))
-                this._hider.show(win);
+    // Make the windows look like the model says: hidden ones invisible, the rest as they are.
+    // Idempotent and complete, so it also repairs what a missed signal left behind (SM-33).
+    _reconcile(animate, thumbsBefore) {
+        const hidden = this._model.hiddenIds();
+        for (const info of this._desktop.model.windows({ userFacing: false })) {
+            const win = this._desktop.metaWindow(info.id);
+            if (!win || this._pending.has(info.id))
+                continue;
+            const want = hidden.has(info.id);
+            if (want === this._hider.isHidden(win))
+                continue;
+            if (want)
+                this._hide(win, animate.hide.has(info.id));
+            else
+                this._show(win, animate.show.has(info.id), thumbsBefore?.get(win) ?? null);
         }
     }
 
-    _isAttached(win) {
-        return this._machine.kindOf(win.get_stable_sequence()) === 'attached';
-    }
-
-    _onScreen(win) {
+    _hide(win, animated) {
         const actor = win.get_compositor_private();
-        return !!actor && !this._overview && win.get_workspace()?.index() === this._machine.activeWorkspace &&
-            win.get_monitor() === this._layout.primaryIndex;
+        const visible = !!actor && actor.mapped && actor.opacity > 0 && !win.minimized;
+        const from = this._flights.land(win) ?? { ...rectOf(win.get_frame_rect()), angle: 0 };
+        if (!this._hider.hide(win))
+            return;
+        const to = this._view.thumbRect(win);
+        if (animated && visible && to) {
+            this._view.setFlying(win, true);
+            if (!this._flights.fly(win, { from, to, toStage: false }))
+                this._view.setFlying(win, false);
+        }
     }
 
-    // A window with no strip slot flies to the strip's edge
+    _show(win, animated, thumb) {
+        const from = this._flights.land(win) ?? thumb ?? this._edgePoint(win);
+        const fly = animated && !!from && !win.minimized;
+        const opacity = this._hider.show(win, { keepTransparent: fly }) ?? 255;
+        if (fly) {
+            const to = { ...rectOf(win.get_frame_rect()), angle: 0 };
+            if (!this._flights.fly(win, { from, to, toStage: true, opacity }))
+                win.get_compositor_private().opacity = opacity;
+        }
+    }
+
+    // A window with no strip slot flies from the strip's edge
     _edgePoint(win) {
         const wa = this._layout.workArea(this._layout.primaryIndex);
         if (!wa)
             return null;
+        const f = rectOf(win.get_frame_rect());
+        const w = 24;
+        const h = f.width > 0 ? w * f.height / f.width : w;
         const x = this._side === 'right' ? wa.x + wa.width - 12 : wa.x + 12;
-        return { ...pointRect({ x, y: wa.y + wa.height / 2 }, rectOf(win.get_frame_rect()), 24), angle: 0 };
+        return { x: x - w / 2, y: wa.y + wa.height / 2 - h / 2, width: w, height: h, angle: 0 };
     }
 
     _ms(d) {
@@ -495,56 +427,45 @@ export class StageManager {
         this._render();
     }
 
-    _render(slide = 0) {
-        if (!this._machine)
+    _render() {
+        if (!this._model)
             return;
         const entries = [];
-        for (const e of this._machine.shownStrip()) {
-            const windows = e.windows.map(id => this._desktop.metaWindow(id)).filter(Boolean);
+        for (const set of this._model.strip()) {
+            const windows = set.windows.map(id => this._desktop.metaWindow(id)).filter(Boolean);
             if (windows.length === 0)
                 continue;
             const apps = [...new Set(windows.map(w => this._tracker.get_window_app(w)).filter(Boolean))];
-            entries.push({ id: e.id, windows, set: e.set, app: apps[0] ?? null, names: apps.map(a => a.get_name()) });
+            entries.push({ id: set.id, windows, set: apps.length > 1, app: apps[0] ?? null, names: apps.map(a => a.get_name()) });
         }
-        const tilt = this._ks.int('stage-manager-tilt');
         this._view.update({
-            side: this._side, entries, tilt, slide,
+            side: this._side, entries, tilt: this._ks.int('stage-manager-tilt'),
             workArea: this._layout.workArea(this._layout.primaryIndex),
         });
-        this._syncConditions();
-    }
-
-    _setOverview(on) {
-        this._overview = on;
-        this._syncConditions();
-    }
-
-    _syncConditions() {
-        const floor = this._view.floorRect();
-        const workArea = this._layout.workArea(this._layout.primaryIndex);
-        let overlapped = false;
-        for (const win of this._stageWindows()) {
-            if (overlaps(stageRect(rectOf(win.get_frame_rect()), isMaximized(win), workArea), floor)) {
-                overlapped = true;
-                break;
-            }
-        }
-        this._view.setConditions({
-            showRecent: this._ks.bool('stage-manager-show-recent'),
-            autohide: this._ks.bool('stage-manager-autohide'),
-            overlapped, suppressed: this._overview,
-        });
+        this._syncOverlap();
     }
 
     // Visible windows on the stage of the active workspace (the managed ones and their dialogs)
     _stageWindows() {
         const out = [];
-        for (const id of this._machine.stageWindows()) {
+        for (const id of this._model.stageWindows()) {
             const win = this._desktop.metaWindow(id);
             if (win && !win.minimized)
                 out.push(win);
         }
         return out;
+    }
+
+    // Does a stage window cover the strip's area? The model decides what that does (SM-16).
+    _syncOverlap() {
+        const floor = this._view.band;
+        const workArea = this._layout.workArea(this._layout.primaryIndex);
+        const on = !!floor && this._stageWindows().some(win =>
+            overlaps(stageRect(rectOf(win.get_frame_rect()), isMaximized(win), workArea), floor));
+        if (on === this._overlapped)
+            return;
+        this._overlapped = on;
+        this._send({ type: 'overlap', on });
     }
 
     // Stage windows moving over the strip hide it: watch their frames (only theirs)
@@ -561,9 +482,10 @@ export class StageManager {
             this._geometry.set(win, [
                 this._cleanup.connect(win, 'position-changed', queue),
                 this._cleanup.connect(win, 'size-changed', queue),
+                this._cleanup.connect(win, 'notify::maximized-horizontal', queue),
             ]);
         }
-        this._syncConditions();
+        this._syncOverlap();
     }
 
     _unwatchGeometry(win) {
@@ -582,7 +504,7 @@ export class StageManager {
             return;
         this._geometryIdle = this._cleanup.idle(() => {
             this._geometryIdle = 0;
-            this._syncConditions();
+            this._syncOverlap();
             return GLib.SOURCE_REMOVE;
         }, { name: 'stage-manager-geometry' });
     }
@@ -597,20 +519,15 @@ export class StageManager {
             this._press = null;
             return Clutter.EVENT_PROPAGATE;
         }
-        const target = global.stage.get_event_actor(event);
-        const onWallpaper = target instanceof Meta.BackgroundActor;
+        const onWallpaper = global.stage.get_event_actor(event) instanceof Meta.BackgroundActor;
+        const [x, y] = event.get_coords();
         if (type === Clutter.EventType.BUTTON_PRESS) {
-            // Alt-click outside the windows (the dock, the app grid): open into the current stage
-            if ((event.get_state() & Clutter.ModifierType.MOD1_MASK) && !(target instanceof Meta.WindowActor) && !onWallpaper)
-                this._send({ type: 'join-next', appId: null });
-            const [x, y] = event.get_coords();
             this._press = onWallpaper && !Main.overview.visible && Main.modalCount === 0
                 ? { x, y, time: event.get_time() } : null;
             return Clutter.EVENT_PROPAGATE;
         }
         const press = this._press;
         this._press = null;
-        const [x, y] = event.get_coords();
         if (press && onWallpaper && isClick(press, { x, y, time: event.get_time() }) &&
             this._ks.bool('stage-manager-wallpaper-click') &&
             this._ks.string('click-wallpaper-reveals-desktop') !== 'never') {
@@ -623,66 +540,30 @@ export class StageManager {
         return Clutter.EVENT_PROPAGATE;
     }
 
-    // What the pointer of a dragged stage window is over: an entry, the strip, or neither
-    _dragProbe() {
-        const [x, y] = global.get_pointer();
-        // A press on the titlebar (a double-click to maximize) is no drag yet: the strip stays put
-        const { start } = this._drag;
-        if (Math.hypot(x - start.x, y - start.y) <= St.Settings.get().drag_threshold)
-            return { hint: null, entry: null };
-        const hint = dropHint({ x, y }, {
-            floor: this._view.floorRect(),
-            onEntry: this._view.entryAt(x, y) !== null,
-            workArea: this._layout.workArea(this._layout.primaryIndex),
-            zone: St.Settings.get().drag_threshold * TILE_ZONE_FACTOR,
-        });
-        return { hint, entry: hint === 'over' ? this._view.entryAt(x, y) : null };
-    }
-
-    // A stage window dragged by its titlebar and dropped on an entry of the strip joins it.
-    // Resizes (RESIZING_*) never get here, and the screen-edge zone is left to tiling.
+    // A stage window moved by its titlebar and dropped on the strip goes to the strip (SM-25).
+    // Resizes never get here.
     _dragBegin(win, op) {
         const moving = op === Meta.GrabOp.MOVING || op === Meta.GrabOp.MOVING_UNCONSTRAINED ||
             op === Meta.GrabOp.KEYBOARD_MOVING;
         const id = win?.get_stable_sequence?.();
-        if (!moving || id === undefined || !this._machine.stageWindows().includes(id))
-            return;
-        this._endDrag();
-        const [x, y] = global.get_pointer();
-        const drag = { win, frame: rectOf(win.get_frame_rect()), start: { x, y }, token: 0 };
-        this._drag = drag;
-        drag.token = this._cleanup.timeout(WINDOW_DRAG_SAMPLE_MS, () => {
-            this._view.setDropHint(this._dragProbe().hint);
-            return GLib.SOURCE_CONTINUE;
-        }, { name: 'stage-manager-window-drag' });
+        this._drag = moving && id !== undefined && this._model?.stageWindows().includes(id) && this._model.isManaged(id)
+            ? { win, frame: rectOf(win.get_frame_rect()) } : null;
     }
 
     _dragEnd(win) {
         const drag = this._drag;
-        if (!drag || drag.win !== win)
+        this._drag = null;
+        const band = this._view.band;
+        if (!drag || drag.win !== win || !band || !this._model)
             return;
-        const { entry } = this._dragProbe();
-        this._endDrag();
-        if (entry === null)
+        const [x, y] = global.get_pointer();
+        if (!overlaps({ x, y, width: 1, height: 1 }, band))
             return;
         // Once Mutter has ended the grab (focus changes are refused during it)
         this._cleanup.idle(() => {
-            const id = win.get_stable_sequence();
-            if (!this._machine.stageWindows().includes(id))
-                return GLib.SOURCE_REMOVE;
-            // It comes back where it was picked up
             win.move_frame(true, drag.frame.x, drag.frame.y);
-            this._send({ type: 'move-to-entry', id, entry });
+            this._send({ type: 'stash', id: win.get_stable_sequence() });
             return GLib.SOURCE_REMOVE;
-        }, { name: 'stage-manager-window-drop' });
-    }
-
-    _endDrag() {
-        const drag = this._drag;
-        if (!drag)
-            return;
-        this._drag = null;
-        this._cleanup.release(drag.token);
-        this._view.setDropHint(null);
+        }, { name: 'stage-manager-drop' });
     }
 }

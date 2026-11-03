@@ -63,17 +63,18 @@ our adaptation or a guess about macOS Sonoma/Sequoia; the rest follows macOS.
   overlaps its area (SM-13). With show-recent off it appears only on reveal (SM-17).
 - **SM-16** `stage-manager-autohide` on: a stage window overlapping the strip area slides the strip
   off the edge (220 ms, `ctx.motion`); when the overlap ends it slides back. Off: the strip stays.
-- **SM-17** Reveal by pointer: the pointer rests on the screen edge pixel (within the strip's
-  vertical band) and either dwells 150 ms or pushes (3 motion events towards the edge within
-  400 ms). The strip slides in over the windows.
+- **SM-17** Reveal by pointer: the pointer rests on the 2 px hover strip at the screen edge (within
+  the strip's vertical band) for 150 ms, or pushes the edge (a pressure barrier: 40 px within
+  600 ms, not while a button is held, so window drags still tile). The strip slides in over the
+  windows. It never reveals while a window is full screen (the chrome is hidden then).
 - **SM-18** It slides out again when the pointer has been out of the strip (strip width + 24 px)
   for 500 ms and SM-13 still holds. Reveal and hide reverse mid-slide from the current position
   (interruptible); no jump, no flicker.
 - **SM-19** Keyboard reveal: the cycle and slot shortcuts (Super+Alt+PageUp/PageDown/1..6) reveal
   the strip for 1.5 s. Thumbnails are focusable; Enter activates (accessibility).
-- **SM-20** Thumbnails are live clones of the window actors at native resolution (never a
-  downscaled texture), tilted by `stage-manager-tilt` degrees, stacked for sets of several
-  windows, with the app icon badge. Rounded corners follow `rounded-corners`.
+- **SM-20** Thumbnails are live clones of the window actors drawn from the full buffer (never a
+  cached low-resolution texture), tilted by `stage-manager-tilt` degrees, stacked for sets of
+  several windows, with the app icon badge. Rounded corners follow `rounded-corners`.
 
 ## Switching
 - **SM-21** Click on a thumbnail swaps: the thumbnail's windows fly from their slot to their stage
@@ -87,13 +88,14 @@ our adaptation or a guess about macOS Sonoma/Sequoia; the rest follows macOS.
 - **SM-24** Super+Alt+PageDown / PageUp cycle to the next / previous set; Super+Alt+1..6 pick a
   strip slot. The remove shortcut takes the focused window out of its set into its own set.
 - **SM-25** Dragging a stage window by its title and dropping it on the strip sends it to the strip
-  as its own set (guess for a thumbnail under the pointer: it joins that set). The drop never
-  resizes or tiles the window.
+  as its own set (guess: macOS also lets it join the thumbnail under the pointer; v1 does not). The
+  window goes back to where it was picked up. A resize or a drop elsewhere does nothing here.
 - **SM-26** Wallpaper click (`stage-manager-wallpaper-click`) = Show Desktop (SM-31).
 
 ## Workspaces and monitors
 - **SM-27** Each workspace has its own stage and strip; the sets are per workspace. A window moved
-  to another workspace joins that workspace's sets. The strip slides with a Space switch.
+  to another workspace joins that workspace's sets, in its strip when the workspace has a stage.
+  Switching workspace redraws the strip for that workspace without animation (guess: macOS slides).
 - **SM-28** Only the primary monitor has a strip. Windows on other monitors are never hidden (guess:
   macOS has a strip per display).
 
@@ -103,8 +105,7 @@ our adaptation or a guess about macOS Sonoma/Sequoia; the rest follows macOS.
   Manager) read by Mission Control and the adaptive menu bar. `WindowState.stageActive` is true
   while it runs.
 - **SM-30** Hidden windows keep their frame, workspace, stacking and run normally. Mission Control
-  shows the stage and the minimized-to-dock windows' rules of its own; hidden sets show only as
-  thumbnails.
+  decides what it lists from the `'staged'` flag; hidden sets show as thumbnails.
 - **SM-31** Show Desktop moves the stage set into the strip (all windows hidden, no stage); calling
   it again or activating any window brings the previous stage back.
 
@@ -132,6 +133,14 @@ fade-in. Keyboard focus never rests on a hidden window: the model moves it to th
 `stage-manager-shortcut` (empty), `-remove-`, `-next-`, `-previous-`, `-slot-1..6-shortcut`.
 
 ## Code
-`features/stageManager/`: `model.js` (pure state machine), `geometry.js` (pure), `index.js`
-(adapter), `view.js` (strip), `windows.js` (hider), `flights.js`, `shortcut.js`. The strip is claimed
-through `core/layout.js` (opposite a side dock).
+`features/stageManager/`: `model.js` (pure `StageModel`: events in, effects out; it owns the sets, the
+stage and strip per workspace and whether the strip is slid in), `geometry.js` (pure), `index.js`
+(adapter: Mutter signals to events, effects applied by an idempotent reconcile), `view.js` (strip,
+edge, pressure barrier), `windows.js` (hider), `flights.js` (clone flights through `ctx.motion`),
+`thumbEffect.js`, `shortcut.js`. The strip is claimed through `core/layout.js` (opposite a side dock).
+
+## Tests
+`tests/stageManagerModel.test.js` (one scenario per rule, named by SM-n),
+`tests/stageManagerFuzz.test.js` (300 seeds of random events; invariants after every event),
+`tests/stageManagerGeometry.test.js`. Real Shell: `tools/scenarios/stage-manager-*.sh` (bundle
+`stage-manager-lib.sh` first; see its header), plus the `stage-manager-hide-reveal` probe.
