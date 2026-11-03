@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Minimize effects: "Minimize windows using: Genie / Scale", played in
 // reverse on restore. Under reduced motion the window fades where it is; with animations off
-// it goes at once.
+// (or in the overview, as GNOME does) it goes at once.
 //
 // Where a window goes:
 //   1. a target provider (setTargetProvider: Stage Manager sends windows to its strip)
@@ -9,34 +9,51 @@
 //      minimized-window slot; on restore, the window's icon geometry (the dock keeps it on
 //      the window's own tile)
 //   3. the window's icon geometry, set by whatever dock runs
-// With no target, or for windows another feature set aside (core/windowState flags), GNOME's
-// own effect runs: Guava animates only the windows it chose.
+//   4. the middle of the dock's edge of the window's monitor (model.edgeTarget): the dock is
+//      hidden, off or not laid out yet, so every minimize gets the effect
+// For windows another feature set aside (core/windowState flags: Hide, Stage Manager's
+// own), GNOME's own effect runs: Guava animates only the windows it chose.
+//
+// Interruptible: Mutter emits 'kill-window-effects' right before a minimize or restore of a
+// window whose effect still runs. The cut-off effect completes for Mutter at once but keeps
+// its picture for the call that follows, which carries on from that progress in the share of
+// the time that is left (model.retarget); a picture nobody claims goes on the next idle.
 //
 // API (ctx.features.instance('minimize-effect')):
 //   setTargetProvider(owner, fn)   fn(metaWindow) -> {rect, edge?} or null (edge: the side the
 //                                  target sits on, 'bottom' | 'left' | 'right'); `owner` is a
 //                                  CleanupRegistry that removes it. The last one added wins.
 //   targetFor(metaWindow)          the rect and edge an effect would use, or null
+//   stats                          {animations, frames, resumed}: read by the harness
 //
 // Shell API: global.window_manager (Shell.WM) 'minimize' / 'unminimize' /
 // 'kill-window-effects' and completed_minimize / completed_unminimize; the stock handlers of
 // ui/windowManager.js are bound closures, so they are blocked while Guava runs (and unblocked
 // after), and Main.wm._minimizeWindow / _unminimizeWindow (private) run for the windows Guava
-// leaves to GNOME. Checked on GNOME 50.
+// leaves to GNOME. Main.wm._skippedActors (skipNextEffect). Checked on GNOME 50.
 
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 import Meta from 'gi://Meta';
+import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import { GuavaSettings } from '../../lib/settings.js';
 import { WindowState } from '../../core/windowState.js';
 import { GenieEffect } from './genie.js';
-import { chooseMode, genieFrame, genieOpacity, readConfig, scaleTarget } from './model.js';
+import {
+    chooseMode, edgeTarget, genieFrame, genieOpacity, readConfig, retarget, scaleFrame, scaleTarget,
+} from './model.js';
 
 const EFFECT_NAME = 'guava-genie';
 const ANIMATED_TYPES = [Meta.WindowType.NORMAL, Meta.WindowType.MODAL_DIALOG, Meta.WindowType.DIALOG];
 const SIGNALS = ['minimize', 'unminimize'];
+// Per mode: the full run's duration and curve (minimize, restore)
+const TIMING = Object.freeze({
+    genie: { duration: 'extraLong', curve: ['linear', 'linear'] },
+    scale: { duration: 'long', curve: ['move', 'emphasized'] },
+    fade: { duration: 'short', curve: ['standard', 'standard'] },
+});
 
 export class MinimizeEffect {
     constructor(ctx, cleanup) {
@@ -53,9 +70,10 @@ export class MinimizeEffect {
             this._config = readConfig(this._ks);
         });
         this._providers = [];
-        this._running = new Map();   // window actor -> {finish(finished)}
-        // Measured in the harness: frames and the time spent per frame computing them
-        this.stats = { animations: 0, frames: 0 };
+        this._running = new Map();   // window actor -> run (see _run)
+        this._carried = new Map();   // window actor -> the picture of a run Mutter cut off
+        // Measured in the harness: effects started, frames drawn, effects resumed mid-way
+        this.stats = { animations: 0, frames: 0, resumed: 0 };
 
         const wm = global.window_manager;
         // Only the Shell's own handlers (the oldest of each signal, connected at start-up) are
@@ -63,8 +81,10 @@ export class MinimizeEffect {
         // other extensions' (Mutter then fails its minimize accounting)
         for (const signalId of SIGNALS) {
             const stock = GObject.signal_handler_find(wm, { signalId });
-            if (!stock)
+            if (!stock) {
+                console.warn(`[Guava] minimize effect: the Shell's '${signalId}' handler was not found`);
                 continue;
+            }
             GObject.signal_handler_block(wm, stock);
             cleanup.add(() => {
                 if (GObject.signal_handler_is_connected(wm, stock))
@@ -73,11 +93,13 @@ export class MinimizeEffect {
         }
         cleanup.connect(wm, 'minimize', (shellwm, actor) => this._play(shellwm, actor, false));
         cleanup.connect(wm, 'unminimize', (shellwm, actor) => this._play(shellwm, actor, true));
-        cleanup.connect(wm, 'kill-window-effects', (_wm, actor) => this._running.get(actor)?.finish());
+        cleanup.connect(wm, 'kill-window-effects', (_wm, actor) => this._running.get(actor)?.interrupt());
         // Disabled mid-flight: every window ends where it was going
         cleanup.add(() => {
             for (const run of [...this._running.values()])
                 run.finish();
+            for (const actor of [...this._carried.keys()])
+                this._dropCarried(actor);
         });
     }
 
@@ -105,24 +127,29 @@ export class MinimizeEffect {
             }
         }
         const dock = this._ctx.features.instance('dock');
+        const edge = dock?.position ?? 'bottom';
         if (dock && !restoring) {
             const rect = dock.minimizeTarget(win);
             if (rect)
-                return { rect, edge: dock.position };
+                return { rect, edge };
         }
         const [ok, geom] = win.get_icon_geometry();
-        if (ok && geom.width > 0 && geom.height > 0) {
-            const rect = { x: geom.x, y: geom.y, width: geom.width, height: geom.height };
-            return { rect, edge: dock?.position ?? 'bottom' };
-        }
-        return null;
+        if (ok && geom.width > 0 && geom.height > 0)
+            return { rect: { x: geom.x, y: geom.y, width: geom.width, height: geom.height }, edge };
+        const rect = edgeTarget(edge, Main.layoutManager.monitors[win.get_monitor()] ?? null);
+        return rect ? { rect, edge } : null;
     }
 
     // ---- effects -------------------------------------------------------------------------
 
     _play(shellwm, actor, restoring) {
         const win = actor.meta_window;
+        // A run Mutter cut off just now (kill-window-effects) for this window
+        const carried = this._carried.get(actor) ?? null;
+        this._carried.delete(actor);
+        this._running.get(actor)?.finish();
         const target = win ? this.targetFor(win, restoring) : null;
+        const overview = Main.overview.visible && !Main.overview.closing;
         const mode = chooseMode({
             effect: this._config.effect,
             env: this._ctx.motion.env,
@@ -130,9 +157,11 @@ export class MinimizeEffect {
             // A provider's target (Stage Manager's strip) is meant for exactly those windows
             flagged: !!win && WindowState.flags(win).length > 0 && !target?.provided,
             hasTarget: !!target,
-            monitorSized: !!win?.is_monitor_sized(),
+            overview,
         });
-        this._running.get(actor)?.finish();
+        const resume = carried?.mode === mode ? carried : null;
+        if (carried && !resume)
+            carried.dispose();
         if (mode === 'stock') {
             // GNOME's own effect (the handlers Guava blocked)
             if (restoring)
@@ -141,79 +170,130 @@ export class MinimizeEffect {
                 Main.wm._minimizeWindow(shellwm, actor);
             return;
         }
-        const complete = () => (restoring ? shellwm.completed_unminimize(actor) : shellwm.completed_minimize(actor));
+        // Shell.WM's own methods: another extension (Magic Lamp) replaces them on the instance with
+        // no-ops, and Mutter would then wait for this window forever
+        const complete = () => (restoring
+            ? Shell.WM.prototype.completed_unminimize.call(shellwm, actor)
+            : Shell.WM.prototype.completed_minimize.call(shellwm, actor));
         if (mode === 'none') {
             if (restoring)
                 actor.show();
             complete();
             return;
         }
-        this.stats.animations++;
-        if (mode === 'fade')
-            this._fade(actor, restoring, complete);
-        else if (mode === 'scale')
-            this._scale(actor, win, target.rect, restoring, complete);
+        let picture;
+        try {
+            picture = resume?.picture ?? this._picture(mode, actor, win, target, restoring);
+        } catch (e) {
+            // The desktop stays usable: the window goes at once
+            console.error(`[Guava] minimize effect: ${mode} for ${win?.get_wm_class()} failed:`, e.message);
+            if (restoring)
+                actor.show();
+            complete();
+            return;
+        }
+        if (resume)
+            this.stats.resumed++;
         else
-            this._genie(actor, win, target, restoring, complete);
+            this.stats.animations++;
+        this._run(actor, mode, picture, resume?.progress ?? null, restoring, complete);
     }
 
-    // One record per running window: how to end it (at its end state) exactly once
-    _track(actor, handleOf, reset, complete) {
-        let handle = null;
-        const run = {
-            finish: () => {
-                if (this._running.get(actor) !== run)
-                    return;
-                this._running.delete(actor);
-                handle?.cancel();
-                reset();
-                complete();
-            },
+    /**
+     * One running effect: drives `picture` from `progress` to its end, completes for Mutter
+     * exactly once, and can be cut off by Mutter (interrupt) or by Guava (finish).
+     */
+    _run(actor, mode, picture, progress, restoring, complete) {
+        const motion = this._ctx.motion;
+        const timing = TIMING[mode];
+        const plan = retarget(progress, restoring, motion.duration({ duration: timing.duration }));
+        const run = { mode, progress: plan.from, handle: null };
+        const stats = this.stats;
+        const frame = t => {
+            run.progress = plan.from + (plan.to - plan.from) * t;
+            stats.frames++;
+            picture.apply(run.progress);
+        };
+        const own = () => this._running.get(actor) === run;
+        run.finish = () => {
+            if (!own())
+                return;
+            this._running.delete(actor);
+            run.handle?.cancel();
+            picture.dispose(restoring);
+            complete();
+        };
+        // Mutter starts a new effect for this window next: hand it the picture as it is now
+        run.interrupt = () => {
+            if (!own())
+                return;
+            this._running.delete(actor);
+            run.handle?.cancel();
+            this._carried.set(actor, {
+                mode, picture, progress: run.progress,
+                dispose: () => picture.dispose(restoring),
+            });
+            this._cleanup.idle(() => this._dropCarried(actor), { name: 'guava minimize carried' });
+            complete();
         };
         this._running.set(actor, run);
-        handle = handleOf(() => run.finish());
-        return run;
-    }
-
-    _fade(actor, restoring, complete) {
-        const motion = this._ctx.motion;
-        if (restoring) {
-            actor.opacity = 0;
+        picture.apply(plan.from);
+        if (restoring)
             actor.show();
-        }
-        this._track(actor,
-            done => motion.ease(actor, { opacity: restoring ? 255 : 0 }, { duration: 'short', onDone: done }, this._cleanup),
-            () => {
-                actor.remove_all_transitions();
-                actor.opacity = 255;
-            }, complete);
+        run.handle = motion.tween(actor,
+            { duration: plan.duration, curve: timing.curve[restoring ? 1 : 0], onDone: () => run.finish() },
+            frame, this._cleanup);
     }
 
-    _scale(actor, win, rect, restoring, complete) {
-        const motion = this._ctx.motion;
+    _dropCarried(actor) {
+        const carried = this._carried.get(actor);
+        if (!carried)
+            return;
+        this._carried.delete(actor);
+        carried.dispose();
+    }
+
+    /**
+     * What an effect draws: apply(progress) puts the window at that progress (0 = in place,
+     * 1 = in the target); dispose(restored) puts the actor back as Mutter expects it.
+     */
+    _picture(mode, actor, win, target, restoring) {
+        if (mode === 'fade')
+            return this._fadePicture(actor);
+        if (mode === 'scale')
+            return this._scalePicture(actor, win, target.rect);
+        return this._geniePicture(actor, win, target, restoring);
+    }
+
+    _fadePicture(actor) {
+        return {
+            apply: p => {
+                actor.opacity = Math.round(255 * (1 - p));
+            },
+            dispose: () => {
+                actor.opacity = 255;
+            },
+        };
+    }
+
+    _scalePicture(actor, win, rect) {
         const buffer = win.get_buffer_rect();
         const from = { x: buffer.x, y: buffer.y, width: actor.width, height: actor.height };
         const end = scaleTarget(from, rect);
-        const shrunk = { x: end.x, y: end.y, scale_x: end.scale, scale_y: end.scale, opacity: 0 };
-        const full = { x: from.x, y: from.y, scale_x: 1, scale_y: 1, opacity: 255 };
         actor.set_pivot_point(0, 0);
-        if (restoring) {
-            actor.set(shrunk);
-            actor.show();
-        }
-        this._track(actor,
-            done => motion.ease(actor, restoring ? full : shrunk,
-                { duration: 'long', curve: restoring ? 'emphasized' : 'move', onDone: done }, this._cleanup),
-            () => {
-                actor.remove_all_transitions();
+        return {
+            apply: p => {
+                const f = scaleFrame(from, end, p);
+                actor.set({ x: f.x, y: f.y, scale_x: f.scale, scale_y: f.scale, opacity: f.opacity });
+            },
+            dispose: () => {
                 actor.set({ scale_x: 1, scale_y: 1, opacity: 255 });
-                if (restoring)
-                    actor.set_position(from.x, from.y);
-            }, complete);
+                actor.set_position(from.x, from.y);
+            },
+        };
     }
 
-    _genie(actor, win, target, restoring, complete) {
-        const motion = this._ctx.motion;
+    _geniePicture(actor, win, target, restoring) {
         if (restoring) {
             const buffer = win.get_buffer_rect();
             actor.set_position(buffer.x, buffer.y);
@@ -237,22 +317,19 @@ export class MinimizeEffect {
         // Above every window, as on macOS: the funnel passes over the windows between it and the dock
         actor.get_parent().insert_child_above(container, null);
         actor.opacity = 0;
-        const stats = this.stats;
-        const frame = p => {
-            stats.frames++;
-            effect.setProgress(p);
-            container.opacity = genieOpacity(p);
-        };
-        if (restoring) {
-            frame(1);
-            actor.show();
-        }
-        this._track(actor,
-            done => motion.tween(actor, { duration: 'extraLong', curve: 'linear', reverse: restoring, onDone: done },
-                frame, this._cleanup),
-            () => {
+        let alive = true;
+        return {
+            apply: p => {
+                effect.setProgress(p);
+                container.opacity = genieOpacity(p);
+            },
+            dispose: () => {
+                if (!alive)
+                    return;
+                alive = false;
                 container.destroy();
                 actor.opacity = 255;
-            }, complete);
+            },
+        };
     }
 }

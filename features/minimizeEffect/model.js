@@ -8,6 +8,9 @@
 //   genieVertex(...)         where one point of the window mesh is at a given progress
 //   genieOpacity(p)          the fade at the very end of the funnel
 //   scaleTarget(...)         the end transform of the Scale effect
+//   scaleFrame(...)          the Scale effect's actor properties at a given progress
+//   edgeTarget(...)          where a window goes when the dock shows no icon for it
+//   retarget(...)            where an effect cut in on resumes, and for how long
 //
 // The Genie ("magic lamp"): the edge of the window nearest the dock pinches into a funnel
 // whose sides are smooth S-curves, then the whole window slides down the funnel into the
@@ -48,18 +51,19 @@ export function readConfig(get) {
  * @param {{animations: boolean, reducedMotion: boolean}} p.env core/motion env
  * @param {boolean} p.normal a normal window or dialog (the Shell animates only those)
  * @param {boolean} p.flagged WindowState says another feature set it aside
- * @param {boolean} p.hasTarget a target rect is known
- * @param {boolean} p.monitorSized full screen: GNOME's own fade suits it
+ * @param {boolean} p.hasTarget a target rect is known (edgeTarget() gives one on any monitor)
+ * @param {boolean} [p.overview] the overview is open
  * @returns {'stock'|'none'|'fade'|'scale'|'genie'}
  */
-export function chooseMode({ effect, env, normal, flagged, hasTarget, monitorSized }) {
+export function chooseMode({ effect, env, normal, flagged, hasTarget, overview }) {
     if (effect === 'gnome' || !normal || flagged)
         return 'stock';
-    if (!env.animations)
+    // The overview animates its own previews (GNOME skips the effect there too)
+    if (!env.animations || overview)
         return 'none';
     if (env.reducedMotion)
         return 'fade';
-    if (!hasTarget || monitorSized)
+    if (!hasTarget)
         return 'stock';
     return effect === 'scale' ? 'scale' : 'genie';
 }
@@ -206,4 +210,61 @@ export function scaleTarget(win, target) {
         y: target.y + (target.height - win.height * scale) / 2,
         scale,
     };
+}
+
+/**
+ * The Scale effect's actor properties at progress p (0 = the window, 1 = in the target).
+ *
+ * @param {{x: number, y: number}} from the window's place
+ * @param {{x: number, y: number, scale: number}} end scaleTarget()
+ * @param {number} p
+ * @returns {{x: number, y: number, scale: number, opacity: number}}
+ */
+export function scaleFrame(from, end, p) {
+    const q = clamp01(p);
+    return {
+        x: from.x + (end.x - from.x) * q,
+        y: from.y + (end.y - from.y) * q,
+        scale: 1 + (end.scale - 1) * q,
+        opacity: Math.round(255 * (1 - q)),
+    };
+}
+
+/**
+ * Where a window minimizes to when the dock gives no icon (the dock is hidden, auto-hidden,
+ * off, still starting, or the app has no tile): the middle of the dock's edge of the
+ * window's monitor, an icon-sized square, as if the icon sat there.
+ *
+ * @param {'bottom'|'left'|'right'} position the dock's edge
+ * @param {?{x,y,width,height}} monitor the window's monitor
+ * @param {number} [size] the square's side
+ * @returns {?{x,y,width,height}} null without a monitor
+ */
+export function edgeTarget(position, monitor, size = 48) {
+    if (!monitor || !(monitor.width > 0) || !(monitor.height > 0))
+        return null;
+    const cx = Math.round(monitor.x + (monitor.width - size) / 2);
+    const cy = Math.round(monitor.y + (monitor.height - size) / 2);
+    if (position === 'left')
+        return { x: monitor.x, y: cy, width: size, height: size };
+    if (position === 'right')
+        return { x: monitor.x + monitor.width - size, y: cy, width: size, height: size };
+    return { x: cx, y: monitor.y + monitor.height - size, width: size, height: size };
+}
+
+/**
+ * An effect cut in on (minimize, then restore before it ends, or the reverse) carries on
+ * from where it is towards the new end, in the share of the full duration that is left.
+ *
+ * @param {?number} progress how far the interrupted effect got (0 = the window, 1 = in the
+ *   target); null or undefined: nothing was running, start from the far end
+ * @param {boolean} restoring the new direction
+ * @param {number} fullMs the full effect's duration
+ * @returns {{from: number, to: number, duration: number}}
+ */
+export function retarget(progress, restoring, fullMs) {
+    const to = restoring ? 0 : 1;
+    const from = progress === null || progress === undefined || Number.isNaN(progress)
+        ? 1 - to : clamp01(progress);
+    return { from, to, duration: Math.round(Math.max(0, fullMs) * Math.abs(to - from)) };
 }

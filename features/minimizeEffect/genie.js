@@ -8,9 +8,12 @@
 // The effect sits on a container exactly as big as `reach` (the window and its target) holding
 // a clone of the window: the funnel never leaves the container's box, which is what Clutter's
 // offscreen effects can draw into (on GNOME 50 the window actor itself cuts the funnel off at
-// the window's own edges).
+// the window's own edges). The texture is at the monitor's scale (rounded up) and covers the
+// container's paint box, which Clutter pads by a few pixels for effects: the strips map through
+// that box, so at rest every texel lands on one device pixel (sharp at any scale).
 //
 // Shell API: Clutter.OffscreenEffect (get_pipeline, get_target_size, vfunc_paint_target),
+// Clutter.Actor.get_paint_box,
 // Clutter.PipelineNode (add_texture_rectangle), Cogl.Pipeline.set_color (premultiplied); checked on GNOME 50.
 
 import Clutter from 'gi://Clutter';
@@ -34,9 +37,6 @@ export const GenieEffect = GObject.registerClass({
         super._init();
         this._frame = frame;
         this._reach = reach;
-        // Where the window sits in the container
-        this._offX = frame.winX - reach.x;
-        this._offY = frame.winY - reach.y;
         this._strips = Math.min(MAX_STRIPS, Math.max(1, Math.ceil(frame.extent)));
         // Per edge between strips: where it falls; per strip: its centre and width along the dock
         this._edge = new Float64Array(this._strips + 1);
@@ -72,13 +72,16 @@ export const GenieEffect = GObject.registerClass({
     }
 
     vfunc_paint_target(node, _paintContext) {
-        const [ok, texWidth] = this.get_target_size();
+        const [ok, texWidth, texHeight] = this.get_target_size();
         if (!ok)
             return;
-        const reach = this._reach;
         const f = this._frame;
-        // Buffer pixels per logical pixel (the monitor's scale)
-        const k = texWidth / reach.width;
+        // The texture covers the actor's paint box, which Clutter enlarges for effects (a few
+        // pixels past the container): map through it so every texel lands on one pixel
+        const box = this._paintBox();
+        const kx = texWidth / box.width;
+        const ky = texHeight / box.height;
+        this.map = { x: box.x, y: box.y, width: box.width, height: box.height, texWidth, texHeight };
         const pipeline = this.get_pipeline();
         const a = this.get_actor().get_paint_opacity() / 255;
         this._color.init_from_4f(a, a, a, a);
@@ -87,55 +90,57 @@ export const GenieEffect = GObject.registerClass({
         node.add_child(strips);
 
         const n = this._strips;
-        const box = this._box;
-        const cw = reach.width;
-        const ch = reach.height;
+        const rect = this._box;
         const position = f.position;
-        const across0 = position === 'bottom' ? this._offY : this._offX;
-        const acrossLen = position === 'bottom' ? f.winH : f.winW;
-        const acrossFull = position === 'bottom' ? ch : cw;
-        const alongFull = position === 'bottom' ? cw : ch;
-        const along0 = position === 'bottom' ? this._offX : this._offY;
-        const alongLen = position === 'bottom' ? f.winW : f.winH;
+        const bottom = position === 'bottom';
+        // Across the funnel (towards the dock) and along it, relative to the texture's box
+        const acrossOrigin = bottom ? box.y : box.x;
+        const alongOrigin = bottom ? box.x : box.y;
+        const across0 = (bottom ? f.winY : f.winX) - acrossOrigin;
+        const acrossLen = bottom ? f.winH : f.winW;
+        const acrossFull = bottom ? box.height : box.width;
+        const along0 = (bottom ? f.winX : f.winY) - alongOrigin;
+        const alongFull = bottom ? box.width : box.height;
+        const u0 = along0 / alongFull;
+        const u1 = (along0 + (bottom ? f.winW : f.winH)) / alongFull;
         for (let i = 0; i < n; i++) {
             const d0 = i / n;
             const d1 = (i + 1) / n;
             const s0 = this._edge[i];
             const s1 = this._edge[i + 1];
             const half = this._width[i] / 2;
-            const lo = this._centre[i] - half;
-            const hi = this._centre[i] + half;
-            // The strip's span across the funnel, in the container's coordinates
+            // The strip's span across the funnel and the line of the window it shows
             let a0, a1, t0, t1;
             if (position === 'left') {
-                a0 = -s1 - reach.x;
-                a1 = -s0 - reach.x;
+                a0 = -s1 - acrossOrigin;
+                a1 = -s0 - acrossOrigin;
                 t0 = across0 + (1 - d1) * acrossLen;
                 t1 = across0 + (1 - d0) * acrossLen;
-            } else if (position === 'right') {
-                a0 = s0 - reach.x;
-                a1 = s1 - reach.x;
-                t0 = across0 + d0 * acrossLen;
-                t1 = across0 + d1 * acrossLen;
             } else {
-                a0 = s0 - reach.y;
-                a1 = s1 - reach.y;
+                a0 = s0 - acrossOrigin;
+                a1 = s1 - acrossOrigin;
                 t0 = across0 + d0 * acrossLen;
                 t1 = across0 + d1 * acrossLen;
             }
-            const l0 = lo - (position === 'bottom' ? reach.x : reach.y);
-            const l1 = hi - (position === 'bottom' ? reach.x : reach.y);
-            const u0 = along0 / alongFull;
-            const u1 = (along0 + alongLen) / alongFull;
-            if (position === 'bottom') {
-                box.set_origin(l0 * k, a0 * k);
-                box.set_size((l1 - l0) * k, (a1 - a0) * k);
-                strips.add_texture_rectangle(box, u0, t0 / acrossFull, u1, t1 / acrossFull);
+            const l0 = this._centre[i] - half - alongOrigin;
+            const l1 = this._centre[i] + half - alongOrigin;
+            if (bottom) {
+                rect.set_origin(l0 * kx, a0 * ky);
+                rect.set_size((l1 - l0) * kx, (a1 - a0) * ky);
+                strips.add_texture_rectangle(rect, u0, t0 / acrossFull, u1, t1 / acrossFull);
             } else {
-                box.set_origin(a0 * k, l0 * k);
-                box.set_size((a1 - a0) * k, (l1 - l0) * k);
-                strips.add_texture_rectangle(box, t0 / acrossFull, u0, t1 / acrossFull, u1);
+                rect.set_origin(a0 * kx, l0 * ky);
+                rect.set_size((a1 - a0) * kx, (l1 - l0) * ky);
+                strips.add_texture_rectangle(rect, t0 / acrossFull, u0, t1 / acrossFull, u1);
             }
         }
+    }
+
+    // The stage rect the texture covers (the container's box when Clutter gives none)
+    _paintBox() {
+        const [ok, pb] = this.get_actor()?.get_paint_box() ?? [false, null];
+        if (ok && pb.x2 > pb.x1 && pb.y2 > pb.y1)
+            return { x: pb.x1, y: pb.y1, width: pb.x2 - pb.x1, height: pb.y2 - pb.y1 };
+        return this._reach;
     }
 });

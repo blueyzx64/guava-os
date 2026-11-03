@@ -1,7 +1,8 @@
 // Run: gjs -m tests/minimizeEffectModel.test.js
 // features/minimizeEffect/model.js: the Genie mesh and the effect choice.
 import {
-    chooseMode, genieFrame, genieOpacity, genieRow, genieVertex, readConfig, scaleTarget,
+    chooseMode, edgeTarget, genieFrame, genieOpacity, genieRow, genieVertex, readConfig, retarget, scaleFrame,
+    scaleTarget,
 } from '../features/minimizeEffect/model.js';
 
 let failed = 0;
@@ -20,7 +21,7 @@ function near(a, b, msg = '', tol = 0.5) {
 // The mesh the tests sample: few points across the rows, many along the funnel
 const GENIE_TILES = Object.freeze({ across: 4, along: 40 });
 const ENV = { animations: true, reducedMotion: false };
-const base = { effect: 'genie', env: ENV, normal: true, flagged: false, hasTarget: true, monitorSized: false };
+const base = { effect: 'genie', env: ENV, normal: true, flagged: false, hasTarget: true, overview: false };
 const WIN = { x: 200, y: 100, width: 600, height: 400 };
 const ICON = { x: 480, y: 740, width: 48, height: 48 };
 
@@ -36,7 +37,13 @@ test('mode: Genie, Scale, and the cases left to GNOME', () => {
     eq(chooseMode({ ...base, flagged: true }), 'stock', 'Stage Manager owns its windows');
     eq(chooseMode({ ...base, normal: false }), 'stock');
     eq(chooseMode({ ...base, hasTarget: false }), 'stock');
-    eq(chooseMode({ ...base, monitorSized: true }), 'stock');
+});
+test('mode: maximized and full-screen windows get the Genie too (B1: was GNOME\'s fade)', () => {
+    eq(chooseMode({ ...base, monitorSized: true }), 'genie');
+});
+test('mode: in the overview the window goes at once, as GNOME does', () => {
+    eq(chooseMode({ ...base, overview: true }), 'none');
+    eq(chooseMode({ ...base, overview: true, effect: 'gnome' }), 'stock');
 });
 test('mode: animations off completes at once; reduced motion fades in place', () => {
     eq(chooseMode({ ...base, env: { animations: false, reducedMotion: false } }), 'none');
@@ -166,6 +173,34 @@ test('scale: keeps the aspect ratio, centred in the icon', () => {
     near(t.scale, 0.08, 'scale', 0.001);
     near(t.x + WIN.width * t.scale / 2, ICON.x + 24, 'centre x');
     near(t.y + WIN.height * t.scale / 2, ICON.y + 24, 'centre y');
+});
+
+test('edgeTarget: the middle of the dock edge of the window\'s monitor (B1: no icon, no Genie)', () => {
+    const mon = { x: 1280, y: 0, width: 1920, height: 1080 };
+    eq(edgeTarget('bottom', mon), { x: 1280 + 936, y: 1032, width: 48, height: 48 });
+    eq(edgeTarget('left', mon), { x: 1280, y: 516, width: 48, height: 48 });
+    eq(edgeTarget('right', mon), { x: 1280 + 1872, y: 516, width: 48, height: 48 });
+    eq(edgeTarget('bottom', null), null);
+    eq(edgeTarget('bottom', { x: 0, y: 0, width: 0, height: 0 }), null);
+});
+test('retarget: a fresh effect runs the whole way', () => {
+    eq(retarget(null, false, 550), { from: 0, to: 1, duration: 550 });
+    eq(retarget(undefined, true, 550), { from: 1, to: 0, duration: 550 });
+});
+test('retarget: restore during a minimize turns back from where it is (B1: was a snap to the icon)', () => {
+    eq(retarget(0.4, true, 500), { from: 0.4, to: 0, duration: 200 });
+    eq(retarget(0.25, false, 400), { from: 0.25, to: 1, duration: 300 });
+    eq(retarget(1.3, true, 100), { from: 1, to: 0, duration: 100 });
+    eq(retarget(0, true, 550).duration, 0);
+});
+test('scaleFrame: from the window to the target, continuous', () => {
+    const end = scaleTarget(WIN, ICON);
+    eq(scaleFrame(WIN, end, 0), { x: 200, y: 100, scale: 1, opacity: 255 });
+    const e = scaleFrame(WIN, end, 1);
+    near(e.x, end.x, 'x', 1e-9);
+    near(e.scale, end.scale, 'scale', 1e-9);
+    eq(e.opacity, 0);
+    near(scaleFrame(WIN, end, 0.5).scale, (1 + end.scale) / 2, 'half', 1e-9);
 });
 
 if (failed)
