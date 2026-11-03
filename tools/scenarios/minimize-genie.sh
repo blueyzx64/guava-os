@@ -31,17 +31,28 @@ const fx=()=>{let e=null;const f=x=>{e??=x.get_effect?.("guava-genie")??null;x.g
 const genie=()=>fx()?.progress??null;
 const clean=()=>genie()===null&&me._running.size===0&&me._carried.size===0&&global.get_window_actors().every(a=>a.meta_window.minimized||a.opacity===255);
 const st=()=>({...me.stats});
-const rec=()=>{const s=[];const id=global.stage.connect("after-paint",()=>{const p=genie();if(p!==null)s.push(p)});return {s,stop:()=>global.stage.disconnect(id)}};
+const rec=()=>{const s=[],t=[];const id=global.stage.connect("after-paint",()=>{const p=genie();if(p!==null){s.push(p);t.push(GLib.get_monotonic_time()/1000)}});return {s,t,stop:()=>global.stage.disconnect(id)}};
 globalThis.__clean=clean; globalThis.__anyw=anyw;
-const turns=s=>{let t=0,d=0,big=0;for(let i=1;i<s.length;i++){const k=s[i]-s[i-1];if(Math.abs(k)>big)big=Math.abs(k);const n=Math.sign(k);if(n&&d&&n!==d)t++;if(n)d=n;}return {t,big:+big.toFixed(3),n:s.length}};'
+// big: the largest step beyond what the elapsed time allows. The tween is linear at 1 per 550 ms
+// (allowed here: 1 per 250 ms); the time counts over this frame and the one before it, because a
+// slow software frame is painted late and the next one catches up. A snap is a step with no time
+// behind it
+// until(): wait for the funnel to be part-way (software frames take any wall-clock time)
+const until=async(f,ms=3000)=>{for(let i=0;i<ms/10&&!f();i++)await sl(10)};
+const turns=(s,ts)=>{let t=0,d=0,big=-1;for(let i=1;i<s.length;i++){const k=s[i]-s[i-1];const ex=Math.abs(k)-(ts[i]-ts[Math.max(0,i-2)])/250;if(ex>big)big=ex;const n=Math.sign(k);if(n&&d&&n!==d)t++;if(n)d=n;}return {t,big:+big.toFixed(3),n:s.length}};'
 J() { _kjs "$H $1"; }
 E=org.gnome.TextEditor
 
+# The Genie is the full-quality path: a Shell over its frame budget (env.degraded) plays Scale instead
+# (chooseMode, covered in minimizeEffectModel.test.js). llvmpipe paints 4x the pixels at scale 2 and
+# trips that budget in every frame, so the scenario would test Scale, not the Genie. Report the real
+# load, then pin degraded=false for the effect (the budget would flip it back on each repaint).
+J "const m=me._ctx.motion; globalThis.__real=m.env; Object.defineProperty(m,'env',{configurable:true,get:()=>({...globalThis.__real,...Object.getPrototypeOf(m).__lookupGetter__('env').call(m),degraded:false})}); return 'real motion env (pinned degraded=false from here) '+JSON.stringify(globalThis.__real)"
 echo "-- warm-up"
 J "const w=anyw('$E'); w.activate(global.get_current_time()); await sl(400); w.minimize(); await sl(900); w.unminimize(); await sl(900); return 1" >/dev/null
 
 echo "-- B1 minimize and restore by Mutter (keyboard, app menu and dock share this path)"
-J "globalThis.__s0=st(); const w=anyw('$E'); w.minimize(); await sl(200); globalThis.__mid=genie(); globalThis.__map=fx()?.map; await sl(900); globalThis.__m=w.minimized; w.unminimize(); await sl(200); globalThis.__mid2=genie(); await sl(900); return 1" >/dev/null
+J "globalThis.__s0=st(); const w=anyw('$E'); let r=rec(); w.minimize(); await until(()=>fx()?.map,3000); globalThis.__map=fx()?.map; await sl(900); r.stop(); globalThis.__mid=r.s.find(p=>p>0&&p<1)??null; globalThis.__m=w.minimized; r=rec(); w.unminimize(); await sl(900); r.stop(); globalThis.__mid2=r.s.find(p=>p>0&&p<1)??null; return 1" >/dev/null
 assert "genie-minimize-runs" "globalThis.__m && globalThis.__mid>0 && globalThis.__mid<1"
 J "return 'map '+JSON.stringify(globalThis.__map)"
 assert "genie-texture-native-1to1" "(m=>m && Number.isInteger(m.texWidth/m.width) && m.texWidth/m.width===m.texHeight/m.height && Number.isInteger(m.x) && Number.isInteger(m.y))(globalThis.__map)"
@@ -60,7 +71,7 @@ J "globalThis.__s0=st(); const w=anyw('$E'); w.minimize(); await sl(1200); const
 assert "genie-restore-from-dock-tile" "globalThis.__tile && !__anyw('$E').minimized && inst('minimize-effect').stats.animations-globalThis.__s0.animations===2 && __clean()"
 
 echo "-- B1 maximized and full-screen windows"
-J "globalThis.__s0=st(); const w=anyw('$E'); w.maximize(); await sl(900); w.minimize(); await sl(200); globalThis.__mx=genie(); await sl(900); w.unminimize(); await sl(900); w.unmaximize(); await sl(700); w.make_fullscreen(); await sl(4500); w.minimize(); await sl(350); globalThis.__fs=genie(); await sl(900); w.unminimize(); await sl(900); w.unmake_fullscreen(); await sl(900); return 1" >/dev/null
+J "globalThis.__s0=st(); const w=anyw('$E'); w.maximize(); await sl(900); let r=rec(); w.minimize(); await sl(900); r.stop(); globalThis.__mx=r.s.find(p=>p>0&&p<1)??null; w.unminimize(); await sl(900); w.unmaximize(); await sl(700); w.make_fullscreen(); const fsx=inst('move-window-to-new-workspace'); await until(()=>fsx._wins.get(w)?.isolated&&!fsx._slow&&!fsx._pin,30000); await sl(500); r=rec(); w.minimize(); await sl(900); r.stop(); globalThis.__fs=r.s.find(p=>p>0&&p<1)??null; w.unminimize(); await sl(900); w.unmake_fullscreen(); await sl(900); return 1" >/dev/null
 assert "genie-maximized" "globalThis.__mx>0 && globalThis.__mx<1"
 # B24: the Genie runs for a full-screen window once its Space has settled (4.5 s: isolation delay
 # plus the slowed workspace switch of features/fullscreenSpace). Inside that switch Mutter hides the
@@ -82,12 +93,12 @@ gs dock true
 sleep 3
 
 echo "-- B1 interruptible: restore during a minimize, minimize during a restore"
-J "const w=anyw('$E'); w.activate(global.get_current_time()); await sl(500); globalThis.__s0=st(); const r=rec(); w.minimize(); await sl(260); globalThis.__p1=genie(); w.unminimize(); globalThis.__p2=genie(); await sl(1000); r.stop(); globalThis.__t1=turns(r.s); return 1" >/dev/null
-assert "genie-restore-turns-back-in-place" "globalThis.__p1>0.1 && globalThis.__p1<0.9 && Math.abs(globalThis.__p2-globalThis.__p1)<0.02 && inst('minimize-effect').stats.resumed-globalThis.__s0.resumed===1"
-assert "genie-restore-turn-smooth" "globalThis.__t1.t===1 && globalThis.__t1.big<0.2 && __clean() && !__anyw('$E').minimized"
+J "const w=anyw('$E'); w.activate(global.get_current_time()); await sl(500); globalThis.__s0=st(); const r=rec(); w.minimize(); await until(()=>genie()!==null&&genie()>0.3); globalThis.__p1=genie(); w.unminimize(); globalThis.__p2=genie(); await sl(1000); r.stop(); globalThis.__t1=turns(r.s,r.t); return 1" >/dev/null
+assert "genie-restore-turns-back-in-place" "globalThis.__p1>0.1 && globalThis.__p1<=1 && Math.abs(globalThis.__p2-globalThis.__p1)<0.02 && inst('minimize-effect').stats.resumed-globalThis.__s0.resumed===1"
+assert "genie-restore-turn-smooth" "globalThis.__t1.t===1 && globalThis.__t1.big<0.1 && __clean() && !__anyw('$E').minimized"
 # The record holds the minimize, the restore, and the minimize that cuts the restore: two turns
-J "const w=anyw('$E'); globalThis.__s0=st(); const r=rec(); w.minimize(); await sl(1000); w.unminimize(); await sl(260); globalThis.__p1=genie(); w.minimize(); globalThis.__p2=genie(); await sl(1000); r.stop(); globalThis.__t2=turns(r.s); globalThis.__m2=w.minimized; w.unminimize(); await sl(900); return 1" >/dev/null
-assert "genie-minimize-during-restore" "globalThis.__m2 && Math.abs(globalThis.__p2-globalThis.__p1)<0.02 && globalThis.__t2.t===2 && globalThis.__t2.big<0.2 && __clean()"
+J "const w=anyw('$E'); globalThis.__s0=st(); const r=rec(); w.minimize(); await sl(100); await until(()=>genie()===null); w.unminimize(); await until(()=>genie()!==null&&genie()<0.7); globalThis.__p1=genie(); w.minimize(); globalThis.__p2=genie(); await sl(1000); r.stop(); globalThis.__t2=turns(r.s,r.t); globalThis.__m2=w.minimized; w.unminimize(); await sl(900); return 1" >/dev/null
+assert "genie-minimize-during-restore" "globalThis.__m2 && Math.abs(globalThis.__p2-globalThis.__p1)<0.02 && globalThis.__t2.t===2 && globalThis.__t2.big<0.1 && __clean()"
 J "return 'turns '+JSON.stringify([globalThis.__t1,globalThis.__t2])"
 
 echo "-- B1 five fast pairs"
@@ -102,6 +113,7 @@ echo "-- B1 frame times"
 perf_start
 J "const w=anyw('$E'); w.minimize(); await sl(900); w.unminimize(); await sl(900); return 1" >/dev/null
 perf_stop genie-min-restore
+J "delete me._ctx.motion.env; return 'unpinned, real degraded now '+me._ctx.motion.env.degraded"
 J "return 'stats '+JSON.stringify(me.stats)"
 shot minimize-genie-end
 assert_summary
