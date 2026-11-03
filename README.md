@@ -208,6 +208,12 @@ for writing a feature are in [docs/architecture/conventions.md](docs/architectur
 
 To help translate Guava OS, see the [translation guide](i18n/README.md).
 
+## Testing
+
+`make check` runs the unit tests and static checks; `tools/harness/` runs Guava in a real GNOME
+Shell 50 (Fedora 44 packages). What still needs a real machine is in
+[docs/testing/real-machine-checklist.md](docs/testing/real-machine-checklist.md).
+
 ## Contributors
 
 - **[blueyzx64](https://github.com/blueyzx64)**: maintainer of Guava OS.
