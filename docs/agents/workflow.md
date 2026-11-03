@@ -18,6 +18,24 @@ Rules for the code itself: `docs/architecture/principles.md` and `conventions.md
 
 Leads run with `isolation: "worktree"`: their own checkout and branch, merged by O.
 
+### Limits and tokenomics
+
+| Tier | Model | Max at once | Use for |
+|---|---|---|---|
+| Orchestrator | the session's model | 1 | planning, merging, the gate |
+| Lead / researcher | `model: "sonnet"` | **6** | a lane: design, hard code, verification |
+| Worker | `model: "haiku"` | **12** | one small, fully specified ticket plus its test |
+
+1. **Spawn only when parallel work pays.** A lookup or a one-file fix is done inline, not by an agent.
+2. **Terse prose.** Agent-to-agent text (memory files, ASKs, reports) uses the `caveman:caveman`
+   style: short sentences, no filler. Code, docs in `docs/`, commit messages and UI strings stay normal.
+3. **Read narrowly.** Grep, then Read with `offset`/`limit`. Never re-read a file you just edited.
+4. **Hand off by pointer**: path, SHA, one line. Never paste file contents into reports or memory.
+5. **Test narrowly.** Run the one test file you touched while iterating; `make check` and one
+   harness run at the end of the lane (a harness run costs ~3 minutes of log output: grep it).
+6. **Fail fast.** Two failed attempts at the same error: write `STATUS: blocked` and stop.
+7. **Final report ≤ 150 words.** Memory file ≤ 60 lines.
+
 ## 2. Memory
 
 Live memory sits outside the repo so every worktree sees the same files:
