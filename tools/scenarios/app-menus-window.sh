@@ -14,7 +14,7 @@ const items=m=>m._getMenuItems().flatMap(i=>i.menu&&i.menu!==m&&i.menu._getMenuI
 const find=(id,label)=>items(btn(id).menu).find(i=>i.label?.text===label);
 const ed=()=>global.get_window_actors().map(a=>a.meta_window).find(w=>w.get_wm_class()==="org.gnome.TextEditor");
 const home=async()=>{const w=ed();const ws=global.workspace_manager.get_workspace_by_index(0);w.change_workspace(ws);ws.activate_with_focus(w,global.get_current_time());await sl(1500);};
-const pick=async(label,sub)=>{await kc(btn("window")); await sl(700); if(sub){await kc(find("window",sub)); await sl(600);} const it=find("window",label); if(!it) return "NOITEM"; const orn=it._ornament; globalThis.__orn=orn; const [,iy]=it.get_transformed_position(); if(iy+it.height<global.stage.height-4) await kc(it); else {it.grab_key_focus(); await kkey(["Return"]);} await sl(1500); return "orn="+orn;};
+const pick=async(label,sub)=>{await kc(btn("window")); await sl(700); if(sub){await kc(find("window",sub)); await sl(600);} const it=find("window",label); if(!it) return "NOITEM"; const orn=it._ornament; globalThis.__orn=orn; const [,iy]=it.get_transformed_position(); if(iy+it.height<global.stage.height-4) await kc(it); else it.activate(Clutter.get_current_event()); await sl(1500); return "orn="+orn;};
 const onNew=()=>{const w=ed();const ws=w.get_workspace();const wm=global.workspace_manager;return ws.index()>0&&ws.list_windows().filter(x=>x.get_window_type()===Meta.WindowType.NORMAL).length===1&&wm.get_active_workspace_index()===ws.index()&&global.display.focus_window===w;};'
 J() { _kjs "$H $1"; }
 for sm in false true; do
