@@ -12,7 +12,7 @@ gs onboarding "'done'"; sleep 1
 P "global.get_window_actors().map(a=>a.meta_window).filter(w=>(w.get_title()??'').includes('Guava')).forEach(w=>w.delete(global.get_current_time())); return 1" >/dev/null
 # Never pkill -f here: harness roots are chroots sharing the host's PID namespace, so a pattern
 # kill also hits other roots and the host. Kill exactly the process owning the name on OUR bus.
-svc=$(gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.GetConnectionUnixProcessID org.gnome.Shell.Extensions 2>/dev/null | grep -o '[0-9]\+' | head -1)
+svc=$(gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.GetConnectionUnixProcessID org.gnome.Shell.Extensions 2>/dev/null | grep -o '[0-9]\+' | tail -1)
 [ -n "$svc" ] && kill "$svc" 2>/dev/null; sleep 1
 WDS=$(ls $W/run | grep -m1 '^wayland-[0-9]*$')
 (cd "$W/home" && env HOME="$HOME" WAYLAND_DISPLAY="$WDS" XDG_RUNTIME_DIR="$W/run" GDK_BACKEND=wayland \

@@ -21,7 +21,7 @@ G() { _kjs "$1"; }
 
 assert "L16 feature lock-screen is running" "!!ls() && ls()._ctx"
 # No GDM here: the prompt's reauthentication channel cannot open and the Shell logs an error from it. Not under test.
-G "const u=await import('resource:///org/gnome/shell/gdm/util.js'); u.ShellUserVerifier.prototype._openReauthenticationChannel=function(){}; return 1" >/dev/null
+G "const u=await (0,eval)(\"import('resource:///org/gnome/shell/gdm/util.js')\"); u.ShellUserVerifier.prototype._openReauthenticationChannel=function(){}; return 1" >/dev/null
 
 BEFORE=$(G "return gvOutside().length" | grep -o "[0-9]*" | head -1)
 echo "LOCK Guava surfaces visible before: $BEFORE"
@@ -110,7 +110,7 @@ setkey lockscreen-now-playing true
 
 echo "-- reduced motion: no shake, the error flag still shows"
 G "St.Settings.get().gtk_enable_animations; return 1" >/dev/null
-G "dlg()._authPrompt.emit('failed'); return 1" >/dev/null
+G "dlg().activate(); await sl(900); dlg()._authPrompt.emit('failed'); return 1" >/dev/null
 sleep 0.2
 assert "L16 failed attempt flags the capsule" "sd()._capsule.has_style_pseudo_class('error')"
 

@@ -11,7 +11,7 @@ Re-lays out GNOME's Quick Settings menu like the macOS Control Center. Nothing G
 - **Timer:** Guava's own countdown timers (`core/timers.js`); they survive the lock screen and show in the notch.
 
 ## Low Power Mode (`low-power`)
-`low-power-battery` and `low-power-adapter` (both off) hold power-profiles-daemon's power-saver profile while that power source is in use. Choosing a profile by hand in GNOME drops the hold until the source or the choice changes. Without the daemon it is unavailable and holds nothing. It also provides battery health (capacity, charge cycles) for the Battery menu bar item. Code: `features/lowPower/`.
+`low-power-battery` and `low-power-adapter` (both off) hold power-profiles-daemon's power-saver profile while that power source is in use. Choosing a profile by hand in GNOME drops the hold until the source or the choice changes. Without the daemon it is unavailable and holds nothing; the daemon and UPower are watched on the bus (`Gio.bus_watch_name`), so one that starts after Guava, or restarts, is picked up and a vanished one releases the state. It also provides battery health (capacity, charge cycles) for the Battery menu bar item. Code: `features/lowPower/`.
 
 ## Settings (default)
 `control-center` on · `control-center-user-row` on · `battery-percentage-always` off · `control-center-layout` empty · `menubar-pinned` empty · `menubar-battery-percentage` off.

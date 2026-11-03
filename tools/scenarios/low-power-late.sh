@@ -8,7 +8,7 @@ _KJS_PRE="$_KJS_PRE
 $LP"
 owner_pid() {
   DBUS_SYSTEM_BUS_ADDRESS=$SB gdbus call --system --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus \
-    --method org.freedesktop.DBus.GetConnectionUnixProcessID org.freedesktop.UPower.PowerProfiles 2>/dev/null | grep -o '[0-9]\+' | head -1
+    --method org.freedesktop.DBus.GetConnectionUnixProcessID org.freedesktop.UPower.PowerProfiles 2>/dev/null | grep -o '[0-9]\+' | tail -1
 }
 assert "low-power feature runs and found the daemon at start" "!!lp() && lp().available"
 pid=$(owner_pid)

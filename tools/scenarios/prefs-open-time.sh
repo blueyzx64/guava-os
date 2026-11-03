@@ -21,7 +21,7 @@ open_timed() {
 }
 # The service may be running from the first-login offer: end it (exactly the process owning the name on OUR bus)
 closeprefs
-svc=$(gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.GetConnectionUnixProcessID org.gnome.Shell.Extensions 2>/dev/null | grep -o '[0-9]\+' | head -1)
+svc=$(gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus --method org.freedesktop.DBus.GetConnectionUnixProcessID org.gnome.Shell.Extensions 2>/dev/null | grep -o '[0-9]\+' | tail -1)
 echo "PREFSTIME service pid before the cold call: ${svc:-none}"; [ -n "$svc" ] && kill "$svc" 2>/dev/null; sleep 2
 open_timed cold
 COLD_REPLY=$REPLY_S; COLD_AFTER=$AFTER_S

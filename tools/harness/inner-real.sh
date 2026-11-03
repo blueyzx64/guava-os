@@ -8,6 +8,12 @@ mkdir -p $X; cp -r /opt/guava-src $X/$UUID; cp -r /opt/probe/probe@x2 $X/
 sed -i 's/"shell-version": \[/"shell-version": ["51","50","49",/' $X/$UUID/metadata.json
 glib-compile-schemas $X/$UUID/schemas
 mkdir -p /run/dbus
+# xdg-desktop-portal asks RealtimeKit over the system bus. Without systemd the bus cannot start rtkit-daemon and
+# the call runs into its 25 s timeout, which held up the portal and with it every GTK app and D-Bus service that
+# asks it at start (the prefs service at the first login: the Shell's OpenExtensionPrefs call timed out). A real
+# session has rtkit; here the name is simply absent, which fails at once.
+[ -f /usr/share/dbus-1/system-services/org.freedesktop.RealtimeKit1.service ] &&
+    mv /usr/share/dbus-1/system-services/org.freedesktop.RealtimeKit1.service /usr/share/dbus-1/system-services/org.freedesktop.RealtimeKit1.service.disabled
 rm -f /run/dbus/system_bus_socket /run/dbus/pid; dbus-daemon --system --fork 2>&1
 gjs /opt/fake-logind.js >$W/fake-logind.log 2>&1 &
 sleep 1

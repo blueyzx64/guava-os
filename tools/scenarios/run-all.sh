@@ -21,7 +21,11 @@ for f in "$HERE"/*.sh; do
 done
 run_one() {
     local n=$1 base=${1%.sh} pre="" libs=()
-    [ -f "$HERE/$base-pre.sh" ] && pre="$HERE/$base-pre.sh"
+    # The pre file is bundled after pre-lib.sh (pre_bus, _kwait_name, ...): the harness copies one file only
+    if [ -f "$HERE/$base-pre.sh" ]; then
+        pre="$OUT/$base.pre.sh"
+        "$K/bundle.sh" "$pre" "$K/pre-lib.sh" "$HERE/$base-pre.sh" >/dev/null
+    fi
     # Stage Manager scenarios share a helper file
     [[ "$n" == stage-manager-* ]] && libs+=("$HERE/stage-manager-lib.sh")
     "$K/bundle.sh" "$OUT/$base.extra.sh" "$K/lib.sh" "$K/perf-lib.sh" "$K/classify.js" "${libs[@]}" "$HERE/$n" >/dev/null

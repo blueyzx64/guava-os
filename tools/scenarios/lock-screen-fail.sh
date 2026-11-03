@@ -16,7 +16,7 @@ unlock() { G "Main.screenShield.deactivate(false); return 1" >/dev/null; sleep 1
 
 assert "feature lock-screen is running" "!!ls() && ls()._ctx"
 # No GDM here: the prompt's reauthentication channel cannot open and the Shell logs an error from it. Not under test.
-G "const u=await import('resource:///org/gnome/shell/gdm/util.js'); u.ShellUserVerifier.prototype._openReauthenticationChannel=function(){}; return 1" >/dev/null
+G "const u=await (0,eval)(\"import('resource:///org/gnome/shell/gdm/util.js')\"); u.ShellUserVerifier.prototype._openReauthenticationChannel=function(){}; return 1" >/dev/null
 
 echo "-- RV4-3: cancelled prompts are not failures"
 lock
@@ -28,7 +28,8 @@ sleep 0.5
 echo "LOCKFAIL failures after 3 cancels: $(G 'return sd()._failures')"
 assert "RV4-3 three cancelled prompts count no failure" "sd()._failures===0"
 assert "RV4-3 the capsule did not flash red" "!sd()._capsule.has_style_pseudo_class('error')"
-G "dlg()._authPrompt.emit('failed'); globalThis.__r=[sd()._failures, sd()._capsule.has_style_pseudo_class('error')]; return 1" >/dev/null
+G "dlg().activate(); await sl(900); return 1" >/dev/null
+echo "LOCKFAIL wrong password: $(G "dlg()._authPrompt.emit('failed'); globalThis.__r=[sd()._failures, sd()._capsule.has_style_pseudo_class('error')]; return JSON.stringify(globalThis.__r)")"
 sleep 0.3
 assert "RV4-3 a wrong password counts and flags the capsule" "globalThis.__r[0]===1 && globalThis.__r[1]===true"
 unlock

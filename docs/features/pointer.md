@@ -42,7 +42,7 @@ Pick the outline and fill colours; Reset puts back the macOS defaults. Guava mak
 copy of your cursor theme (dark parts take the fill, light parts the outline, the soft shadow
 stays) in `~/.local/share/icons/Guava-Pointer-<colours>/` and selects it through `cursor-theme`
 (given back when the option is off or Guava stops). A change of colour makes a new folder and
-removes Guava's older ones; turning the option off removes them all. Only folders with Guava's
+removes Guava's older ones once the `cursor-theme` setting names the new one (the live theme is never deleted first); turning the option off removes them all. Only folders with Guava's
 `.guava-pointer` marker are ever touched.
 
 Limit: only Xcursor themes are recoloured (Adwaita and most themes are). Apps that draw their own
