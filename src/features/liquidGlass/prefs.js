@@ -77,10 +77,11 @@ export function buildPrefs({ settings, extension }) {
     const _ = s => extension?.gettext?.(s) ?? s;
 
     const look = new Adw.PreferencesGroup({
-        title: _('Liquid Glass'),
-        description: _('One glass look for every Guava surface: a tint with a soft sheen, a thin rim and a shadow. No blur, so it costs almost nothing. App windows keep their own look.'),
+        title: _('Translucency'),
+        description: _('Guava\'s surfaces blur what is behind them under a neutral translucent fill. Liquid Glass adds boosted colour, a tint gradient with a sheen, a rim and a shadow. App windows keep their own look.'),
     });
-    look.add(switchRow(settings, _('Glass'), _('Off gives every surface its solid theme colour'), 'liquid-glass'));
+    look.add(switchRow(settings, _('Liquid Glass'),
+        _('Off is a plain frosted blur. On adds the sheen, the rim and a colour boost'), 'liquid-glass'));
     const tint = _tintRow(settings, _);
     look.add(tint);
     const wallpaper = switchRow(settings, _('Allow Wallpaper Tinting'),
@@ -110,20 +111,21 @@ export function buildPrefs({ settings, extension }) {
     access.add(switchRow(settings, _('Show Borders'),
         _('A clear border around every surface and Control Center module'), 'glass-show-borders'));
 
-    const where = new Adw.PreferencesGroup({ title: _('Glass Surfaces') });
+    const where = new Adw.PreferencesGroup({
+        title: _('Blurred Surfaces'),
+        description: _('A surface switched off keeps its solid theme colour. Reduce Transparency makes the rest opaque.'),
+    });
     for (const [surface, title] of SURFACES)
         where.add(_surfaceRow(settings, surface, _(title)));
 
     // macOS greys the Liquid Glass choice out while Reduce Transparency or Increase Contrast
-    // is on; everything here depends on the Glass switch
+    // is on; the slider, the wallpaper tint and the grain are Liquid Glass options only
     const sync = () => {
         const on = settings.get_boolean('liquid-glass');
         const opaque = settings.get_boolean('glass-reduce-transparency') ||
             settings.get_boolean('glass-increase-contrast');
         for (const row of [tint, wallpaper, grain])
             row.sensitive = on && !opaque;
-        access.sensitive = on;
-        where.sensitive = on;
     };
     sync();
     for (const key of ['liquid-glass', 'glass-reduce-transparency', 'glass-increase-contrast'])

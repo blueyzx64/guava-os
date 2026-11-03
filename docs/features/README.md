@@ -24,7 +24,7 @@ One page per area: what it does, how to use it, its settings with defaults, its 
 | Volume pill, glass dialogs, colour filters | [system-ui.md](system-ui.md) | `osd`, `dialogs`, `color-filters` |
 | Pointer (shake to locate, hide while typing, size, colours) | [pointer.md](pointer.md) | `pointer` |
 | Appearance | [appearance.md](appearance.md) | `appearance`, `popup-menu-styling` |
-| Liquid Glass | [liquid-glass.md](liquid-glass.md) | `liquid-glass` |
+| Frosted blur, Liquid Glass | [liquid-glass.md](liquid-glass.md) | `liquid-glass` |
 | Setup Assistant | [onboarding.md](onboarding.md) | `onboarding` |
 | Lock screen like macOS | [lock-screen.md](lock-screen.md) | `lock-screen` |
 

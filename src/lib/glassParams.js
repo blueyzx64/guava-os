@@ -17,6 +17,10 @@
 //             prerendered texture and paints it with hard, rectangular edges, so the surface
 //             itself never carries one). Surfaces without a host have no drop shadow.
 //   noise     optional: a faint grain image instead of the gradient (St draws one or the other).
+// Two looks share one pipeline (look.style). 'frost' is the default (liquid-glass off): the same
+// blur effect with a flat neutral translucent fill, no sheen, rim, saturation boost, tint
+// gradient, wallpaper tint or grain; FROST below. 'glass' is Liquid Glass (liquid-glass on): all
+// of the above. Both honour the surfaces list, Show Borders, Reduce Transparency and contrast.
 // Reduce Transparency: opaque fill, no wallpaper tint, no grain. Increase Contrast (Guava's, or
 // GNOME's high contrast): Reduce Transparency plus a flat fill and strong borders.
 // The continuous colours go in an inline style fragment (fillStyle); everything that only has
@@ -26,7 +30,7 @@ export const SURFACES = ['panel', 'menus', 'dock', 'overlays'];
 
 /** GSettings key -> [snapshot field, default used when the key is missing]. */
 export const SETTING_FIELDS = {
-    'liquid-glass': ['liquid', true],
+    'liquid-glass': ['liquid', false],
     'liquid-glass-surfaces': ['surfaces', ['panel', 'menus', 'dock', 'overlays']],
     'glass-tint': ['tint', 0],
     'glass-wallpaper-tint': ['wallpaperTint', true],
@@ -60,6 +64,20 @@ export const BLUR = {
     light: { brightness: 1, lift: 0.3 },
 };
 
+/**
+ * The frosted look (Liquid Glass off): a plain Gaussian blur of the real backdrop under a flat
+ * neutral tint. alpha is the fill opacity over the blur (fixed: the Clear <-> Tinted slider and
+ * the wallpaper tint belong to Liquid Glass); noBlur is the denser fill when no blur can draw.
+ * The loop in resolve() still raises it until text reaches MIN_TEXT_CONTRAST.
+ */
+export const FROST = {
+    alpha: { content: 0.72, bar: 0.6 },
+    noBlur: { content: 0.9, bar: 0.78 },
+    saturation: 1,
+    dark: { brightness: 1, lift: 0 },
+    light: { brightness: 1, lift: 0 },
+};
+
 /** Base tints (cookbook: light rgba(246,246,248), dark rgba(36,36,40)). */
 export const TINT = { dark: [36, 36, 40], light: [246, 246, 248] };
 /** Increase Contrast: flat, a little further from the text colour than the glass tint. */
@@ -83,10 +101,13 @@ const mix = (a, b, t) => a.map((c, i) => c + (b[i] - c) * t);
 const round = c => c.map(v => Math.round(v));
 const round3 = v => Math.round(v * 1000) / 1000;
 
-/** Does this surface get glass? */
+/** Does this surface get the frosted look or Liquid Glass (which one: styleOf)? */
 export function wantsSurface(snap, surface) {
-    return !!snap?.liquid && Array.isArray(snap.surfaces) && snap.surfaces.includes(surface);
+    return Array.isArray(snap?.surfaces) && snap.surfaces.includes(surface);
 }
+
+/** 'glass' (Liquid Glass on) or 'frost' (the default Gaussian blur). */
+export const styleOf = snap => snap?.liquid ? 'glass' : 'frost';
 
 /** The role a surface plays when the caller does not say: bars hold icons, the rest text. */
 export function roleFor(surface, role) {
@@ -125,8 +146,9 @@ export const opaqueOn = (snap, env) => !!snap?.reduceTransparency || contrastOn(
 export function resolve(snap, env, surface, role) {
     const dark = !!env.dark;
     const scheme = dark ? 'dark' : 'light';
+    const style = styleOf(snap);
     const look = {
-        tier: 'off', dark, motion: !env.reducedMotion, role: roleFor(surface, role),
+        tier: 'off', style, dark, motion: !env.reducedMotion, role: roleFor(surface, role),
         alpha: 0, top: null, bottom: null, edge: 'soft', noise: false, blur: null,
     };
     if (!wantsSurface(snap, surface))
@@ -137,13 +159,18 @@ export function resolve(snap, env, surface, role) {
 
     const opaque = opaqueOn(snap, env);
     let base = TINT[scheme];
-    if (!opaque && snap.wallpaperTint && Array.isArray(env.wallpaper))
+    const frost = style === 'frost';
+    if (!frost && !opaque && snap.wallpaperTint && Array.isArray(env.wallpaper))
         base = mix(base, env.wallpaper, WALLPAPER_MIX);
     const edge = snap.showBorders ? 'borders' : 'soft';
     const tier = opaque ? 'solid' : 'glass';
-    const blur = !opaque && env.blur ? blurParams(look.role, dark) : null;
+    const blur = !opaque && env.blur ? blurParams(look.role, dark, style) : null;
     look.blur = blur;
     const paint = alpha => {
+        if (frost) {
+            // flat neutral fill: no sheen, no shade, no grain
+            return { ...look, tier, alpha, top: [...round(base), round3(alpha)], edge };
+        }
         if (!opaque && snap.noise) {
             // St draws a background image or a gradient, never both: grain on a flat fill
             const flat = [...round(base), round3(alpha + BOTTOM_EXTRA_ALPHA / 2)];
@@ -153,7 +180,7 @@ export function resolve(snap, env, surface, role) {
         const bottom = [...round(mix(base, [0, 0, 0], SHADE[scheme])), round3(Math.min(1, alpha + BOTTOM_EXTRA_ALPHA))];
         return { ...look, tier, alpha, top, bottom, edge };
     };
-    let alpha = opaque ? 1 : sliderAlpha(snap.tint, look.role, !!blur);
+    let alpha = opaque ? 1 : frost ? FROST[blur ? 'alpha' : 'noBlur'][look.role] : sliderAlpha(snap.tint, look.role, !!blur);
     let painted = paint(alpha);
     // A bright wallpaper lightens dark glass (and a dark one darkens light glass) just where
     // the backdrop is hardest on the text: the fill gets denser until the text reads
@@ -165,9 +192,12 @@ export function resolve(snap, env, surface, role) {
 }
 
 /** The backdrop treatment for a role and scheme. */
-export function blurParams(role, dark) {
-    const scheme = dark ? BLUR.dark : BLUR.light;
-    return { sigma: BLUR.sigma[role] ?? BLUR.sigma.content, saturation: BLUR.saturation, ...scheme };
+export function blurParams(role, dark, style = 'glass') {
+    const frost = style === 'frost';
+    const scheme = frost ? (dark ? FROST.dark : FROST.light) : (dark ? BLUR.dark : BLUR.light);
+    return {
+        sigma: BLUR.sigma[role] ?? BLUR.sigma.content, saturation: frost ? FROST.saturation : BLUR.saturation, ...scheme,
+    };
 }
 
 const rgba = ([r, g, b, a]) => `rgba(${r}, ${g}, ${b}, ${a})`;
@@ -201,7 +231,7 @@ export function fillStyle(look, radius = null, effect = false) {
  * does not reliably replace, while an inline declaration always does.
  */
 export function rimShadow(look) {
-    if (look.edge === 'contrast')
+    if (look.edge === 'contrast' || look.style === 'frost')
         return 'none';
     return look.dark ? 'inset 0 1px 0 0 rgba(255, 255, 255, 0.22)' : 'inset 0 1px 0 0 rgba(255, 255, 255, 0.95)';
 }
@@ -220,6 +250,8 @@ export function glassClasses(look, surface) {
         look.dark ? 'guava-glass-dark' : 'guava-glass-light'];
     if (look.edge !== 'soft')
         classes.push(`guava-glass-${look.edge}`);
+    if (look.style === 'frost' && look.edge === 'soft')
+        classes.push('guava-glass-frost');
     if (look.tier === 'solid')
         classes.push('guava-glass-solid');
     if (look.noise)

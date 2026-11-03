@@ -1,7 +1,11 @@
-# Liquid Glass
+# Liquid Glass and the frosted blur
 
 ## What it does
-One glass for Guava's surfaces: what lies behind is blurred and its colour boosted, a tint with a soft sheen lies over it, with a thin rim and a shadow. Registry id `liquid-glass` (key `liquid-glass`, on). Code: `lib/glass.js` (the service), `lib/glassBlur.js` (the blur effect), `lib/glassParams.js` (the numbers), `features/liquidGlass/`, CSS in `src/styles/base.css`.
+Guava's surfaces (menu bar, menus, dock, overlays) blur what lies behind them. Two looks share one pipeline (`look.style` in `lib/glassParams.js`, one `GlassBlurEffect`, the same capture, cache and load governor):
+- **Frosted (default, `liquid-glass` off):** a plain Gaussian blur of the real backdrop under a flat neutral translucent fill (`FROST`: 60 % bars, 72 % content, raised until text reads 4.5:1), the normal rounded corners and a soft shadow. No sheen, rim, saturation boost, tint gradient, wallpaper tint or grain. Class `guava-glass-frost`.
+- **Liquid Glass (`liquid-glass` on):** the blurred backdrop with boosted colour, a tint with a soft sheen lies over it, with a thin rim and a shadow.
+
+Registry id `liquid-glass` (always loaded; the key `liquid-glass`, default off, picks the look). There is no separate blur key: the surfaces list switches blur off per surface and Reduce Transparency makes both looks opaque (Settings keeps one place for each choice). A user who set `liquid-glass` to true keeps Liquid Glass; one who never set it gets the frosted blur. Code: `lib/glass.js` (the service), `lib/glassBlur.js` (the blur effect), `lib/glassParams.js` (the numbers), `features/liquidGlass/`, CSS in `src/styles/base.css`.
 
 ## How it draws
 - One effect on the surface actor copies the backdrop from the screen at device pixels (sharp at any scale, fractional included), blurs it at a reduced size, boosts saturation, darkens it (dark glass) or lifts it (light glass), lays the tint over it and cuts the rounded corners. Text keeps 4.5:1 over a white or black backdrop.
@@ -12,11 +16,10 @@ One glass for Guava's surfaces: what lies behind is blurred and its colour boost
 - **Mission Control:** the menu bar's glass fades with the overview's own progress, frame for frame, also when interrupted. Clear to solid (with "solid when a window touches it") is one interruptible fade.
 
 ## Use
-- **Surfaces (`liquid-glass-surfaces`, default `panel`, `menus`, `dock`, `overlays`):** menu bar; menus, Control Center and calendar; dock; Spotlight, clipboard and the Stage Manager floor.
-- **Clear to Tinted (`glass-tint`, 0):** Clear is more see-through, Tinted more opaque and easier to read.
-- **`glass-wallpaper-tint` (on):** a little of the wallpaper's average colour shows through. **`glass-noise` (off):** a faint grain instead of the top-to-bottom sheen.
-- **Accessibility:** `glass-reduce-transparency` (opaque, no wallpaper tint), `glass-increase-contrast` (opaque, flat, strong borders), `glass-show-borders` (all off). GNOME's High Contrast also makes Guava surfaces solid.
-- Off gives every surface its solid theme colour.
+- **Surfaces (`liquid-glass-surfaces`, default `panel`, `menus`, `dock`, `overlays`):** menu bar; menus, Control Center and calendar; dock; Spotlight, clipboard and the Stage Manager floor. A surface not listed keeps the theme's solid colour, in both looks.
+- **Liquid Glass only:** **Clear to Tinted (`glass-tint`, 0):** Clear is more see-through, Tinted more opaque and easier to read. **`glass-wallpaper-tint` (on):** a little of the wallpaper's average colour shows through. **`glass-noise` (off):** a faint grain instead of the top-to-bottom sheen.
+- **Accessibility (both looks):** `glass-reduce-transparency` (opaque, no wallpaper tint), `glass-increase-contrast` (opaque, flat, strong borders), `glass-show-borders` (all off). GNOME's High Contrast also makes Guava surfaces solid.
+- Proof: `tools/scenarios/glass-frost.sh` (defaults give a flat, saturation-1 blur whose bar pixels are smoother than the wallpaper beside it and differ from the solid bar; `liquid-glass` true gives the gradient, boost and rim) and `tests/glassParams.test.js`.
 
 ## Limits
 - The glass lives on the surface actor itself (an effect plus `guava-glass-*` classes), so it follows rounded corners. App windows stay opaque.

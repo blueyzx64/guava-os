@@ -8,6 +8,8 @@ if [ ! -f $JXL ]; then
 else
   _kjs 'const EXT=Main.extensionManager.lookup("guava-os@blueyzx64").dir.get_path(); const {Glass}=await import("file://"+EXT+"/lib/glass.js"); globalThis.__tint=()=>Glass._env.wallpaper; return 1' >/dev/null
   force_animations on
+  # the wallpaper tint is a Liquid Glass option (off by default since B41)
+  gsettings set org.gnome.shell.extensions.guava-os liquid-glass true
   gsettings set org.gnome.desktop.interface color-scheme default
   # a flat colour first, so "tint read" cannot be a leftover
   gsettings set org.gnome.desktop.background picture-options none

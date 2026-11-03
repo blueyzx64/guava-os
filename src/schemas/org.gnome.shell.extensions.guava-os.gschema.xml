@@ -461,14 +461,14 @@
 
       <!-- Appearance (features/liquidGlass, features/appearance, lib/glass.js); glass-* and appearance-* are v3 -->
       <key name="liquid-glass" type="b">
-        <default>true</default>
+        <default>false</default>
         <summary>Liquid Glass</summary>
-        <description>Faux Liquid Glass on every Guava surface: a translucent tint with a sheen, a rim and a soft shadow; no blur. Off keeps the theme's solid surfaces.</description>
+        <description>Liquid Glass on every Guava surface: the blurred backdrop with boosted colour, a tint gradient with a sheen, a rim and a soft shadow. Off (the default) gives the plain frosted look: a Gaussian blur of what is behind the surface under a neutral translucent fill. Reduce Transparency makes either look opaque.</description>
       </key>
       <key name="liquid-glass-surfaces" type="as">
         <default>['panel', 'menus', 'dock', 'overlays']</default>
-        <summary>Liquid Glass surfaces</summary>
-        <description>Which surfaces use glass: panel, menus, dock, overlays.</description>
+        <summary>Blurred surfaces</summary>
+        <description>Which surfaces are blurred (frosted, or Liquid Glass when that is on): panel, menus, dock, overlays. A surface not listed keeps the theme's solid colour.</description>
       </key>
       <key name="glass-tint" type="i">
         <default>0</default>

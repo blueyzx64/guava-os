@@ -1,4 +1,4 @@
-# Scenario (GUAVA_EXTRA): Liquid Glass real blur (B3) and the menu bar leaving Mission Control (B15).
+# Scenario (GUAVA_EXTRA): Liquid Glass (liquid-glass on) real blur (B3) and the menu bar leaving Mission Control (B15).
 # Bundle: K=tools/harness/lib; $K/bundle.sh OUT $K/lib.sh $K/perf-lib.sh $K/classify.js tools/scenarios/glass-blur.sh
 #   - a detailed test wallpaper (stripes, circles, text) so blur is visible in the screenshots
 #   - the blur effect is attached and has captured a backdrop (menu bar, Control Center)
@@ -24,6 +24,8 @@ gjs $W/mkwall.js $W/wall.png
 gsettings set org.gnome.desktop.background picture-uri "file://$W/wall.png"
 gsettings set org.gnome.desktop.background picture-uri-dark "file://$W/wall.png"
 force_animations on
+# Liquid Glass is off by default (B41, glass-frost.sh covers the default look): this scenario is about the glass look
+gs liquid-glass true
 sleep 2
 FX='const fx=a=>a?.get_effect?.("guava-glass")??null; const cc=()=>Main.panel.statusArea.quickSettings.menu;'
 # warm-up: shaders and the first overview frame
@@ -67,7 +69,7 @@ DRAG='const w=kwin("org.gnome.TextEditor"); w.move_frame(true, 300, 150); await 
 perf_start; _kjs "$DRAG" >/dev/null; perf_stop drag-glass-on
 _kjs 'const w=kwin("org.gnome.TextEditor"); const r=w.get_frame_rect(); await kdrag(r.x+r.width/2,r.y+18,r.x+r.width/2,r.y+318,30); await sl(800); return 1' >/dev/null
 shot glass-dock-over-window
-gs liquid-glass false; sleep 2
+gs liquid-glass-surfaces '[]'; sleep 2
 perf_start; _kjs "$DRAG" >/dev/null; perf_stop drag-glass-off
-gs liquid-glass true; sleep 2
+gs liquid-glass-surfaces "['panel', 'menus', 'dock', 'overlays']"; sleep 2
 assert_summary

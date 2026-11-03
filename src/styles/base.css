@@ -16,6 +16,7 @@
                                drop shadow
      .guava-glass-borders       Show Borders: a 35 % contrast edge
      .guava-glass-contrast      Increase Contrast / High Contrast: a 60 % edge, no rim
+     .guava-glass-frost         the default look: a plain blur, no rim, a hairline edge
      .guava-glass-solid         opaque (Reduce Transparency or contrast)
      .guava-glass-noise         the frosted grain
      .guava-glass-static        reduced motion: no transitions */
@@ -50,6 +51,19 @@ StWidget.guava-glass.guava-glass-light {
 
 .guava-glass-shadow.guava-glass-light {
   box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.09);
+}
+
+/* Frosted look (Liquid Glass off): the same edge as a plain hairline, no rim */
+StWidget.guava-glass.guava-glass-frost {
+  box-shadow: none;
+}
+
+StWidget.guava-glass.guava-glass-frost.guava-glass-dark {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+StWidget.guava-glass.guava-glass-frost.guava-glass-light {
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* The menu bar runs edge to edge: no ring, no shadow; Show Borders draws a bottom line */

@@ -151,8 +151,9 @@ export const FEATURES = [
         load: async () => (await import('./features/appearance/index.js')).PopupMenuStyling,
     },
     {
-        // Translucent panel, menus and overlays (lib/glass.js does the work)
-        id: 'liquid-glass', setting: 'liquid-glass',
+        // Frosted (or, with liquid-glass on, Liquid Glass) panel and menus; always loaded, the
+        // surfaces list decides (lib/glass.js does the work)
+        id: 'liquid-glass',
         load: async () => (await import('./features/liquidGlass/index.js')).LiquidGlass,
     },
     {

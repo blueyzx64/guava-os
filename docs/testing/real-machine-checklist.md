@@ -37,9 +37,13 @@ journalctl --user -b -o cat /usr/bin/gnome-shell | grep -i -A12 'guava\|JS ERROR
 plus a screenshot or a short screen recording (Ctrl+Shift+Alt+R).
 
 ### 2.1 Look and sharpness (your GPU, your displays)
-- [ ] **Liquid Glass:** menu bar, Control Center, notch, dock and menus show a real blur of what is
-      behind them, over your wallpaper and over windows. Move a window under the dock: the blur
-      follows, with no squares, ghosts or darkening over time.
+- [ ] **Frosted blur (default, Liquid Glass off):** menu bar, Control Center, notch, dock and menus show a
+      plain blur of what is behind them under a flat neutral fill, over your wallpaper and over windows;
+      no sheen, rim or boosted colour. Text stays readable in Light and Dark. Move a window under the
+      dock: the blur follows, with no squares, ghosts or darkening over time. Reduce Transparency
+      makes them opaque.
+- [ ] **Liquid Glass (Settings > Appearance, on):** the same surfaces gain the colour boost, the
+      tint gradient with a sheen, the rim and the wallpaper tint, exactly as before.
 - [ ] **Sharpness at your scale:** text, icons, the dock (also magnified), the big pointer
       (shake the mouse) and the Genie are crisp at your monitor's native resolution and scale
       (especially fractional scales like 125% / 150%). Nothing should look soft or stretched.

@@ -572,7 +572,7 @@ class GlassService {
     }
 
     _offSnapshot() {
-        return { ...readSnapshot(null), liquid: false };
+        return { ...readSnapshot(null), liquid: false, surfaces: [] };
     }
 
     _start() {
