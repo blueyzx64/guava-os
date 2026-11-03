@@ -54,5 +54,19 @@ assert "SM-34 the dragged window left the stage and joined the thumbnail's set" 
 assert "SM-34 the most recent other set (B) took the stage" "onStage(sid('B'))"
 assert "SM-34 the strip has one thumbnail less: A and C share one" "cards().length===globalThis.__smCards0-1"
 assert "SM-34 the highlight is gone" "!walk(global.stage,a=>a.has_style_class_name?.('guava-stage-drop-card')&&a.visible)"
+
+echo "-- RV1-6 a window dropped at the very screen edge of the strip: a stash, not a tile"
+sm_down
+sm_up A B C
+_kjs "$_SMD"'
+const w=aw(sid("C")).meta_window; const f=w.get_frame_rect(); globalThis.__smFrame0=[f.x,f.y,f.width,f.height];
+const b=inst("stage-manager")._view.band; const ex=b.x+2, ey=b.y+10;
+await kmove(f.x+f.width/2, f.y+16); await sl(120); await kpress();
+for(let i=1;i<=24;i++) await kmove(f.x+f.width/2+(ex-f.x-f.width/2)*i/24, f.y+16+(ey-f.y-16)*i/24);
+await sl(700); return 1' >/dev/null
+_kjs 'await krelease(); await sl(2000); return 1' >/dev/null
+sm_state
+assert "RV1-6 the edge drop stashed C into the strip" "inStrip(sid('C')) && !onStage(sid('C'))"
+assert "RV1-6 and did not tile it (frame as before the drag)" "JSON.stringify((f=>[f.x,f.y,f.width,f.height])(aw(sid('C')).meta_window.get_frame_rect()))===JSON.stringify(globalThis.__smFrame0)"
 sm_down
 assert_summary

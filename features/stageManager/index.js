@@ -71,6 +71,7 @@ export class StageManager {
         this._model = null;
         this._timers = new Map();    // model timer key -> cleanup token
         this._pending = new Set();   // window ids not mapped yet (not told to the model)
+        this._mapWatch = new Map();  // pending window id -> token of its actor's notify::mapped
         this._wsCount = 1;           // workspaces last seen
         this._geometry = new Map();  // stage Meta.Window -> cleanup tokens (position/size)
         this._geometryIdle = 0;
@@ -266,6 +267,13 @@ export class StageManager {
         const actor = win?.get_compositor_private();
         if (!actor || !actor.mapped) {
             this._pending.add(window.id);
+            // Created minimized, the Shell's 'map' never comes: the actor mapping is the sign
+            if (actor && !this._mapWatch.has(window.id)) {
+                this._mapWatch.set(window.id, this._cleanup.connect(actor, 'notify::mapped', () => {
+                    if (actor.mapped)
+                        this._mapped(win);
+                }));
+            }
             return;
         }
         this._send({ type: 'add', window: this._info(window) });
@@ -275,6 +283,7 @@ export class StageManager {
         const id = win?.get_stable_sequence?.();
         if (id === undefined || !this._pending.delete(id))
             return;
+        this._unwatchMap(id);
         const info = this._desktop.model.window(id);
         if (info)
             this._send({ type: 'add', window: this._info(info) });
@@ -291,9 +300,18 @@ export class StageManager {
         this._send({ type: 'change', window: this._info(window) });
     }
 
+    _unwatchMap(id) {
+        const token = this._mapWatch.get(id);
+        if (token !== undefined)
+            this._cleanup.release(token);
+        this._mapWatch.delete(id);
+    }
+
     _removed(window) {
-        if (this._pending.delete(window.id))
+        if (this._pending.delete(window.id)) {
+            this._unwatchMap(window.id);
             return;
+        }
         const win = this._desktop.metaWindow(window.id);
         if (win) {
             this._flights.land(win);

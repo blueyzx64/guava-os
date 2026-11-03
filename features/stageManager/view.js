@@ -30,7 +30,7 @@ import { Glass } from '../../lib/glass.js';
 import { attachThumbEffect } from './thumbEffect.js';
 import { DRAG_PX, dragStarted, thumbDropTarget } from './dragModel.js';
 import {
-    METRICS, clonePose, edgeBarrier, layerRect, slotBox, stackLayers, stripLayout, tiltAngle,
+    METRICS, clonePose, edgeBarrier, layerRect, slotBox, snapPx, stackLayers, stripLayout, tiltAngle,
 } from './geometry.js';
 
 const PRESSURE_THRESHOLD = 40;   // px pushed against the edge, as the auto-hide top bar
@@ -50,7 +50,9 @@ export class StripView {
         this._env = env;
         this._state = { side: 'left', entries: [], tilt: 22, workArea: null };
         this._layout = null;
-        this._cards = new Map();     // set id -> St.Button
+        this._cards = new Map();     // set id -> {card: St.Button, key, thumbs: [[Meta.Window, thumb]]}
+        this._actorIds = new WeakMap();  // window actor -> number, for the cards' keys
+        this._actorSeq = 0;
         this._thumbs = new Map();    // Meta.Window -> {actor, rect}
         this._flying = new Set();    // windows whose thumbnail waits for a flight to land
         this._shown = null;
@@ -138,17 +140,20 @@ export class StripView {
         const { side, entries, workArea } = this._state;
         if (!workArea)
             return;
-        this._layout = stripLayout({ workArea, side, count: entries.length });
+        this._layout = stripLayout({ workArea, side, count: entries.length, grid: this._monitorScale() });
         this._placeEdge(workArea, side);
         // A redraw under a drag (the set changed): the drag ends where it is
         this._endDrag(false, true);
-        for (const card of this._cards.values())
-            card.destroy();
-        this._cards.clear();
+        // Cards whose pictures would come out the same stay as they are: a redraw for one
+        // changed entry does not rebuild every clone and shader
+        const old = this._cards;
+        this._cards = new Map();
         this._thumbs.clear();
         const { floor, slots, scale } = this._layout;
         this._cardRects = entries.map((e, i) => ({ id: e.id, rect: slots[i] })).filter(c => c.rect);
         if (!floor) {
+            for (const prev of old.values())
+                prev.card.destroy();
             this._floor.visible = false;
             this._dropBarrier();
             return;
@@ -157,10 +162,24 @@ export class StripView {
         this._floor.set_position(floor.x, floor.y);
         this._floor.set_size(floor.width, floor.height);
         entries.forEach((entry, i) => {
-            const card = this._makeCard(entry, slots[i], floor, scale, i);
-            this._cards.set(entry.id, card);
+            const key = this._cardKey(entry, slots[i], floor, scale);
+            const prev = old.get(entry.id);
+            if (prev && prev.key === key) {
+                old.delete(entry.id);
+                this._cards.set(entry.id, prev);
+                for (const [win, thumb] of prev.thumbs)
+                    this._thumbs.set(win, thumb);
+                return;
+            }
+            const thumbs = [];
+            const card = this._makeCard(entry, slots[i], floor, scale, i, thumbs);
+            for (const [win, thumb] of thumbs)
+                this._thumbs.set(win, thumb);
+            this._cards.set(entry.id, { card, key, thumbs });
             this._floor.add_child(card);
         });
+        for (const prev of old.values())
+            prev.card.destroy();
         this._syncBarrier();
         this._placeStrip();
     }
@@ -299,7 +318,7 @@ export class StripView {
     _beginDrag(drag) {
         drag.active = true;
         // The card lets go of the pointer (no click at the end)
-        this._cards.get(drag.entry.id)?.fake_release?.();
+        this._cards.get(drag.entry.id)?.card.fake_release?.();
         // A modal grab on a transparent overlay: every event of the drag reaches us, whatever is under
         // the pointer (a client window would otherwise take the stream), and Esc is ours
         const overlay = new Clutter.Actor({ reactive: true, x: 0, y: 0, width: global.stage.width, height: global.stage.height });
@@ -464,7 +483,34 @@ export class StripView {
         this._edge.set_size(EDGE_PX, workArea.height);
     }
 
-    _makeCard(entry, rect, floor, scale, index) {
+    // Everything a card's pixels depend on: equal keys, same card (the clones are live)
+    _cardKey(entry, rect, floor, scale) {
+        const { side, tilt } = this._state;
+        const corners = this._env.corners();
+        const identify = actor => {
+            if (!actor)
+                return 0;
+            if (!this._actorIds.has(actor))
+                this._actorIds.set(actor, ++this._actorSeq);
+            return this._actorIds.get(actor);
+        };
+        return JSON.stringify([
+            entry.id, entry.set, entry.app?.get_id?.() ?? null, entry.names, rect, floor.x, floor.y, scale, side, tilt,
+            corners.radius, corners.mask, this._monitorScale(),
+            entry.windows.map(w => {
+                const f = w.get_frame_rect();
+                const b = w.get_buffer_rect();
+                return [w.get_stable_sequence(), identify(w.get_compositor_private()), f.x, f.y, f.width, f.height, b.x, b.y, b.width, b.height];
+            }),
+        ]);
+    }
+
+    _monitorScale() {
+        const index = Main.layoutManager.primaryIndex;
+        return global.display.get_monitor_scale(index) || 1;
+    }
+
+    _makeCard(entry, rect, floor, scale, index, thumbs) {
         const { side, tilt } = this._state;
         const angle = tiltAngle(side, tilt);
         const names = entry.names.filter(Boolean);
@@ -495,10 +541,10 @@ export class StripView {
                 continue;
             t.actor.opacity = this._flying.has(win) ? 0 : layer.opacity;
             holder.add_child(t.actor);
-            this._thumbs.set(win, {
+            thumbs.push([win, {
                 actor: t.actor, opacity: layer.opacity, angle: angle + layer.tilt,
                 rect: { x: rect.x + t.rect.x, y: rect.y + t.rect.y, width: t.rect.width, height: t.rect.height },
-            });
+            }]);
             if (layer.index === 0)
                 front = t;
         }
@@ -539,21 +585,25 @@ export class StripView {
         if (!actor || !(frame?.width > 0) || !(frame?.height > 0))
             return null;
         const buffer = win.get_buffer_rect();
-        const rect = layerRect(frame, box, layer, scale);
+        const rect = layerRect(frame, box, layer, scale, this._monitorScale());
         const pose = clonePose(frame, buffer, rect);
         if (!pose)
             return null;
         const clone = new Clutter.Clone({ source: actor, reactive: false });
         clone.set_size(buffer.width, buffer.height);
         clone.set_pivot_point(pose.pivotX, pose.pivotY);
-        clone.set_position(Math.round(pose.x), Math.round(pose.y));
+        // On the physical pixel grid: at 125% a logical integer is a fraction of a pixel
+        const ms = this._monitorScale();
+        const px = snapPx(pose.x, ms);
+        const py = snapPx(pose.y, ms);
+        clone.set_position(px, py);
         clone.set_scale(pose.scaleX, pose.scaleY);
         clone.scale_z = pose.scale;
         clone.rotation_angle_y = angle;
         attachThumbEffect(clone, buffer, { x: frame.x - buffer.x, y: frame.y - buffer.y, width: frame.width, height: frame.height },
-            this._env.corners());
-        const dx = Math.round(pose.x) - pose.x;
-        const dy = Math.round(pose.y) - pose.y;
+            this._env.corners(), ms);
+        const dx = px - pose.x;
+        const dy = py - pose.y;
         return { actor: clone, rect: { ...rect, x: rect.x + dx, y: rect.y + dy } };
     }
 

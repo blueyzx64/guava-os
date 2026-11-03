@@ -21,6 +21,7 @@ import Cogl from 'gi://Cogl';
 import GObject from 'gi://GObject';
 
 import { GLSL_EFFECT, createShaderEffect } from '../../lib/compat.js';
+import { thumbFilter } from './geometry.js';
 
 const MAX_TAPS = 8;
 
@@ -37,6 +38,7 @@ uniform float guava_tr;
 uniform float guava_br;
 uniform float guava_bl;
 uniform float guava_k;
+uniform float guava_n;
 
 float guava_mask(vec2 p) {
     vec2 c = clamp(p, vec2(guava_x0, guava_y0) + vec2(guava_r), vec2(guava_x1, guava_y1) - vec2(guava_r));
@@ -54,7 +56,7 @@ const EFFECT_FN = `
 vec4 guava_effect(vec2 uv, vec4 color) {
     vec2 size = vec2(guava_w, guava_h);
     vec2 p0 = uv * size;
-    float n = clamp(ceil(guava_k), 1.0, ${MAX_TAPS}.0);
+    float n = clamp(ceil(guava_n), 1.0, ${MAX_TAPS}.0);
     vec4 sum = vec4(0.0);
     for (int i = 0; i < ${MAX_TAPS}; i++) {
         if (float(i) >= n)
@@ -99,7 +101,21 @@ function createEffect() {
     const Glsl = glslClass();
     if (Glsl) {
         const effect = new Glsl();
-        return { effect, set: (name, v) => effect.set_uniform_float(effect.get_uniform_location(name), 1, [v]) };
+        // One array and one lookup per uniform, not one of each per frame of a flight
+        const locations = new Map();
+        const value = [0];
+        return {
+            effect,
+            set: (name, v) => {
+                let loc = locations.get(name);
+                if (loc === undefined) {
+                    loc = effect.get_uniform_location(name);
+                    locations.set(name, loc);
+                }
+                value[0] = v;
+                effect.set_uniform_float(loc, 1, value);
+            },
+        };
     }
     const effect = createShaderEffect({ declarations: DECLARATIONS, effectFn: EFFECT_FN });
     // set_uniform_value takes a float; an integral JS number would become an int uniform
@@ -123,9 +139,10 @@ export function cornerSpec({ enabled, radius, which }) {
  * @param {{width: number, height: number}} buffer
  * @param {{x: number, y: number, width: number, height: number}} frame inside the buffer
  * @param {{radius: number, mask: number[]}} corners from cornerSpec()
+ * @param {number} [scale] the monitor's scale: the window texture has that many texels per logical px
  * @returns {boolean} false where shaders are unavailable (the clone is left as it is)
  */
-export function attachThumbEffect(clone, buffer, frame, corners) {
+export function attachThumbEffect(clone, buffer, frame, corners, scale = 1) {
     const made = createEffect();
     if (!made)
         return false;
@@ -138,7 +155,16 @@ export function attachThumbEffect(clone, buffer, frame, corners) {
     f('guava_y1', frame.y + frame.height);
     f('guava_r', corners.radius);
     ['tl', 'tr', 'br', 'bl'].forEach((k, i) => f(`guava_${k}`, corners.mask[i]));
-    const follow = () => f('guava_k', 1 / Math.max(clone.scale_x, 0.01));
+    let last = -1;
+    const follow = () => {
+        const { span, taps } = thumbFilter(clone.scale_x, scale);
+        // A flight sets the scale every frame: the uniforms only follow a visible change
+        if (Math.abs(span - last) < 0.002)
+            return;
+        last = span;
+        f('guava_k', span);
+        f('guava_n', taps);
+    };
     follow();
     clone.connect('notify::scale-x', follow);
     clone.add_effect(made.effect);

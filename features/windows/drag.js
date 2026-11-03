@@ -27,6 +27,7 @@ import { getPointerWatcher } from 'resource:///org/gnome/shell/ui/pointerWatcher
 import { CleanupRegistry } from '../../lib/disposables.js';
 import { Glass } from '../../lib/glass.js';
 import { ZONES } from '../../core/tileActions.js';
+import { WindowState } from '../../core/windowState.js';
 import { EDGE_PX, dropZone, hitZone, needsDwell } from './model.js';
 import { SnapBar } from './snapBar.js';
 
@@ -96,7 +97,10 @@ export class TileDrag {
         if (!win)
             return;
         this._engine.cancelSettle(win);
-        if (!MOVE_OPS.has(op) || win.get_window_type() !== Meta.WindowType.NORMAL || !this._wanted())
+        // Paused while Stage Manager runs (its settings text says so): dropping a window on the
+        // strip's screen edge is a stash there, not a tile
+        if (!MOVE_OPS.has(op) || win.get_window_type() !== Meta.WindowType.NORMAL || !this._wanted() ||
+            WindowState.stageActive)
             return;
         this._stop();
         this._win = win;

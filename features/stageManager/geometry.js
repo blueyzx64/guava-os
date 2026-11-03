@@ -57,10 +57,11 @@ export function stripSide(preferred, dockEdge) {
 /**
  * Where the strip band, its entries and the floor under them go. Entries shrink to m.minScale
  * to fit the height; at most six are listed, which always fits.
- * @param {{workArea: rect, side: 'left'|'right', count: number}} args
+ * `grid` is the monitor's scale: the entries sit on whole physical pixels (1: whole logical ones).
+ * @param {{workArea: rect, side: 'left'|'right', count: number, grid?: number}} args
  * @returns {{band: rect, slots: rect[], floor: ?rect, scale: number}}
  */
-export function stripLayout({ workArea, side, count }, m = METRICS) {
+export function stripLayout({ workArea, side, count, grid = 1 }, m = METRICS) {
     const x0 = side === 'right' ? workArea.x + workArea.width - m.stripWidth : workArea.x;
     const band = { x: x0, y: workArea.y, width: m.stripWidth, height: workArea.height };
     const n = Math.max(0, Math.floor(count));
@@ -68,15 +69,15 @@ export function stripLayout({ workArea, side, count }, m = METRICS) {
         return { band, slots: [], floor: null, scale: 1 };
     const avail = Math.max(1, workArea.height - m.padTop - m.padBottom);
     const scale = clamp(avail / (n * m.thumbH + (n - 1) * m.gap), m.minScale, 1);
-    const w = Math.round(m.thumbW * scale);
-    const h = Math.round(m.thumbH * scale);
-    const gap = Math.round(m.gap * scale);
+    const w = snapPx(m.thumbW * scale, grid);
+    const h = snapPx(m.thumbH * scale, grid);
+    const gap = snapPx(m.gap * scale, grid);
     const total = n * h + (n - 1) * gap;
-    const top = Math.round(workArea.y + m.padTop + (avail - total) / 2);
-    const x = Math.round(x0 + (m.stripWidth - w) / 2);
+    const top = snapPx(workArea.y + m.padTop + (avail - total) / 2, grid);
+    const x = snapPx(x0 + (m.stripWidth - w) / 2, grid);
     const slots = [];
     for (let i = 0; i < n; i++)
-        slots.push({ x, y: top + i * (h + gap), width: w, height: h });
+        slots.push({ x, y: snapPx(top + i * (h + gap), grid), width: w, height: h });
     const floor = { x: x0, y: top - m.floorPad, width: m.stripWidth, height: total + 2 * m.floorPad };
     return { band, slots, floor, scale };
 }
@@ -123,16 +124,17 @@ export function tiltAngle(side, degrees) {
  * @param {rect} box the entry's slot, padded
  * @param {object} layer from stackLayers()
  * @param {number} scale the strip's scale
+ * @param {number} [grid] the monitor's scale: whole physical pixels (1: whole logical ones)
  */
-export function layerRect(frame, box, layer, scale) {
+export function layerRect(frame, box, layer, scale, grid = 1) {
     const fit = balancedFit(frame.width, frame.height, box.width, box.height);
     const width = fit.width * layer.scale;
     const height = fit.height * layer.scale;
     // Whole pixels, so the unrotated edges fall on pixel boundaries
     return {
-        x: Math.round(box.x + (box.width - width) / 2 + layer.dx * scale),
-        y: Math.round(box.y + (box.height - height) / 2 + layer.dy * scale),
-        width: Math.max(1, Math.round(width)), height: Math.max(1, Math.round(height)),
+        x: snapPx(box.x + (box.width - width) / 2 + layer.dx * scale, grid),
+        y: snapPx(box.y + (box.height - height) / 2 + layer.dy * scale, grid),
+        width: Math.max(1 / grid, snapPx(width, grid)), height: Math.max(1 / grid, snapPx(height, grid)),
     };
 }
 
@@ -191,6 +193,31 @@ export function edgeBarrier(workArea, monitor, others, side) {
     if (neighbour || y2 <= y1)
         return null;
     return { x1: x, x2: x, y1, y2, direction: right ? 'negative' : 'positive' };
+}
+
+/**
+ * A logical coordinate moved onto the physical pixel grid (at 125% a whole logical pixel is not a
+ * whole physical one, and an edge on a fraction is drawn blurred).
+ * @param {number} v logical px
+ * @param {number} scale the monitor's scale (1, 1.25, 2, ...)
+ */
+export function snapPx(v, scale = 1) {
+    const s = Number.isFinite(scale) && scale > 0 ? scale : 1;
+    return Math.round(v * s) / s;
+}
+
+/**
+ * The box filter of a downscaled thumbnail: how far one output pixel reaches into the window
+ * (logical px, `span`) and how many texels per axis lie under it (`taps`). The window's texture has
+ * `scale` texels per logical px (the monitor's scale), an output pixel is 1/scale logical px
+ * wide, and the clone shows `1/cloneScale` logical px of the window per logical px.
+ * @param {number} cloneScale the clone's scale_x
+ * @param {number} scale the monitor's scale
+ */
+export function thumbFilter(cloneScale, scale = 1) {
+    const c = Math.max(cloneScale, 0.01);
+    const s = Number.isFinite(scale) && scale > 0 ? scale : 1;
+    return { span: 1 / (c * s), taps: 1 / c };
 }
 
 /** A duration under the user's animation speed (1 normal, 2 twice as fast). */

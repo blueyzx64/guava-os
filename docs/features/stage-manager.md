@@ -56,7 +56,7 @@ our adaptation or a guess about macOS Sonoma/Sequoia; the rest follows macOS.
   hidden.
 - **SM-14** A full-screen window covers the monitor: the strip is hidden and cannot be revealed,
   and the sets behind it stay hidden. Leaving full screen returns the strip.
-  (The separate "full screen in its own Space" feature is paused while Stage Manager runs.)
+  (The separate "full screen in its own Space" feature and tiling by drag are paused while Stage Manager runs.)
 
 ## The strip
 - **SM-15** The strip is visible when `stage-manager-show-recent` is on and no stage window
@@ -98,6 +98,9 @@ our adaptation or a guess about macOS Sonoma/Sequoia; the rest follows macOS.
   Switching workspace redraws the strip for that workspace and the strip **slides** in from its
   edge, 220 ms, like the workspace does (D-017); a hidden strip stays hidden. The windows of the
   workspaces change without a Stage Manager animation: the workspace switch itself moves them.
+  Adding or removing a workspace without a switch does not replay the slide. When a workspace in
+  the middle is removed, the stages and strips of the workspaces behind it move down with their
+  windows (Mutter sends no window signal for that; the adapter reads the new indexes).
 - **SM-28** Only the primary monitor has a strip. Windows on other monitors are never hidden (guess:
   macOS has a strip per display).
 
@@ -115,14 +118,19 @@ our adaptation or a guess about macOS Sonoma/Sequoia; the rest follows macOS.
     thumbnails is SM-25. Esc during the drag puts the window back and drops nothing.
 
 ## Public API (kept)
-- **SM-29** `toggleDesktop()` / `isDesktopShown`, `openIntoStage(appId)` (the next window of that
-  app joins the stage set within 10 s), and the `'staged'` window flag (a window hidden by Stage
+- **SM-29** `toggleDesktop()` (returns false when nothing changed) / `isDesktopShown`,
+  `openIntoStage(appId)`, and the `'staged'` window flag (a window hidden by Stage
   Manager) read by Mission Control and the adaptive menu bar. `WindowState.stageActive` is true
-  while it runs.
+  while it runs. `openIntoStage` is what **Option-click** on a Dock icon, or on a Launchpad tile while
+  Option is held, calls: the set of a running app that waits in the strip joins the stage (as
+  Shift-click on its thumbnail), an app already on the stage is focused, an app that is not running
+  opens its next window into the stage set (within 10 s).
 - **SM-30** Hidden windows keep their frame, workspace, stacking and run normally. Mission Control
   decides what it lists from the `'staged'` flag; hidden sets show as thumbnails.
 - **SM-31** Show Desktop moves the stage set into the strip (all windows hidden, no stage); calling
-  it again or activating any window brings the previous stage back.
+  it again or activating any window brings the previous stage back. When the stage has no managed
+  window (only windows Stage Manager sets aside, SM-7) it does nothing, and Show Desktop's own
+  reveal runs instead; Show Desktop then ends it again.
 
 ## Disable and teardown
 - **SM-32** Turning Stage Manager off, disabling Guava, or an error in the adapter leaves **every**
