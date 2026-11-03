@@ -43,6 +43,9 @@ GUAVA_SRC=$PWD tools/harness/run-f44.sh 20       # standard probes + 20 enable/d
   - `GUAVA_PRE=file`: setup before the Shell starts (mocks).
   - `GUAVA_ONLY="notch spotlight"`: enable only these feature switches.
   - `run-f44.sh 0`: no cycles.
+  - `GUAVA_STOCK=1`: log in to stock GNOME (Guava not enabled at start; the perf baseline).
+  - `GUAVA_SKIP_PROBES=1`: skip the standard probes and settings flips (scenario only).
+- **Login trace.** The probe extension is enabled first and records the login (`probe/probe@x2/startupTrace.js`). The run prints one `STARTUP {json}` line with the following times in ms since the Shell started: startup-complete, ready, frame and stall stats, work-area steps, overview events, chrome moves, and Guava's per-feature start order and enable() cost. `tools/scenarios/run-perf.sh` (`tools/scenarios/README.md`) compares it with a stock login.
 
 ## Write a scenario
 Scenarios are bash, run inside the session. They can't see your home folder, so bundle the library with your script first:

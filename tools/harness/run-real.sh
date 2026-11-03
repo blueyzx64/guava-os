@@ -25,6 +25,7 @@ cp -r "$HARNESS_DIR/probe/probe@x2" $R/opt/probe/
 cp "$HARNESS_DIR/inner-real.sh" $R/opt/inner-real.sh
 rm -rf $R/opt/guava-extra.sh $R/opt/shots; mkdir -p $R/opt/shots; chmod 777 $R/opt/shots; rm -f $R/opt/guava-pre.sh; [ -n "$GUAVA_PRE" ] && cp "$GUAVA_PRE" $R/opt/guava-pre.sh; [ -n "$GUAVA_EXTRA" ] && cp "$GUAVA_EXTRA" $R/opt/guava-extra.sh
 rm -f $R/opt/guava-only; [ -n "$GUAVA_ONLY" ] && echo "$GUAVA_ONLY" > $R/opt/guava-only
+rm -f $R/opt/guava-stock $R/opt/guava-skip-probes; [ -n "$GUAVA_STOCK" ] && touch $R/opt/guava-stock; [ -n "$GUAVA_SKIP_PROBES" ] && touch $R/opt/guava-skip-probes
 ENTER="$HARNESS_DIR/enter.sh"; [ -x $R.enter.sh ] && ENTER=$R.enter.sh; export ARCH_ROOT=$R
 trap '"$HARNESS_DIR/killroot.sh" "$R"' EXIT
 timeout -k 5 600 $ENTER bash /opt/inner-real.sh $N >$OUT/last-run.txt 2>&1 9>&-
@@ -53,6 +54,6 @@ PY
 grep "^PROBE" $OUT/last-run.txt | cut -c1-260
 VALID=1
 grep -q "GNOME Shell started\|Running GNOME Shell" $OUT/shell.log 2>/dev/null || VALID=0
-grep -q "^('{\"" $OUT/last-run.txt || VALID=0
+grep -q "^('" $OUT/last-run.txt || VALID=0   # the probe answered at least once
 echo "RUN DIR: $OUT"
 [ $VALID = 1 ] || { echo "INVALID RUN: Shell did not start or probe never answered (see $OUT)" | tee -a $OUT/last-run.txt; exit 1; }

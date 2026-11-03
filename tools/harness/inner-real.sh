@@ -16,7 +16,11 @@ export HOME=$W/home XDG_CONFIG_HOME=$W/home/.config XDG_DATA_HOME=$W/home/.local
 export GSETTINGS_SCHEMA_DIR=$X/$UUID/schemas
 export XDG_SESSION_TYPE=wayland G_MESSAGES_DEBUG=
 gsettings set org.gnome.shell disable-user-extensions false
-gsettings set org.gnome.shell enabled-extensions "['$UUID','probe@x2']"
+# The probe goes first: its login trace (probe@x2/startupTrace.js) must start before Guava enables.
+# GUAVA_STOCK=1 (/opt/guava-stock): log in to stock GNOME (the perf baseline); a scenario can enable Guava later.
+[ -f /opt/guava-stock ] && GUAVA_STOCK=1
+if [ -n "$GUAVA_STOCK" ]; then gsettings set org.gnome.shell enabled-extensions "['probe@x2']"
+else gsettings set org.gnome.shell enabled-extensions "['probe@x2','$UUID']"; fi
 gs() { gsettings set org.gnome.shell.extensions.guava-os "$@" 2>&1 || echo "gsettings fail $*"; }
 SCHEMA=$(grep -o 'id="[^"]*"' $X/$UUID/schemas/*.xml | head -1); echo "schema: $SCHEMA"
 # turn on the new features before start
@@ -47,6 +51,10 @@ echo "== extension state"; P "const e=Main.extensionManager.lookup('guava-os@blu
 echo "== feature status"; P "const e=Main.extensionManager.lookup('guava-os@blueyzx64'); const f=e.stateObj._features; const o={}; for (const id of f._status.keys()) o[id]=f.status(id); return o"
 echo "== panel boxes"; P "const d=a=>a.get_children().map(c=>c.constructor.name+'#'+(c.name||'')+'.'+(c.style_class||'')); return {left:d(Main.panel._leftBox),center:d(Main.panel._centerBox),right:d(Main.panel._rightBox)}"
 echo "== chrome actors named guava*"; P "const o=[];const w=(a,dp)=>{ if((a.name||'').startsWith('guava')||(a.style_class||'').includes('guava')) o.push(a.constructor.name+'#'+a.name+' vis='+a.visible+' '+Math.round(a.width)+'x'+Math.round(a.height)); a.get_children().forEach(c=>w(c,dp+1)); }; w(global.stage,0); return o.slice(0,60)"
+echo "== startup"
+# The login trace stops by itself 8 s after startup-complete; one line for the perf runner
+for _ in $(seq 1 30); do P "return globalThis.__x2startup?.trace.running === false" | grep -q true && break; sleep 1; done
+P "return 'STARTUP '+JSON.stringify(globalThis.__x2startup?.summary() ?? null)" | tr -d '\\' | grep -o 'STARTUP .*[}l]' | head -1
 echo "== launch GTK app"
 for _ in $(seq 1 60); do WD=$(ls $W/run 2>/dev/null | grep -m1 '^wayland-[0-9]*$'); [ -n "$WD" ] && P 'return 1' | grep -q 1 && break; sleep 1; done; echo "wayland socket: $WD"
 # Let D-Bus-activated portals reach the compositor, like a real session (apps read button-layout via the Settings portal)
@@ -67,6 +75,9 @@ gdbus call --session --dest org.freedesktop.Notifications --object-path /org/fre
 sleep 2
 P "return {sources:Main.messageTray.getSources().length, banner:Main.messageTray._banner?.constructor?.name ?? null, bannerVisible:Main.messageTray._bannerBin?.visible, notchState: (()=>{const o=[];const w=a=>{ if(a.name==='guava-notch') o.push({vis:a.visible,w:a.width,h:a.height,kids:a.get_n_children()}); a.get_children().forEach(w)}; w(global.stage); return o})()}"
 
+# GUAVA_SKIP_PROBES=1 (/opt/guava-skip-probes): the scenario only (perf runs, stock baseline)
+[ -f /opt/guava-skip-probes ] && GUAVA_SKIP_PROBES=1
+if [ -z "$GUAVA_SKIP_PROBES" ]; then
 echo "== FUNCTIONAL PROBES"
 T overview-hidden "$SL"'Main.overview.hide(); await sl(1200); return Main.overview.visible ? "FAIL overview still visible" : "PASS overview hidden"'
 T notch-receives-notification "$SL"'
@@ -121,11 +132,12 @@ const b=c.count; const txt="x2-probe-"+Date.now();
 St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD, txt); await sl(2500);
 const a=c.count; const latest=c.latest?.(1);
 return (a>b?"PASS":"FAIL")+` before=${b} after=${a} recording=${c.recording} latest=${JSON.stringify(latest)?.slice(0,120)}`'
+fi # GUAVA_SKIP_PROBES
 # Optional per-agent probes/screenshots (GUAVA_EXTRA). P, T, SL, gs are available; shots go to /opt/shots.
 SHOT() { P "const f=Gio.File.new_for_path('/opt/shots/$1.png'); const s=f.replace(null,false,0,null); const sh=new Shell.Screenshot(); await new Promise((res,rej)=>sh.screenshot(false,s,(o,r)=>{try{o.screenshot_finish(r);res()}catch(e){rej(e)}})); s.close(null); return 'shot $1'"; }
 if [ -f /opt/guava-extra.sh ]; then echo "== EXTRA"; . /opt/guava-extra.sh; fi
 echo "== settings flipping"
-for k in notch liquid-glass control-center stage-manager clipboard-history spotlight; do for v in false true; do gs $k $v; sleep 0.7; done; done
+[ -n "$GUAVA_SKIP_PROBES" ] || for k in notch liquid-glass control-center stage-manager clipboard-history spotlight; do for v in false true; do gs $k $v; sleep 0.7; done; done
 P "const f=Main.extensionManager.lookup('guava-os@blueyzx64').stateObj._features; const o={}; for (const id of f._status.keys()) o[id]=f.status(id); return o"
 echo "== toggling $N x"
 D="gdbus call --session --dest org.gnome.Shell --object-path /org/gnome/Shell --method org.gnome.Shell.Extensions"
