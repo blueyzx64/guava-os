@@ -41,7 +41,9 @@ g=collections.Counter();i=0
 while i<len(L):
     if hdr.search(L[i]):
         b=[L[i]];j=i+1
-        while j<len(L) and L[j].strip() and not hdr.search(L[j]) and not L[j].startswith('('): b.append(L[j]);j+=1
+        # The block runs until the next header or log line; blank lines inside it are kept, because
+        # GLib puts one between a CRITICAL and its JS stack (the Guava frame is in that stack)
+        while j<len(L) and not hdr.search(L[j]) and not L[j].startswith('(') and not re.match(r'^(Gjs-Message|GNOME Shell-Message|WARNING|\S+-(Message|WARNING|DEBUG))',L[j]): b.append(L[j]);j+=1
         t='\n'.join(b);m=fr.search(t)
         if m or '[Guava]' in t:
             msg=re.sub(r'^.*?(CRITICAL|JS ERROR)[^:]*:\s*(\d\d:\d\d:\d\d\.\d+:\s*)?','',L[i])[:120]
