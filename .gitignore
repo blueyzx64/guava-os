@@ -10,3 +10,5 @@ locale
 # Project docs are tracked
 !docs/**
 dist/
+# Agent skills and the project CLAUDE.md are tracked (the rule above would hide .claude/)
+!.claude/

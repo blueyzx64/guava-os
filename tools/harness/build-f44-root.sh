@@ -29,13 +29,21 @@ rm -rf "$work"
 
 cp /etc/resolv.conf "$R/etc/resolv.conf"
 # Behind a TLS-intercepting proxy, put its CA bundle at $CA_BUNDLE (enter.sh points curl/dnf at it)
-mkdir -p "$R/etc/ssl/certs"; [ -n "${CA_BUNDLE:-}" ] && cp "$CA_BUNDLE" "$R/etc/ssl/certs/ccr.pem"
+# Fedora's /etc/ssl/certs is an absolute symlink to /etc/pki/tls/certs: write through the real path,
+# which enter.sh's CURL_CA_BUNDLE=/etc/ssl/certs/ccr.pem resolves to inside the chroot.
+if [ -n "${CA_BUNDLE:-}" ]; then
+  mkdir -p "$R/etc/pki/tls/certs" && cp "$CA_BUNDLE" "$R/etc/pki/tls/certs/ccr.pem"
+  # dnf does not read CURL_CA_BUNDLE: trust the proxy CA system-wide in the root as well
+  mkdir -p "$R/etc/pki/ca-trust/source/anchors" && cp "$CA_BUNDLE" "$R/etc/pki/ca-trust/source/anchors/ccr.pem"
+fi
 printf '#!/bin/bash\nARCH_ROOT=%s exec %s/enter.sh "$@"\n' "$R" "$HARNESS_DIR" > "$X2/$NAME.enter.sh"
 chmod +x "$X2/$NAME.enter.sh"
 
 proxy=${HTTPS_PROXY:+--setopt=proxy=$HTTPS_PROXY}
+# Cisco's openh264 repo is outside Fedora's mirrors (often blocked behind proxies); noopenh264 from Fedora stands in
+proxy="$proxy --disablerepo=fedora-cisco-openh264"
 # shellcheck disable=SC2086
-"$X2/$NAME.enter.sh" bash -c "dnf -y $proxy --setopt=install_weak_deps=False install $(echo $PACKAGES) && gnome-shell --version"
+"$X2/$NAME.enter.sh" bash -c "{ [ -z '${CA_BUNDLE:-}' ] || update-ca-trust; } && dnf -y $proxy --setopt=install_weak_deps=False install $(echo $PACKAGES) && gnome-shell --version"
 
 # Extra roots for parallel runs: copy the first one (never cross a mount: -x)
 for s in b c d e f g h; do
