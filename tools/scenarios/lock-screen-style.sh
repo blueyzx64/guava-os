@@ -51,6 +51,7 @@ assert "L16 prompt page shown, capsule teaser hidden" "dlg()._promptBox.visible 
 assert "L16 real prompt styled and named" "(()=>{const p=dlg()._authPrompt;return !!p && p.has_style_class_name('guava-lock-prompt') && p._passwordEntry.accessible_name.length>0;})()"
 echo "LOCK prompt box: $(G 'return JSON.stringify([pos(dlg()._promptBox), pos(sd()._teaserBox), pos(dlg()._stack)])')"
 assert "L16 prompt ends where the teaser did, centred (the field does not jump)" "(()=>{const p=pos(dlg()._promptBox),t=pos(sd()._teaserBox);return Math.abs(p.y+p.h-(t.y+t.h))<=2 && Math.abs(p.x+p.w/2-global.stage.width/2)<=2;})()"
+echo "LOCK mainBox kids: $(G 'const m=dlg()._authPrompt._mainBox; return JSON.stringify(m.get_children().map(c=>[c.constructor.name,c.visible,Math.round(pos(c).x),Math.round(pos(c).w)]))')"
 echo "LOCK field vs capsule y: $(G 'const e=dlg()._authPrompt._passwordEntry; return JSON.stringify([pos(e).y, pos(sd()._capsule).y, pos(e).x+pos(e).w/2])')"
 assert "L16 clock stays while the prompt is shown" "sd().parts.clock.visible && sd().parts.clock.opacity===255"
 shot lock-prompt
@@ -60,7 +61,7 @@ sleep 1
 assert "L16 back on the capsule after a failure" "sd()._teaserBox.visible && sd()._failures===1"
 G "dlg().emit('failed'); dlg().emit('failed'); return 1" >/dev/null
 sleep 0.3
-assert "L16 no hint while the option is off" "!sd()._hint.visible"
+assert "L16 no hint while the option is off" "sd()._hint.opacity===0 && sd()._hint.text===''"
 
 echo "-- options (each applied live to the open dialog)"
 setkey() { G "setk('$1', $2); return 1" >/dev/null; sleep 0.8; }

@@ -61,6 +61,12 @@
     text-align: center;
 }
 
+/* the stock row has an 18 px spinner after the field: the same margin before it keeps the field centred */
+.guava-lock-dialog .login-dialog-prompt-entry {
+    max-width: 260px;
+    margin-left: 18px;
+}
+
 .guava-lock-capsule:hover {
     background-color: rgba(20, 20, 24, 0.8);
     border-color: rgba(255, 255, 255, 0.4);
