@@ -52,6 +52,11 @@
 - **Reconcile, don't track:** the adapter applies the model's `hiddenIds()` to the real windows
   after every event, so a missed signal heals on the next one. Hiding = opacity 0 + out of pick;
   Stage Manager never minimizes (that left windows minimized and unmapped when it was turned off).
+- **A pointer drag on chrome loses its events after ~250 ms without a grab:** hold
+  `Main.pushModal` for the drag (B31). Esc during a Mutter window grab puts the window back and
+  still fires `grab-op-end`: compare frames to tell a cancel from a drop.
+- **Hover signals fire during teardown:** null the model first in cleanup order, or a late hover
+  re-hides windows after they were restored.
 - **Write the spec and failing scenarios before the rewrite.** The baseline (15/69 failing) found
   causes nobody had reported, and the same scenarios proved the rewrite (71/71).
 
