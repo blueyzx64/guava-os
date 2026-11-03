@@ -55,6 +55,16 @@
 - **Write the spec and failing scenarios before the rewrite.** The baseline (15/69 failing) found
   causes nobody had reported, and the same scenarios proved the rewrite (71/71).
 
+## Dock
+
+- **The Shell re-bases every extension behind a removed one in `_extensionOrder`** (B22): writing
+  Dash to Dock out of `enabled-extensions` made GNOME disable and re-enable Guava. Step out of that
+  array for the write and return once the dock is gone (`features/dock/dashToDock.js`).
+- **Keyfile GSettings (the harness) deliver `changed` asynchronously; dconf (a real session) does
+  it synchronously.** Code that writes a key and reacts to it must work both ways.
+- **Never `set_scale` a small icon up** (B18): draw St icons at the largest size they will be
+  shown (`icon_size` above `set_size`) and scale down; set the texture once, not per frame.
+
 ## Test environment
 
 - **Fedora's `/etc/ssl/certs` is an absolute symlink** to `/etc/pki/tls/certs`. Writing through

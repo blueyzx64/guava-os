@@ -42,7 +42,7 @@ Consequences for Guava:
   `dash-to-dock@micxgx.gmail.com` from `org.gnome.shell enabled-extensions` from an idle.
   If Dash to Dock sits *before* Guava in `Main.extensionManager._extensionOrder`, GNOME disables
   Guava, disables Dash to Dock, then enables Guava again: a second full start at login.
-  ⚠ Not measured at a real login; check `_extensionOrder` and the log for a double enable.
+  Measured and fixed (B22): the Shell rebases extensions behind a removed one in `_extensionOrder`, so Guava steps out of that array while it removes Dash to Dock (`features/dock/dashToDock.js`, `rebaseShield`).
 - `features.js` modules load lazily (`load: async () => import(...)`); the registry starts each
   feature in the pass after its class arrives (`lib/featureRegistry.js:1-23`), so a cold
   start spans several main-loop iterations. `ext.stateObj._features.settled()` resolves when all
