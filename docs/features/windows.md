@@ -13,7 +13,7 @@ macOS Sequoia tiling. One engine for every way in.
 Super+H hides the front app, Alt+Super+H hides the others. Wayland has no hidden apps, so the windows are minimized without an animation and flagged `hidden`; the dock leaves them out of its minimized area, and activating the app brings them all back. Guava borrows Super+H from GNOME's minimize binding while Hide is on and gives it back after. The app menu and the app switcher use the same action.
 
 ## Full screen in its own Space (`move-window-to-new-workspace`, on)
-A full-screen window moves to a new workspace at the right and returns when it leaves full screen. Paused while Stage Manager runs.
+A full-screen window moves to a new workspace at the right and returns when it leaves full screen. The maximize (green) button of an app's titlebar enters full screen ([window-controls.md](window-controls.md)). Paused while Stage Manager runs.
 
 ## Split View (`split-view`, on)
 With a full-screen window focused, press Ctrl+Super+Alt+Left or Right (`split-view-left-shortcut`, `split-view-right-shortcut`; also in Settings, Windows) to tile it to that side of the screen. A full-screen window cannot be dragged, so the snap bar does not offer Split View. The other half shows thumbnails of your other windows; click one to pair it. Esc or a click on the tiled half cancels. The pair ends when a window closes, minimizes, goes full screen or maximizes; the remaining window is full screen again.

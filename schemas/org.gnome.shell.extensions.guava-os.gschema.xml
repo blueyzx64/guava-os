@@ -314,6 +314,12 @@
         <description>Windows whose WM_CLASS or app id (for example "org.gnome.Terminal" or "firefox") is listed keep square corners. Not case-sensitive.</description>
       </key>
 
+      <!-- Green button (features/appButtons/greenButton.js) -->
+      <key name="windows-green-button-fullscreen" type="b">
+        <default>true</default>
+        <summary>Maximize button enters full screen</summary>
+        <description>As on macOS, a click on the maximize (green) button of an app's titlebar makes the window full screen, and a click on it in full screen leaves full screen. Double-clicking the titlebar, Super+Up, the Zoom menu item and tiling still maximize.</description>
+      </key>
       <!-- Window tiling, Hide (features/windows) -->
       <key name="windows-tiling" type="b">
         <default>true</default>

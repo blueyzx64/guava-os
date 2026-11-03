@@ -77,6 +77,11 @@ export const FEATURES = [
         load: async () => (await import('./features/appButtons/index.js')).AppButtonsFeature,
     },
     {
+        // The maximize (green) button of the apps' titlebars enters / leaves full screen
+        id: 'green-button', setting: 'windows-green-button-fullscreen',
+        load: async () => (await import('./features/appButtons/greenButton.js')).GreenButton,
+    },
+    {
         // Sequoia tiling: drag zones, the drag-to-top layout picker, Ctrl+Super shortcuts.
         // Owns org.gnome.mutter edge-tiling (off while it runs). Asked through 'window-tile-requested'.
         id: 'window-tiling', setting: 'windows-tiling',

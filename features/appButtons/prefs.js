@@ -5,7 +5,7 @@
 
 import Adw from 'gi://Adw';
 
-import { comboRow } from '../../prefs/widgets.js';
+import { comboRow, switchRow } from '../../prefs/widgets.js';
 
 /**
  * @param {{settings: Gio.Settings, window: Adw.PreferencesWindow, extension: object}} args
@@ -51,6 +51,11 @@ export function buildPrefs({ settings, extension }) {
         values: ['small', 'normal'],
         labels: [_('Small'), _('Normal')],
     }));
+
+    group.add(switchRow(settings, _('Maximize Button Enters Full Screen'),
+        _('As on macOS: the green button makes the window full screen, and leaves full screen again. ' +
+            'Double-clicking the titlebar and Super+Up still maximize'),
+        'windows-green-button-fullscreen'));
 
     return [group];
 }
