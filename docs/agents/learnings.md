@@ -77,3 +77,7 @@
   overview; a focused text view blinks its caret).
 - **In the harness, an app's own maximize is now full screen** (the green button, B12): a
   scenario that maximizes from the app asserts `maximized || fullscreen`.
+- **FreeType stem darkening is hinting-dependent:** `autofitter:` darkening needs light hinting, so
+  TrueType fonts (Inter) stay thin under `font-hinting none`; CFF fonts darken either way. Measure
+  text weight as ink (sum of |pixel - background|) over a crop of a harness screenshot. GNOME 50
+  `font-rendering automatic` makes GTK4 ignore `font-hinting`: own `manual`.

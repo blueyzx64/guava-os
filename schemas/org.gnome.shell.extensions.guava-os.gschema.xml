@@ -564,6 +564,11 @@
         <summary>macOS text rendering</summary>
         <description>Draw text unhinted with grayscale antialiasing, as macOS does. Sets GNOME's font-hinting and font-antialiasing while Guava runs and gives yours back when it stops. Choosing another rendering in GNOME Tweaks turns this off.</description>
       </key>
+      <key name="macos-font-smoothing" type="b">
+        <default>true</default>
+        <summary>Font smoothing</summary>
+        <description>Heavier text, like a Mac: FreeType stem darkening through a Guava-marked file in ~/.config/environment.d, with light hinting while macOS text rendering is on. Takes effect after you log out and in. The file is removed when this goes off.</description>
+      </key>
       <key name="macos-font" type="b">
         <default>true</default>
         <summary>macOS font</summary>

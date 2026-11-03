@@ -13,11 +13,57 @@ export const MONO_FAMILIES = Object.freeze(['SF Mono']);
 /** The Fedora package that brings Inter (offered by the preferences). */
 export const INTER_PACKAGE = 'rsms-inter-vf-fonts';
 
-/** org.gnome.desktop.interface values that render text like macOS. */
+/**
+ * org.gnome.desktop.interface values that render text like macOS.
+ * `font-rendering` 'manual' comes first: with GNOME 50's default 'automatic', GTK4 and
+ * libadwaita apps ignore font-hinting and font-antialiasing and pick their own.
+ */
 export const MACOS_RENDERING = Object.freeze({
+    'font-rendering': 'manual',
     'font-hinting': 'none',
     'font-antialiasing': 'grayscale',
 });
+
+/**
+ * FreeType stem darkening (heavier text, like Quartz). The string is macos-font-rendering's.
+ * It darkens CFF/Type1 fonts at any hinting, but TrueType outlines (Inter Variable) only when
+ * the autofitter runs, which needs light hinting (measured in the harness, see the docs).
+ */
+export const FREETYPE_SMOOTHING = 'autofitter:no-stem-darkening=0 '
+    + 'autofitter:darkening-parameters=500,500,1000,500,2500,500,4000,0 '
+    + 'cff:no-stem-darkening=0 type1:no-stem-darkening=0 t1cid:no-stem-darkening=0';
+/** Guava's environment.d file (read by the systemd user manager: applies at the next login). */
+export const SMOOTHING_FILE = '60-guava-freetype.conf';
+export const SMOOTHING_MARKER = '# Managed by Guava OS (Font Smoothing). Removed when the option is turned off.';
+
+/**
+ * The rendering keys Guava owns; stem darkening needs `slight` hinting to reach TrueType fonts.
+ *
+ * @param {boolean} smoothing
+ * @returns {Record<string, string>}
+ */
+export function renderingValues(smoothing) {
+    return { ...MACOS_RENDERING, 'font-hinting': smoothing ? 'slight' : MACOS_RENDERING['font-hinting'] };
+}
+
+/** @returns {string} the content of Guava's environment.d file */
+export function smoothingText() {
+    return `${SMOOTHING_MARKER}\nFREETYPE_PROPERTIES=${FREETYPE_SMOOTHING}\n`;
+}
+
+/**
+ * What to do with the environment.d file.
+ *
+ * @param {?string} current its content, null when there is no file
+ * @param {boolean} want Font Smoothing is on
+ * @returns {'write'|'remove'|'none'} a file Guava did not write is never replaced or removed
+ */
+export function smoothingAction(current, want) {
+    const ours = current !== null && String(current).startsWith(SMOOTHING_MARKER);
+    if (want)
+        return current === null || (ours && current !== smoothingText()) ? 'write' : 'none';
+    return ours ? 'remove' : 'none';
+}
 
 /**
  * The first of `wanted` that is installed (case-insensitive), with its installed spelling.

@@ -1,6 +1,7 @@
 // Run: gjs -m tests/typographyModel.test.js
 import {
-    MACOS_RENDERING, fontSize, parseFcList, pickFamily, plan, withFamily,
+    FREETYPE_SMOOTHING, MACOS_RENDERING, SMOOTHING_MARKER, fontSize, parseFcList, pickFamily, plan,
+    renderingValues, smoothingAction, smoothingText, withFamily,
 } from '../features/typography/model.js';
 
 let failed = 0;
@@ -44,8 +45,31 @@ test('the user\'s size is kept, styles in the family dropped', () => {
     eq(withFamily('', 'SF Mono', 10), 'SF Mono 10');
 });
 
-test('macOS rendering: unhinted, grayscale', () => {
-    eq(MACOS_RENDERING, { 'font-hinting': 'none', 'font-antialiasing': 'grayscale' });
+test('macOS rendering: manual (GTK4 follows the keys), unhinted, grayscale', () => {
+    eq(MACOS_RENDERING, { 'font-rendering': 'manual', 'font-hinting': 'none', 'font-antialiasing': 'grayscale' });
+});
+
+test('smoothing needs light hinting to darken TrueType stems', () => {
+    eq(renderingValues(false), MACOS_RENDERING);
+    eq(renderingValues(true), { 'font-rendering': 'manual', 'font-hinting': 'slight', 'font-antialiasing': 'grayscale' });
+});
+
+test('smoothing file: marked, one FREETYPE_PROPERTIES line', () => {
+    const t = smoothingText();
+    eq(t.startsWith(SMOOTHING_MARKER + '\n'), true);
+    eq(t.split('\n').filter(l => l.startsWith('FREETYPE_PROPERTIES=')), [`FREETYPE_PROPERTIES=${FREETYPE_SMOOTHING}`]);
+    eq(t.endsWith('\n'), true);
+});
+
+test('smoothing file: written when on, removed when off, a foreign file untouched', () => {
+    eq(smoothingAction(null, true), 'write');
+    eq(smoothingAction(smoothingText(), true), 'none');
+    eq(smoothingAction(smoothingText().replace('500', '600'), true), 'write');
+    eq(smoothingAction(smoothingText(), false), 'remove');
+    eq(smoothingAction(null, false), 'none');
+    eq(smoothingAction('FREETYPE_PROPERTIES=x\n', true), 'none');
+    eq(smoothingAction('FREETYPE_PROPERTIES=x\n', false), 'none');
+    eq(smoothingAction('', false), 'none');
 });
 
 if (failed) {

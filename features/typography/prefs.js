@@ -34,6 +34,9 @@ export function buildPrefs({ settings, extension }) {
     group.add(switchRow(settings, _('macOS Text Rendering'),
         _('Smooth, unhinted letters with grayscale antialiasing, as on a Mac'),
         'macos-text-rendering'));
+    group.add(switchRow(settings, _('Font Smoothing'),
+        _('Slightly heavier text, like a Mac. Takes effect after you log out and in.'),
+        'macos-font-smoothing'));
     const font = switchRow(settings, _('macOS Font'), '', 'macos-font');
     group.add(font);
 

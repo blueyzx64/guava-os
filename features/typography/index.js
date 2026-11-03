@@ -1,7 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Typography (registry id 'typography', always running; each part has its own key):
 // - macOS text rendering (macos-text-rendering): unhinted glyphs with grayscale antialiasing,
-//   as macOS draws them. Owns org.gnome.desktop.interface font-hinting and font-antialiasing.
+//   as macOS draws them. Owns org.gnome.desktop.interface font-rendering ('manual': GNOME 50's
+//   'automatic' makes GTK4 ignore the two keys below), font-hinting and font-antialiasing.
+// - Font smoothing (macos-font-smoothing): heavier text through FreeType stem darkening. A
+//   Guava-marked ~/.config/environment.d file sets FREETYPE_PROPERTIES from the next login; while
+//   it is on, font-hinting is 'slight' (TrueType stems darken only under light hinting). The file
+//   follows the key, not enable/disable (GNOME disables extensions at every lock).
 // - macOS font (macos-font): SF Pro when installed, else Inter, for the interface and
 //   document fonts at the user's own size; SF Mono for the monospace font when installed.
 //   Owns font-name, document-font-name (and monospace-font-name). Nothing is set while
@@ -16,12 +21,14 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
+import { enqueueUserFileJob, exists, isSymlink, makeDirectory, readText, remove, writeText } from '../../lib/fileOps.js';
 import { GuavaSettings } from '../../lib/settings.js';
 import { SettingOwner } from '../../core/originals.js';
-import { MACOS_RENDERING, parseFcList, plan, withFamily } from './model.js';
+import { SMOOTHING_FILE, parseFcList, plan, renderingValues, smoothingAction, smoothingText, withFamily } from './model.js';
 
 const IFACE_SCHEMA = 'org.gnome.desktop.interface';
-const KEYS = { rendering: 'macos-text-rendering', font: 'macos-font' };
+const KEYS = { rendering: 'macos-text-rendering', font: 'macos-font', smoothing: 'macos-font-smoothing' };
+const envDir = () => Gio.File.new_for_path(GLib.build_filenamev([GLib.get_user_config_dir(), 'environment.d']));
 const FONT_DIRS = () => ['/usr/share/fonts', GLib.build_filenamev([GLib.get_user_data_dir(), 'fonts'])];
 /** An install writes many files: one scan after the burst. */
 const RESCAN_DELAY_MS = 2000;
@@ -56,7 +63,13 @@ export class Typography {
 
         this._ks.watch(KEYS.rendering, () => this._syncRendering());
         this._ks.watch(KEYS.font, () => this._syncFonts());
+        this._ks.watch(KEYS.smoothing, () => {
+            this._releaseAll(this._rendering);   // hinting differs: own it again
+            this._syncRendering();
+            this._syncSmoothingFile();
+        });
         this._syncRendering();
+        this._syncSmoothingFile();
         this._watchFontDirs();
         this._scan();
     }
@@ -94,11 +107,33 @@ export class Typography {
         }
         if (this._rendering.length)
             return;
-        for (const [key, value] of Object.entries(MACOS_RENDERING)) {
+        const schema = this._iface.settings_schema;
+        for (const [key, value] of Object.entries(renderingValues(this._ks.bool(KEYS.smoothing)))) {
+            // font-rendering is new in GNOME 50: older shells lack the key
+            if (!schema.has_key(key))
+                continue;
             const owner = this._own(key, { value }, KEYS.rendering);
             owner.sync(true);
             this._rendering.push(owner);
         }
+    }
+
+    /** Bring ~/.config/environment.d/60-guava-freetype.conf in line with the key (async, queued). */
+    _syncSmoothingFile() {
+        const want = this._ks.bool(KEYS.smoothing);
+        const file = envDir().get_child(SMOOTHING_FILE);
+        enqueueUserFileJob(async () => {
+            // A symlink there is the user's (dotfiles): left alone
+            if (await exists(file) && await isSymlink(file))
+                return;
+            const action = smoothingAction(await readText(file), want);
+            if (action === 'remove') {
+                await remove(file);
+            } else if (action === 'write') {
+                await makeDirectory(envDir());
+                await writeText(file, smoothingText());
+            }
+        });
     }
 
     _syncFonts() {
