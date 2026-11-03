@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// About: the project, its links, the author's other work and extensions that work with Guava.
+// Copyright (C) 2026 blueyzx64
+//
+// About: logo, name, version, the Setup Assistant row, project links, credits, the legal sheet
+// and a folded list of extensions that work well beside Guava. Adw/Gtk only (the prefs process).
 
 import Adw from 'gi://Adw';
 import Gdk from 'gi://Gdk';
@@ -9,211 +12,126 @@ import Gtk from 'gi://Gtk';
 
 import * as onboardingPrefs from '../../features/onboarding/prefs.js';
 import { addFeatureGroups, linkRow } from '../widgets.js';
+import {
+    REPO_URL, ISSUES_URL, LICENSE_URL, CREDITS, RECOMMENDED, versionLabel, releaseUrl,
+} from '../aboutModel.js';
 
 export const PAGE = { id: 'about', icon: 'help-about-symbolic' };
 
-export function build({ settings, extension, window, _, breakpoints, title: extensionTitle }) {
-    const page = new Adw.PreferencesPage({ title: _('About'), icon_name: PAGE.icon });
+const COPYRIGHT_LINE = '© 2026 blueyzx64';
+const WARRANTY = 'This program is free software: you can redistribute it and/or modify it under the terms of the ' +
+    'GNU General Public License as published by the Free Software Foundation, either version 3 of the License, ' +
+    'or (at your option) any later version.';
 
-    // Header group with centered logo, title, author, and version
-    const headerGroup = new Adw.PreferencesGroup();
-    const headerBox = new Gtk.Box({
-        orientation: Gtk.Orientation.VERTICAL,
-        spacing: 12,
-        margin_top: 16,
-        margin_bottom: 8,
-        margin_start: 16,
-        margin_end: 16,
-        halign: Gtk.Align.CENTER,
+function headerGroup({ extension, title, _ }) {
+    const column = new Gtk.Box({
+        orientation: Gtk.Orientation.VERTICAL, spacing: 8, halign: Gtk.Align.CENTER,
+        margin_top: 12, margin_bottom: 12,
     });
-
-    // Logo centered — Gtk.Picture scales with the window (matches guava-menu)
-    headerBox.append(new Gtk.Picture({
+    const logo = new Gtk.Picture({
         file: Gio.File.new_for_path(`${extension.path}/icons/guava_logo.png`),
-        width_request: 128,
-        height_request: 128,
         content_fit: Gtk.ContentFit.CONTAIN,
-        halign: Gtk.Align.CENTER,
-    }));
-
-    // Title
-    const titleLabel = new Gtk.Label({
-        label: `<span size="xx-large" weight="bold">${GLib.markup_escape_text(extensionTitle, -1)}</span>`,
+        width_request: 128, height_request: 128,
+        can_shrink: true, halign: Gtk.Align.CENTER,
+    });
+    column.append(logo);
+    column.append(new Gtk.Label({
         use_markup: true,
-        halign: Gtk.Align.CENTER,
-    });
-    headerBox.append(titleLabel);
+        label: `<span size="xx-large" weight="bold">${GLib.markup_escape_text(title, -1)}</span>`,
+    }));
+    column.append(new Gtk.Label({ label: 'blueyzx64', css_classes: ['dim-label'] }));
 
-    // Author
-    const authorLabel = new Gtk.Label({
-        label: 'blueyzx64 · based on Kiwi by Arnis Kemlers (kem-a)',
-        halign: Gtk.Align.CENTER,
-    });
-    headerBox.append(authorLabel);
-
-    // Version pill
-    // EGO adds the numeric version on upload; local installs only have version-name
-    const versionName = extension.metadata['version-name'];
-    const version = extension.metadata.version;
-    const versionButton = new Gtk.Button({
-        label: version ? `${versionName} (${version})` : versionName,
+    const { 'version-name': name, version } = extension.metadata;
+    const pill = new Gtk.Button({
+        label: versionLabel(name, version),
+        tooltip_text: _('Change log'),
+        css_classes: ['guava-version-button', 'pill'],
         halign: Gtk.Align.CENTER,
         margin_top: 4,
-        tooltip_text: _('Change log'),
     });
-    versionButton.add_css_class('pill');
-    versionButton.add_css_class('guava-version-button');
-    versionButton.connect('clicked', () => {
-        Gtk.show_uri(null, `https://github.com/blueyzx64/guava-os/releases/tag/v${encodeURIComponent(versionName)}`, Gdk.CURRENT_TIME);
+    pill.connect('clicked', () => Gtk.show_uri(null, releaseUrl(name), Gdk.CURRENT_TIME));
+    column.append(pill);
+
+    const group = new Adw.PreferencesGroup();
+    group.add(column);
+    return group;
+}
+
+function creditsRow(_) {
+    const row = new Adw.ExpanderRow({
+        title: _('Credits'),
+        subtitle: _('Code and inspiration'),
     });
-    headerBox.append(versionButton);
+    for (const credit of CREDITS)
+        row.add_row(linkRow(credit.title, credit.url, _(credit.subtitle)));
+    return row;
+}
 
-    headerGroup.add(headerBox);
-    page.add(headerGroup);
-    addFeatureGroups(page, onboardingPrefs, { extension, window, _, settings });
-
-    // Content group: the link cards
-    const contentGroup = new Adw.PreferencesGroup();
-    const contentBox = new Gtk.Box({
-        orientation: Gtk.Orientation.HORIZONTAL,
-        spacing: 24,
-        margin_top: 8,
-        margin_bottom: 16,
-        margin_start: 16,
-        margin_end: 16,
-        hexpand: true,
-        homogeneous: true,
+function legalDialog(window, _) {
+    const dialog = new Adw.Dialog({
+        title: _('Legal'), content_width: 420, content_height: 560,
+        presentation_mode: Adw.DialogPresentationMode.BOTTOM_SHEET,
     });
-
-    // Left column: link groups styled with ActionRows
-    const leftColumn = new Gtk.Box({
-        orientation: Gtk.Orientation.VERTICAL,
-        spacing: 12,
-        hexpand: true,
-        halign: Gtk.Align.FILL,
+    const page = new Adw.PreferencesPage();
+    const license = new Adw.PreferencesGroup({
+        title: _('License'),
+        description: _('Guava is free and open source software'),
     });
+    license.add(linkRow('GNU General Public License v3.0', LICENSE_URL,
+        _('View the full license text on GitHub')));
+    page.add(license);
 
-    // Separate cards: Website and Report an Issue
-    const websiteCard = new Adw.PreferencesGroup();
-    websiteCard.add(linkRow(_('Website'), 'https://github.com/blueyzx64/guava-os'));
-    leftColumn.append(websiteCard);
+    const copyright = new Adw.PreferencesGroup({ title: _('Copyright') });
+    copyright.add(new Gtk.Label({
+        label: `${COPYRIGHT_LINE}\n\n${_(WARRANTY)}`,
+        wrap: true, xalign: 0, selectable: true,
+    }));
+    page.add(copyright);
 
-    const issueCard = new Adw.PreferencesGroup();
-    issueCard.add(linkRow(_('Report an Issue'), 'https://github.com/blueyzx64/guava-os/issues'));
-    leftColumn.append(issueCard);
+    const toolbar = new Adw.ToolbarView({ content: page });
+    toolbar.add_top_bar(new Adw.HeaderBar());
+    dialog.set_child(toolbar);
+    dialog.present(window);
+}
 
-    // Combined Credits & Legal group
-    const infoGroup = new Adw.PreferencesGroup();
-    infoGroup.add(linkRow(_('Credits'), 'https://github.com/blueyzx64/guava-os#credits'));
+function linksGroups({ window, _ }) {
+    const website = new Adw.PreferencesGroup();
+    website.add(linkRow(_('Website'), REPO_URL));
+    const issues = new Adw.PreferencesGroup();
+    issues.add(linkRow(_('Report an Issue'), ISSUES_URL));
 
-    const legalRow = new Adw.ActionRow({
-        title: _('Legal'),
-        activatable: true,
-    });
-    legalRow.add_suffix(new Gtk.Image({ icon_name: 'go-next-symbolic' }));
-    legalRow.connect('activated', () => {
-        // Create a dialog with slide-up presentation
-        const legalDialog = new Adw.Dialog({
-            content_width: 420,
-            content_height: 560,
-            presentation_mode: Adw.DialogPresentationMode.BOTTOM_SHEET,
-        });
+    const about = new Adw.PreferencesGroup();
+    about.add(creditsRow(_));
+    const legal = new Adw.ActionRow({ title: _('Legal'), activatable: true });
+    legal.add_suffix(new Gtk.Image({ icon_name: 'go-next-symbolic' }));
+    legal.connect('activated', () => legalDialog(window, _));
+    about.add(legal);
+    return [website, issues, about];
+}
 
-        const legalToolbar = new Adw.ToolbarView();
-        const legalHeader = new Adw.HeaderBar({
-            show_title: true,
-            title_widget: new Adw.WindowTitle({ title: _('Legal') }),
-        });
-        legalToolbar.add_top_bar(legalHeader);
-
-        const legalContent = new Adw.PreferencesPage();
-
-        // License section
-        const licenseGroup = new Adw.PreferencesGroup({
-            title: _('License'),
-            description: _('Guava is free and open source software'),
-        });
-
-        // GPL License link
-        licenseGroup.add(linkRow(
-            _('GNU General Public License v3.0'),
-            'https://github.com/blueyzx64/guava-os/blob/main/LICENSE',
-            _('View the full license text on GitHub')
-        ));
-
-        legalContent.add(licenseGroup);
-
-        // Copyright section
-        const copyrightGroup = new Adw.PreferencesGroup({
-            title: _('Copyright'),
-            description: `${_('Copyright')} © 2025 Arnis Kemlers\n${_('Copyright')} © 2026 blueyzx64\n\n${_('This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.')}`,
-        });
-        legalContent.add(copyrightGroup);
-
-        const scroller = new Gtk.ScrolledWindow({ vexpand: true, hexpand: true });
-        scroller.set_child(legalContent);
-        legalToolbar.set_content(scroller);
-        legalDialog.set_child(legalToolbar);
-
-        // Present the dialog
-        legalDialog.present(window);
-    });
-    infoGroup.add(legalRow);
-
-    leftColumn.append(infoGroup);
-
-    contentBox.append(leftColumn);
-
-
-    contentGroup.add(contentBox);
-    page.add(contentGroup);
-
-    // Responsive breakpoint: stack columns vertically when window is narrow.
-    const aboutBreakpoint = new Adw.Breakpoint({
-        condition: Adw.BreakpointCondition.parse('max-width: 500sp'),
-    });
-    aboutBreakpoint.add_setter(contentBox, 'orientation', Gtk.Orientation.VERTICAL);
-    aboutBreakpoint.add_setter(contentBox, 'homogeneous', false);
-    breakpoints.push(aboutBreakpoint);
-
-    const moreGroup = new Adw.PreferencesGroup({
-        title: _('More from the Kiwi author (kem-a)'),
-    });
-
-    const moreProjects = [
-        { title: _('Kiwi Menu'), subtitle: _('MacOS style menu for GNOME'), url: 'https://github.com/kem-a/Kiwi-Menu' },
-        { title: _('Catalina Reloaded Icon Pack'), subtitle: _('macOS Tahoe icon theme for Linux'), url: 'https://github.com/kem-a/Catalina-reloaded' },
-        { title: _('GDM Wallpaper'), subtitle: _('Set custom GDM login screen wallpaper'), url: 'https://github.com/kem-a/gnome-gdm-wallpaper' },
-    ];
-
-    moreProjects.forEach((project) => {
-        moreGroup.add(linkRow(project.title, project.url, project.subtitle));
-    });
-    page.add(moreGroup);
-
-    const recommendedGroup = new Adw.PreferencesGroup();
-    page.add(recommendedGroup);
-
-    const recommendedExpander = new Adw.ExpanderRow({
+function recommendedGroup(_) {
+    const group = new Adw.PreferencesGroup();
+    const expander = new Adw.ExpanderRow({
         title: _('Other Recommended Extensions'),
         subtitle: _('Extensions that are compatible with Guava'),
-        expanded: false,
     });
-    recommendedGroup.add(recommendedExpander);
+    for (const [title, author, url] of RECOMMENDED)
+        expander.add_row(linkRow(title, url, author));
+    group.add(expander);
+    return group;
+}
 
-    const recommendedExtensions = [
-        { title: 'Superbar', author: 'Furkan-rgb', url: 'https://github.com/Furkan-rgb/superbar' },
-        { title: 'Compiz alike magic lamp effect', author: 'hermes83', url: 'https://extensions.gnome.org/extension/3740/' }, 
-        { title: 'AppIndicator Support', author: '3v1n0', url: 'https://extensions.gnome.org/extension/615/' },
-        { title: 'Blur My Shell', author: 'aunetx', url: 'https://github.com/aunetx/blur-my-shell' },
-        { title: 'Light Style', author: 'fmuellner', url: 'https://extensions.gnome.org/extension/6198/' },
-        { title: 'Weather or Not', author: 'somepaulo', url: 'https://extensions.gnome.org/extension/5660/' },
-    ];
-
-    recommendedExtensions.forEach((rec) => {
-        recommendedExpander.add_row(linkRow(rec.title, rec.url, rec.author));
-    });
-
-
+/**
+ * @param {{settings, extension, window, _: Function, breakpoints: Adw.Breakpoint[], title: string}} args
+ * @returns {Adw.PreferencesPage}
+ */
+export function build(args) {
+    const { _ } = args;
+    const page = new Adw.PreferencesPage({ title: _('About'), icon_name: PAGE.icon });
+    page.add(headerGroup(args));
+    addFeatureGroups(page, onboardingPrefs, args);
+    for (const group of linksGroups(args))
+        page.add(group);
+    page.add(recommendedGroup(_));
     return page;
 }

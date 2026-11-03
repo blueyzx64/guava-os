@@ -1,5 +1,8 @@
 // Run: gjs -m tests/mprisModel.test.js
-import { hasTrack, pickPlayer, showsActivity, NO_TRACK_ID } from '../lib/mprisModel.js';
+import {
+    hasTrack, pickPlayer, showsActivity, NO_TRACK_ID, WEBKIT_TRACK_ID, trackKey, normalizeArtists,
+    normalizeTitle, normalizeCover, normalizeLength, clampSeekTarget, seekMethod, canNavigate,
+} from '../lib/mprisModel.js';
 
 let failed = 0;
 function test(name, fn) {
@@ -69,6 +72,56 @@ test('showsActivity: playing and paused only', () => {
     eq(showsActivity('Paused'), true);
     eq(showsActivity('Stopped'), false);
     eq(showsActivity(undefined), false);
+});
+
+test('trackKey: null when idle, distinguishes tracks that reuse an id', () => {
+    eq(trackKey({ trackId: 'a' }, false), null);
+    const a = trackKey({ trackId: '/x', title: 'One', artists: ['A'] }, true);
+    const b = trackKey({ trackId: '/x', title: 'Two', artists: ['A'] }, true);
+    if (a === b || a === null)
+        throw new Error('keys should differ');
+    eq(trackKey({ title: 'One' }, true), trackKey({ title: 'One' }, true));
+});
+
+test('normalize: artists, title, cover, length', () => {
+    eq(normalizeArtists('Solo', '?'), ['Solo']);
+    eq(normalizeArtists(['A', 'B'], '?'), ['A', 'B']);
+    eq(normalizeArtists([1, 2], '?'), ['?']);
+    eq(normalizeArtists(undefined, '?'), ['?']);
+    eq(normalizeArtists([], '?'), ['?']);
+    eq(normalizeTitle(5, 'T'), 'T');
+    eq(normalizeTitle('x', 'T'), 'x');
+    eq(normalizeCover('file:///a.png'), 'file:///a.png');
+    eq(normalizeCover(3), null);
+    eq(normalizeLength(0), null);
+    eq(normalizeLength(NaN), null);
+    eq(normalizeLength(5e6), 5e6);
+});
+
+test('clampSeekTarget: clamps, rounds, rejects non-finite', () => {
+    eq(clampSeekTarget(-5, 100), 0);
+    eq(clampSeekTarget(500, 100), 100);
+    eq(clampSeekTarget(500, null), 500);
+    eq(clampSeekTarget(10.6, 100), 11);
+    eq(clampSeekTarget(NaN, 100), null);
+    eq(clampSeekTarget(Infinity, 100), null);
+    eq(clampSeekTarget('3', 100), null);
+});
+
+test('seekMethod: per player kind', () => {
+    eq(seekMethod(WEBKIT_TRACK_ID), 'seek-absolute');
+    eq(seekMethod('/org/x/Track/1'), 'set-position');
+    eq(seekMethod(NO_TRACK_ID), 'seek-relative');
+    eq(seekMethod(''), 'seek-relative');
+    eq(seekMethod(undefined), 'seek-relative');
+});
+
+test('canNavigate: needs control, a track and the capability; never WebKit', () => {
+    eq(canNavigate({ control: true, loaded: true, trackId: '/a', can: true }), true);
+    eq(canNavigate({ control: false, loaded: true, trackId: '/a', can: true }), false);
+    eq(canNavigate({ control: true, loaded: false, trackId: '/a', can: true }), false);
+    eq(canNavigate({ control: true, loaded: true, trackId: WEBKIT_TRACK_ID, can: true }), false);
+    eq(canNavigate({ control: true, loaded: true, trackId: '/a', can: false }), false);
 });
 
 if (failed) {
