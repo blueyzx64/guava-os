@@ -77,6 +77,14 @@
   costs ~40 ms, unlock ~45-70 ms, against ~250 ms of blocking for a full disable.
 - **Sub-registries are not reached by the registry's per-feature suspend:** a feature's own child
   cleanup registries (67 of them) need the extension-level sweep that hides `guava-` actors.
+- **The headless harness Shell has no screen shield** (`Main.screenShield` is null): `canLock()`
+  needs `/run/systemd/seats` and `org.gnome.DisplayManager` on the system bus
+  (`tools/scenarios/lock-screen-style-pre.sh` fakes both). `lock(false)` fades to black at once:
+  call `Main.screenShield._wakeUpScreen()` before screenshots.
+- **Instance overrides (`obj._method = …`) only catch calls made as `this._method()`**, not methods
+  the Shell bound with `.bind(this)` at construction: patch the prototype through the cleanup instead.
+- **`ctx.motion.ease` calls `onDone(false)` when the actor is destroyed:** never chain the next
+  step without checking `finished`.
 - **Login readiness is NOT bound by parsing** (L18 disproved the earlier guess): the whole extension
   parses in ~50 ms; Shell imports cost ~0.17 ms/KB (~250 ms for the 1.5 MB login path) and
   `enable()` ~290 ms. The desktop counts as ready at the first frame of the notch and desktop icons
