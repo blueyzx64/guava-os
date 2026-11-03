@@ -33,7 +33,7 @@ is relative to the stock GNOME baseline from the same suite run:
 | `login.stall_total_ms`, `login.max_stall_ms` | Main-loop stalls (10 ms heartbeat late by > 50 ms) during login | G ≤ 1.5·S + 300; G ≤ S + 250 |
 | `login.chrome_jumps` | Panel, dock, notch, Stage Manager, desktop icons, widgets: moves/hides after first shown | 0 |
 | `login.workarea_changes` | Struts applied late (windows resize) | G ≤ S |
-| `login.overview_flash` | The login overview shown, then hidden (Mission Control "start on desktop") | no `hiding` |
+| `login.overview_flash` | The login overview shown, then hidden (Mission Control "start on desktop") | no `hiding` (`hiding~` = hidden before it painted: not a flash) |
 | `idle.paints`, `idle.wakeups_per_s`, `idle.cpu_ms` | 10 s idle (and 5 s after the overload ends): stage paints, main-thread context switches, CPU | paints ≤ S (0); wakeups ≤ 1.2·S + 5; CPU ≤ S + 100 ms |
 | `overview`, `menu`, `drag` `.p95_ms`, `.max_stall_ms` | Core interactions at rest: overview open/close, Quick Settings open/close, window titlebar drag | p95 ≤ 1.3·S + 5; stall ≤ 1.3·S + 100 |
 | same with `-load` | One busy loop per core (nice 0) | p95 ≤ 1.5·S + 10; stall ≤ 1.5·S + 100 |

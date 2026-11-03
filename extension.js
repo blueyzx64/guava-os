@@ -9,6 +9,7 @@ import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import { CleanupRegistry } from './lib/disposables.js';
 import { FeatureRegistry } from './lib/featureRegistry.js';
+import { SurfaceLedger, sweepTargets } from './lib/lockModel.js';
 import { Glass } from './lib/glass.js';
 import { IconStyle } from './lib/iconStyle.js';
 import { EventHub } from './core/events.js';
@@ -38,12 +39,14 @@ const openSettings = schemaId =>
  *   extension, settings (Guava's Gio.Settings), gettext, features ({instance(id)}),
  *   events (core/events.js), desktop (core/desktop.js), layout (core/layout.js),
  *   motion (core/motion.js), osd (core/osd.js), originals (core/originals.js), appMenus (core/appMenus/service.js),
- *   timers (core/timers.js)
+ *   timers (core/timers.js), session ({locked}, the lock screen: lib/lockModel.js)
  */
-// The Shell disables every extension while the screen is locked and enables it again at unlock
-// (Guava has no 'unlock-dialog' session mode: its UI has no place on the lock screen). The GNOME
-// keys it owns and the extensions it holds off stay as they are meanwhile, so an unlock changes
-// nothing and nothing flashes; set by disable(), read by the enable() that follows.
+// Guava declares the 'unlock-dialog' session mode (D-018): the Shell then keeps it enabled while the
+// screen is locked, so a lock costs no teardown and an unlock restores everything at once. While
+// locked every feature is suspended (surfaces hidden and inert, lib/lockModel.js) except the ones
+// that declare `lockScreen: true` in features.js (D-022).
+// disable() can still run while locked (the user turns Guava off there, or the Shell updates it);
+// the GNOME keys it owns and the extensions it holds off then stay as they are, so nothing flashes.
 let _heldAcrossLock = false;
 
 export default class GuavaExtension extends Extension {
@@ -86,6 +89,40 @@ export default class GuavaExtension extends Extension {
             now: () => GLib.get_monotonic_time() / 1000,
         });
         this._features.registerAll(FEATURES);
+        // Lock screen: ctx.session.locked, the 'session-locked' / 'session-unlocked' events
+        const session = this._session = { locked: Main.sessionMode.isLocked };
+        // Safety net for Guava-named chrome and panel buttons that no feature registered as a surface
+        const sweep = new SurfaceLedger();
+        const sweepWatch = new Map(); // actor -> 'destroy' handler: a destroyed actor leaves the ledger
+        const sweepRestore = () => {
+            for (const [a, id] of sweepWatch)
+                a.disconnect(id);
+            sweepWatch.clear();
+            sweep.restore();
+        };
+        const sweepNow = () => {
+            const boxes = [Main.panel._leftBox, Main.panel._centerBox, Main.panel._rightBox];
+            const top = [...Main.layoutManager.uiGroup.get_children(), ...boxes.flatMap(b => b?.get_children() ?? [])];
+            for (const a of sweep.hide(sweepTargets(top, this._features.lockSurfaces())))
+                sweepWatch.set(a, a.connect('destroy', () => {
+                    sweepWatch.delete(a);
+                    sweep.forget(a);
+                }));
+        };
+        const onSessionMode = () => {
+            const locked = Main.sessionMode.isLocked;
+            if (locked === session.locked)
+                return;
+            session.locked = locked;
+            this._features?.setLocked(locked);
+            if (locked)
+                sweepNow();
+            else
+                sweepRestore();
+            this._events?.emit(locked ? 'session-locked' : 'session-unlocked', {});
+        };
+        this._cleanup.connect(Main.sessionMode, 'updated', onSessionMode);
+        this._cleanup.add(sweepRestore);
         // Many keys can change at once (Reset Everything): one pass for all of them
         const changedKeys = new Set();
         this._cleanup.connect(this._settings, 'changed', (_settings, key) => {
@@ -117,7 +154,11 @@ export default class GuavaExtension extends Extension {
             originals: this._originals,
             timers: this._timers,
             appMenus: this._appMenus,
+            session,
         }, { holdBack });
+        this._features.setLocked(session.locked);
+        if (session.locked)
+            sweepNow();
         // After the startup animation (at login) and the first idle (always): the frames that
         // show the session come first
         const release = () => this._cleanup?.idle(() => this._features?.release(), { name: 'features: after login' });
@@ -139,6 +180,11 @@ export default class GuavaExtension extends Extension {
     }
 
     disable() {
+        // Session mode 'unlock-dialog' (EGO-M-008): Guava is declared for the lock screen so that it
+        // stays loaded while the screen is locked (instant unlock, D-018). While locked its features
+        // are suspended and inert, none of them handles keyboard input there, and nothing is
+        // disabled selectively. This code runs for a real disable (the user, an update), where
+        // isLocked is only true if that happens during a lock.
         _heldAcrossLock = Main.sessionMode.isLocked;
         if (this._originals)
             this._originals.keepStored = _heldAcrossLock;
@@ -155,6 +201,7 @@ export default class GuavaExtension extends Extension {
         this._events?.clear();
         this._appMenus = this._motion = this._layout = this._desktop = this._events = this._osd = this._timers = null;
         this._originals = null;
+        this._session = null;
         IconStyle.configure(null);
         Glass.configure(null);
         this._settings = null;

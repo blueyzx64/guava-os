@@ -329,7 +329,7 @@ export class BarManager {
                 slot.update({ box: 'right', anchor });
             } else {
                 const actor = id === CHEVRON_ID ? this._chevron.container : this._items.get(id).container;
-                this._slots.set(id, PanelLayout.claim(null, { id, actor, box: 'right', anchor }));
+                this._slots.set(id, PanelLayout.claim(this._cleanup, { id, actor, box: 'right', anchor }));
             }
             prev = id;
         }

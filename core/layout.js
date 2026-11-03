@@ -88,6 +88,7 @@ export class LayoutService {
         if (actor && !this._actors.has(rest.id)) {
             Main.layoutManager.addChrome(actor, chromeParams(rest.reserve));
             this._actors.set(rest.id, actor);
+            owner.surface?.(actor); // hidden while the screen is locked (lib/lockModel.js)
             // Destroyed by its owner first: the Shell untracks it itself, so forget it here
             this._cleanup.connect(actor, 'destroy', () => {
                 if (this._actors.get(rest.id) === actor)

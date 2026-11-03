@@ -141,7 +141,7 @@ export function summarize(trace, timings = null) {
             final: work.length ? work[work.length - 1][2] : null,
             steps: work.map(e => `${(e[2] ?? []).join(',')}@${at(e[0])}`) },
         events: trace.events.filter(e => e[1] !== 'workarea').map(e => `${e[1]}${e[2] === null ? '' : `=${e[2]}`}@${at(e[0])}`),
-        overview: trace.events.filter(e => e[1].startsWith('overview-')).map(e => `${e[1].slice(9)}@${at(e[0])}`),
+        overview: trace.events.filter(e => e[1].startsWith('overview-')).map(e => `${e[1].slice(9)}${e[2] === 'unseen' ? '~' : ''}@${at(e[0])}`),
         chrome,
         features,
     };

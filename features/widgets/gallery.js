@@ -66,6 +66,7 @@ export class Gallery {
             x: rect.x, y: rect.y, width: rect.width, height: rect.height,
         });
         Main.layoutManager.addTopChrome(panel);
+        cleanup.surface(panel);
         A11y.keyNavGroup(cleanup, panel);
         cleanup.add(() => {
             Main.layoutManager.removeChrome(panel);

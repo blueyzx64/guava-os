@@ -36,6 +36,10 @@ export const EVENTS = Object.freeze({
     'timer-finished': { timer: 'object' },
     // lib/featureRegistry.js, through extension.js: a feature started or stopped
     'feature-changed': { id: 'string', active: 'boolean' },
+    // extension.js: the screen locked / unlocked (session mode 'unlock-dialog', D-018). Guava stays
+    // loaded; features with `lockScreen: true` in features.js use these, the others are suspended
+    'session-locked': {},
+    'session-unlocked': {},
     // features/focus: the active Focus mode changed (id null: Focus off). The notch and the
     // menu bar show its icon; ctx.features.instance('focus').state() gives the same at any time.
     'focus-changed': { id: 'string|null', name: 'string|null', icon: 'string|null', reason: "'manual'|'app'|'schedule'|null" },

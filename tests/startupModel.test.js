@@ -50,6 +50,15 @@ test('summarize: process clock, ready = the latest of startup, features and chro
     eq(summarize(trace, null).features, null, 'stock GNOME has no feature timings');
 });
 
+test('summarize: an overview hidden before it paints is marked unseen (no flash)', () => {
+    const trace = {
+        t0: 0, procOffset: 0, frames: [], stalls: [],
+        events: [[10, 'overview-shown', 'unseen'], [20, 'overview-hiding', 'unseen'], [30, 'overview-hidden', null]],
+        actors: {},
+    };
+    eq(summarize(trace, null).overview, ['shown~@10', 'hiding~@20', 'hidden@30']);
+});
+
 if (failed) {
     print(`${failed} failed`);
     imports.system.exit(1);

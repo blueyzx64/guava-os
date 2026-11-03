@@ -135,7 +135,8 @@ export function startTrace() {
         });
     });
     for (const s of ['showing', 'shown', 'hiding', 'hidden'])
-        conn(Main.overview, s, () => ev(`overview-${s}`));
+        // 'unseen': the overview group paints nothing (a login overview hidden before it is seen)
+        conn(Main.overview, s, () => ev(`overview-${s}`, lm.overviewGroup.get_paint_opacity() > 0 ? null : 'unseen'));
     conn(Main.extensionManager, 'extension-state-changed', (_m, ext) => {
         if (ext?.uuid === GUAVA)
             ev('guava-state', ext.state);

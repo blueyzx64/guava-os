@@ -104,8 +104,9 @@ pinch, hot corner), `split-view-changed` (Split View), `recording-started` /
 
 | File | Role |
 |---|---|
-| `featureRegistry.js` | the engine of `features.js` (edge-triggered, lazy `load()`, `needs`/`conflictsWith`, failure isolation, `onChange`); staged start: `start(ctx, {holdBack})` keeps entries marked `later` unloaded until `release()` after the login animation; `timings()` per-feature start cost |
-| `disposables.js` | `CleanupRegistry`: signals, timeouts, idles, injections, actors, files; `dispose()` undoes all, newest first |
+| `featureRegistry.js` | the engine of `features.js` (edge-triggered, lazy `load()`, `needs`/`conflictsWith`, failure isolation, `onChange`); staged start: `start(ctx, {holdBack})` keeps entries marked `later` unloaded until `release()` after the login animation; `timings()` per-feature start cost; `setLocked(bool)` and the `lockScreen` entry flag (lock screen: every other feature is suspended, nothing torn down) |
+| `disposables.js` | `CleanupRegistry`: signals, timeouts, idles, injections, actors, files; `dispose()` undoes all, newest first; `surface(actor)` / `suspend(bool)` hide a feature's actors while the screen is locked |
+| `lockModel.js` | pure lock-screen rules: `isSuspended`, `lockPlan`, `SurfaceLedger` (hide and restore actors as they were); tests `tests/lockModel.test.js` |
 | `settings.js` | `GuavaSettings` (typed access, per-key watchers) |
 | `compat.js` (+`compatModel.js`, `gioCompat.js`) | everything that differs between Shell 50 and 51; the reduced-motion source; shader effects; `isMaximized`, `maximizeWindow` |
 | `glass.js` (+`glassBlur.js`, `glassParams.js`) | Liquid Glass service: real backdrop blur per surface (`glassBlur.js`: copy behind, blur, saturate, tint, rounded clip; one shared static blur for the bar and dock over wallpaper; frozen under load), classes and a fill fragment on every Guava surface, shadow hosts, Clear↔Tinted, Reduce Transparency, Increase Contrast, Show Borders (CSS in `styles/base.css`); `attach`, `attachMenu`, `watch` |

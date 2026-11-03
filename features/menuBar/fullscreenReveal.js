@@ -93,6 +93,7 @@ export class FullscreenReveal {
         const edge = new St.Widget({ name: 'guava-menubar-reveal-edge', reactive: true, visible: false, height: 1 });
         this._edge = edge;
         lm.addTopChrome(edge);
+        cleanup.surface(edge);
         cleanup.add(() => {
             this._conceal(false);
             lm.removeChrome(edge);

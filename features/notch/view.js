@@ -88,6 +88,8 @@ export class NotchView {
         this._fade = null;
         this._size = SIZES.idle;
         this._ears = null;
+        this._wantShown = true;
+        this._loginHold = false;
         this._pinned = false;        // a clicked (pinned) dashboard is open
         this._open = false;          // a dashboard (pinned or hover-opened) is open
         this._captureId = 0;         // stage 'captured-event' (Escape) while pinned
@@ -130,6 +132,7 @@ export class NotchView {
             accessible_role: A11y.Role.PANEL,
         });
         Main.layoutManager.addTopChrome(this._island);
+        cleanup.surface(this._island);
         // Keyboard entry: Ctrl+Alt+Tab lists the notch; choosing it opens the dashboard (which
         // takes the key focus), where Tab and the arrows walk the tabs and buttons
         A11y.focusGroup(cleanup, this._island, gettext('Notch'), 'view-pin-symbolic', {
@@ -176,6 +179,11 @@ export class NotchView {
         cleanup.connect(Main.layoutManager, 'monitors-changed', () => this._place(this._size, false));
 
         this._addEars();
+        this._holdAtLogin(cleanup);
+        cleanup.connect(Main.sessionMode, 'updated', () => {
+            if (!Main.sessionMode.isLocked)
+                this._applyShown();
+        });
         // The island and its ears stay above the catcher
         this._outside = new OutsideClick(cleanup, 'guava-notch-catcher', [...this._ears, this._island], () => this._h.onCollapse?.());
         this._plate = new InputRing(cleanup, 'guava-notch-plate', {
@@ -561,8 +569,34 @@ export class NotchView {
     setShown(show) {
         if (this._destroyed)
             return;
-        this._island.visible = show;
-        this._syncOutside();
+        this._wantShown = show;
+        this._applyShown();
+    }
+
+    // The island shows when it is wanted, the login is over (B27) and the screen is not locked
+    // (D-018: the lock hides it, unlock gives it back through _applyShown)
+    _applyShown() {
+        this._island.visible = this._wantShown && !this._loginHold && !Main.sessionMode.isLocked;
+        if (this._outside)
+            this._syncOutside();
+    }
+
+    // B27: the notch stays hidden until the Shell's startup animation is over, with whatever
+    // arrived meanwhile (a notification that expands it) already in place. Shown earlier, it came
+    // up as the idle pill in the first frame and moved to the card a frame later.
+    _holdAtLogin(cleanup) {
+        if (!Main.layoutManager._startingUp)
+            return;
+        this._loginHold = true;
+        this._applyShown();
+        const done = cleanup.connect(Main.layoutManager, 'startup-complete', () => {
+            cleanup.release(done);
+            cleanup.idle(() => {
+                this._loginHold = false;
+                if (!this._destroyed)
+                    this._applyShown();
+            }, { name: 'notch: after login' });
+        });
     }
 
     /**

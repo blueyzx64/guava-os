@@ -161,6 +161,7 @@ export const PanelLayout = {
             drop(claim);
         });
         claims.set(id, claim);
+        cleanup?.surface?.(actor); // hidden while the screen is locked (lib/lockModel.js)
         syncWatches();
         place(claim);
 

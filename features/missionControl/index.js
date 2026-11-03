@@ -449,13 +449,28 @@ export class MissionControl {
         // Shell's startup (cover pane, startup-complete) never completes
         if (Main.overview.visible) {
             this.startupSkipped = true;
-            if (!lm._startingUp) {
+            // The overview is never seen: its group paints nothing until it is hidden, so the
+            // login shows the desktop and no overview flashes (login.overview_flash)
+            const group = lm.overviewGroup;
+            group.opacity = 0;
+            const restore = () => {
+                group.opacity = 255;
+            };
+            c.add(restore);
+            const hide = () => {
+                const hidden = c.connect(Main.overview, 'hidden', () => {
+                    c.release(hidden);
+                    restore();
+                });
                 Main.overview.hide();
+            };
+            if (!lm._startingUp) {
+                hide();
                 return;
             }
             const after = c.connect(lm, 'startup-complete', () => {
                 c.release(after);
-                Main.overview.hide();
+                hide();
             });
             return;
         }

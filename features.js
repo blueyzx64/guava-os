@@ -13,6 +13,11 @@
 // for the chrome the user sees. Anything that changes what is on screen at login must NOT be
 // `later`, or it would appear late.
 //
+// `lockScreen: true` (D-018, D-022): the feature runs on the lock screen. Without it, a feature is
+// suspended while the screen is locked (its surfaces hidden and inert, nothing torn down;
+// lib/lockModel.js). With it, it stays active, reads ctx.session.locked and gets the optional
+// instance.lock() / instance.unlock(). See docs/features/system-ui.md. No entry uses it yet.
+//
 // Shared-resource rules, defined once here:
 //   - button-layout: app-buttons owns it (the user's value is restored on disable).
 //   - Do Not Disturb: the Control Center provides it while on (dnd-button steps aside).
