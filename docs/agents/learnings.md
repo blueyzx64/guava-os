@@ -33,6 +33,28 @@
   or closes never sends `progress-visible=false`. Drop entries whose sender leaves the bus and
   entries that stop moving.
 
+## Motion and rendering
+
+- **Clutter skips transitions on unmapped actors:** `ease(opacity)` on a hidden actor jumps to
+  its end. Show it first (`core/motionModel.js` `mustShowFirst`).
+- **A second spring on a moving property must take over position and velocity** (B2, B4), or
+  two timelines fight and the actor jumps (`springState`/`springPlan`).
+- **The overview's `stateAdjustment.value` is the one source of truth** for anything that must
+  fade with Mission Control (B15: the bar's glass follows it frame by frame).
+- **GNOME 50 runs the login overview animation before extensions enable.** An extension cannot
+  inject `runStartupAnimation` at login; start input-only features `later` instead (B2).
+- **`ClutterPaintContext.get_stage_view()` is not introspected:** track the view from the
+  stage's `before-paint`. `StageView.get_layout()` needs an out-arg in GJS: use `view.layout`.
+- **`Meta.Window` has no `get_maximized()`** in Mutter 50: use `is_maximized()` (or `lib/compat.js`).
+
+## Stage Manager (B25 rewrite)
+
+- **Reconcile, don't track:** the adapter applies the model's `hiddenIds()` to the real windows
+  after every event, so a missed signal heals on the next one. Hiding = opacity 0 + out of pick;
+  Stage Manager never minimizes (that left windows minimized and unmapped when it was turned off).
+- **Write the spec and failing scenarios before the rewrite.** The baseline (15/69 failing) found
+  causes nobody had reported, and the same scenarios proved the rewrite (71/71).
+
 ## Test environment
 
 - **Fedora's `/etc/ssl/certs` is an absolute symlink** to `/etc/pki/tls/certs`. Writing through
@@ -47,3 +69,11 @@
 - **The harness screen is 800 px tall:** long menus scroll, so pointer clicks on low items miss
   (activate them directly when the command, not the click, is under test). Its home has no
   `user-dirs.dirs`, so `GLib.get_user_special_dir(DOWNLOAD)` is null until a scenario writes one.
+- **A missing PERF/JITTER line means a JS error in the scenario body:** `P` and `perf_stop` pipe
+  through grep, which swallows the error. Scenario helpers must not redeclare `st` (perf-lib
+  declares it).
+- **A harness run copies `GUAVA_SRC` when it starts, after the queue:** don't edit the tree while
+  a run waits. The idle baseline must match window and overview state (stock login lands in the
+  overview; a focused text view blinks its caret).
+- **In the harness, an app's own maximize is now full screen** (the green button, B12): a
+  scenario that maximizes from the app asserts `maximized || fullscreen`.
