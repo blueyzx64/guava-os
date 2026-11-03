@@ -43,8 +43,8 @@ is relative to the stock GNOME baseline from the same suite run:
 | `burst.max_stall_ms`, `burst.stalls50` | Six windows open and close, five overview toggles | ≤ 1.5·S + 100; ≤ 1.5·S + 3 |
 | `guava_errors` | The Guava run's log | 0 |
 
-`INFO degraded-under-load` shows whether Guava's `FrameBudget` reported `env.degraded` during the
-overload. Graceful degradation: `core/motion.js` watches painted frame intervals. When 20 % of the last 30 frames
+`INFO degraded-under-load` counts how often Guava's `FrameBudget` reported `env.degraded` during the
+overload (`b28.degraded_under_load` fails at 0). Live glass blur recaptures at most every 80 ms (500 ms while degraded). Graceful degradation: `core/motion.js` watches painted frame intervals. When 20 % of the last 30 frames
 take more than 50 ms, `ctx.motion.env.degraded` turns true and `motion-changed` fires. Requests marked
 `decorative: true` then become a crossfade, and features with costly ornaments drop them until it clears
 (it clears when fewer than 10 % of the frames are slow). Core interactions never degrade.
