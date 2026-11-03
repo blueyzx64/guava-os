@@ -24,6 +24,8 @@ echo "-- B13 pointer shake"
 assert "pointer feature runs" "inst('pointer')"
 J 'await kmove(300,500); await sl(1200); await shake(300,500); await sl(250); return 1' >/dev/null
 assert "shake with no button: big pointer shows" "inst('pointer').state.big"
+# The big pointer is drawn from the theme's real large image, not a scaled-up sprite (B13 crispness)
+assert "big pointer uses the theme's large image" "inst('pointer')._hi !== null && inst('pointer')._big?.content instanceof St.ImageContent"
 shot pointer-shake-big
 J 'await sl(1800); return 1' >/dev/null
 assert "big pointer shrinks away after the shake" "!inst('pointer').state.big"

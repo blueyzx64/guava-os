@@ -12,7 +12,7 @@
 //   over client windows too (ui/magnifier.js follows the pointer with it); get_sprite/get_hot
 //   for the big pointer; inhibit/uninhibit_cursor_visibility (balanced: one inhibit at most,
 //   given back in cleanup).
-// - Clutter.Image from the theme's Xcursor file at the big size (theme.js loadCursorImage): the
+// - St.ImageContent from the theme's Xcursor file at the big size (theme.js loadCursorImage): the
 //   big pointer is a real large cursor, not the small sprite scaled up (that is blurry). The
 //   sprite is the fallback until the image has loaded.
 // - lib/caret.js onMoved (the IBus panel service's caret) for typing.
@@ -26,6 +26,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Meta from 'gi://Meta';
+import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import { Caret } from '../../lib/caret.js';
@@ -327,8 +328,11 @@ export class Pointer {
         loadCursorImage(theme, 'default', want, cancellable).then(img => {
             if (cancellable.is_cancelled() || this._hiKey !== key || !img)
                 return;
-            const image = new Clutter.Image();
-            image.set_data(img.pixels, Cogl.PixelFormat.BGRA_8888_PRE, img.width, img.height, img.width * 4);
+            // GNOME 50 has no Clutter.Image: St.ImageContent takes the bytes (as ui/screenshot.js does)
+            const coglContext = global.stage.context.get_backend().get_cogl_context();
+            const image = St.ImageContent.new_with_preferred_size(img.width, img.height);
+            image.set_bytes(coglContext, new GLib.Bytes(img.pixels), Cogl.PixelFormat.BGRA_8888_PRE,
+                img.width, img.height, img.width * 4);
             // ratio: the file's nominal size -> the wanted size, so the final size is exact
             this._hi = {
                 image, width: img.width, height: img.height, xhot: img.xhot, yhot: img.yhot,
