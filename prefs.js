@@ -11,6 +11,7 @@ import Gtk from 'gi://Gtk';
 import { ExtensionPreferences, gettext as _ } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 import { buildNavigation } from './prefs/window.js';
+import { plainTextTree } from './prefs/plainText.js';
 import { SECTIONS } from './prefs/pages/index.js';
 import { presentAssistant } from './prefs/setupAssistant.js';
 import { ONBOARDING_KEY, shouldPresent } from './features/onboarding/model.js';
@@ -57,6 +58,8 @@ export default class GuavaPreferences extends ExtensionPreferences {
             pages: section.pages.map(page => buildPage(page, args)).filter(Boolean),
         }));
         buildNavigation(window, { sections, pageBreakpoints: breakpoints, title, _ });
+        // Titles such as "Left & Right" are plain text, not markup (else the row shows no text)
+        plainTextTree(window);
 
         if (shouldPresent(settings.get_string(ONBOARDING_KEY))) {
             const id = window.connect('map', () => {

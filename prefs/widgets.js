@@ -19,7 +19,7 @@ export function watchKey(settings, key, widget, fn) {
 
 /** A switch bound to a boolean key. */
 export function switchRow(settings, title, subtitle, key) {
-    const row = new Adw.SwitchRow({ title, subtitle: subtitle ?? '' });
+    const row = new Adw.SwitchRow({ title, subtitle: subtitle ?? '', use_markup: false });
     settings.bind(key, row, 'active', Gio.SettingsBindFlags.DEFAULT);
     return row;
 }
@@ -35,7 +35,7 @@ export function addSwitchRows(settings, group, items) {
 
 /** A drop-down over a string key with fixed values (labels in the same order). */
 export function comboRow(settings, { title, subtitle, key, values, labels }) {
-    const row = new Adw.ComboRow({ title, model: Gtk.StringList.new(labels) });
+    const row = new Adw.ComboRow({ title, model: Gtk.StringList.new(labels), use_markup: false });
     if (subtitle)
         row.subtitle = subtitle;
     const sync = () => {
@@ -54,7 +54,7 @@ export function comboRow(settings, { title, subtitle, key, values, labels }) {
 
 /** A row that opens `url` in the browser. */
 export function linkRow(title, url, subtitle = null, prefixGicon = null) {
-    const row = new Adw.ActionRow({ title, activatable: true });
+    const row = new Adw.ActionRow({ title, activatable: true, use_markup: false });
     if (subtitle)
         row.subtitle = subtitle;
     if (prefixGicon)
@@ -91,7 +91,7 @@ export function isAccel(text) {
  * @returns {Adw.EntryRow}
  */
 export function shortcutRow(settings, _, { key, title, example, suggestion = null, onNote = null }) {
-    const row = new Adw.EntryRow({ title });
+    const row = new Adw.EntryRow({ title, use_markup: false });
     const read = () => settings.get_strv(key)[0] ?? '';
     row.text = read();
     const base = row.title;

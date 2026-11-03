@@ -31,7 +31,7 @@ const ARRANGE_SHORTCUTS = [
 ];
 
 function shortcutExpander(settings, _, title, subtitle, list) {
-    const row = new Adw.ExpanderRow({ title, subtitle: subtitle ?? '' });
+    const row = new Adw.ExpanderRow({ title, subtitle: subtitle ?? '', use_markup: false });
     for (const [key, label, example] of list)
         row.add_row(shortcutRow(settings, _, { key, title: _(label), example }));
     return row;
