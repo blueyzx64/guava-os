@@ -89,11 +89,48 @@ test('window menu lists workspaces and the app windows', () => {
     const ws = item(m, 'window', 'move-to-workspace');
     eq(ws.items.map(i => i.label), ['Workspace 1', 'Workspace 2', undefined, 'New Workspace']);
     eq(ws.items[1].enabled, false);
-    eq(ws.items[3].command, { provider: 'generic', name: 'move-to-workspace', target: 2 });
+    eq(ws.items[3].command, { provider: 'generic', name: 'move-to-workspace', target: 'new' });
     eq(item(m, 'window', 'zoom').label, 'Unzoom');
     eq(item(m, 'window', 'always-on-top').checked, true);
     eq(item(m, 'window', 'window:7').checked, true);
     eq(item(m, 'window', 'window:9').label, 'Files');
+});
+
+test('Move & Resize: halves, quarters and Return to Previous Size go to the tiling engine', () => {
+    const m = buildMenus({ appName: 'X', generic: { hasWindow: true }, accels: { 'tile-left': '<Control><Super>Left', restore: '<Control><Super>r' }, _ });
+    const mr = item(m, 'window', 'move-resize');
+    eq(mr.kind, 'submenu');
+    const zones = mr.items.filter(i => i.kind === 'item').map(i => i.command.target ?? i.command.name);
+    eq(zones, ['left', 'right', 'top', 'bottom', 'top-left', 'top-right', 'bottom-left', 'bottom-right', 'restore']);
+    eq(mr.items[0].accel, '<Control><Super>Left');
+    eq(mr.items.at(-1).accel, '<Control><Super>r');
+    eq(item(m, 'window', 'fill').command, { provider: 'generic', name: 'tile', target: 'fill' });
+    eq(item(m, 'window', 'center').command, { provider: 'generic', name: 'tile', target: 'center' });
+    const none = buildMenus({ appName: 'X', generic: { hasWindow: false }, _ });
+    eq(item(none, 'window', 'move-resize').enabled, false);
+    eq(item(none, 'window', 'fill').enabled, false);
+});
+
+test('Always on Visible Workspace is a checked toggle; a sticky window cannot move workspace', () => {
+    const m = buildMenus({ appName: 'X', generic: { hasWindow: true, sticky: true, canMoveWorkspace: false, workspaces: { count: 2, active: 0, current: -1 } }, _ });
+    eq(item(m, 'window', 'sticky').checked, true);
+    eq(item(m, 'window', 'sticky').command, { provider: 'generic', name: 'sticky' });
+    eq(item(m, 'window', 'move-to-workspace').enabled, false);
+});
+
+test('Move to Display only with more than one monitor', () => {
+    const one = buildMenus({ appName: 'X', generic: { hasWindow: true, monitors: { count: 1, current: 0 } }, _ });
+    eq(item(one, 'window', 'move-to-monitor'), undefined);
+    const two = buildMenus({ appName: 'X', generic: { hasWindow: true, monitors: { count: 2, current: 1 } }, _ });
+    const d = item(two, 'window', 'move-to-monitor');
+    eq(d.items.map(i => [i.label, i.enabled, i.checked]), [['Display 1', true, false], ['Display 2', false, true]]);
+    eq(d.items[0].command, { provider: 'generic', name: 'move-to-monitor', target: 0 });
+});
+
+test('Hide and Hide Others show their shortcuts', () => {
+    const m = buildMenus({ appName: 'X', generic: { hasWindow: true }, accels: { hide: '<Super>h', 'hide-others': '<Alt><Super>h' }, _ });
+    eq(item(m, 'app', 'hide').accel, '<Super>h');
+    eq(item(m, 'app', 'hide-others').accel, '<Alt><Super>h');
 });
 
 test('wm accelerators label the generic items', () => {

@@ -6,7 +6,7 @@ Shows the focused app's own menus when the app exports them, and Guava's generic
 ## Providers, in priority order
 | App | Provider | How Guava reads it | Activation |
 |---|---|---|---|
-| Every app | generic | Shell: About, Hide, Quit, New Window, Minimize, Zoom, Tile, Move to Workspace | Shell / Mutter |
+| Every app | generic | Shell: About, Hide, Quit, New Window, Minimize, Zoom, Fill, Center, Move & Resize, Move to Workspace/Display, Always on Visible Workspace, Always on Top | Shell / Mutter, tiling engine |
 | GTK 3/4 (`GtkApplication`) | GTK actions | `org.gtk.Actions` on the window's bus name; well-known actions fill the generic slots | `org.gtk.Actions.Activate` |
 | GTK apps with `gtk_application_set_menubar()` | GTK exported menus | `org.gtk.Menus` at the menu bar object path (and the GTK 3 app menu) | `org.gtk.Actions.Activate` |
 | Qt 5/6, Chromium/Electron, LibreOffice under Xwayland | DBusMenu | Guava's `com.canonical.AppMenu.Registrar`, then `com.canonical.dbusmenu` | `Event(id, 'clicked')` |
@@ -23,6 +23,9 @@ Settings (Menu Bar page): `menubar-native-menus` (on), `menubar-atspi-menus` (of
 - **Chromium and Electron:** start them on X11 (`--ozone-platform=x11`).
 - **Another registrar** (an appmenu-registrar package): Guava does not take the name; it asks that registrar for each window's menu.
 - **AT-SPI:** GTK exposes its tree whenever the accessibility bus runs. Firefox, Chromium and Qt expose theirs only with accessibility on (`org.gnome.desktop.interface toolkit-accessibility`, or a screen reader). Guava does not change that setting.
+
+## Window menu (generic)
+Minimize, Zoom, Fill, Center, Move & Resize (Left, Right, Top, Bottom, the four quarters, Return to Previous Size), Enter Full Screen, Move to Workspace (each workspace, or New Workspace: the window moves to a new last workspace and you follow it), Move to Display (two or more monitors), Always on Visible Workspace, Always on Top, Bring All to Front, then the app's windows. Fill, Center and Move & Resize ask the tiling engine (`window-tile-requested`, `core/tileActions.js`); without it the zones are placed directly and Center / Return to Previous Size do nothing. Shortcut labels show Guava's tiling and Hide shortcuts when set, else GNOME's window-manager shortcuts. As in GNOME's window menu, a window on every workspace, or one off the primary monitor with workspaces on the primary only, cannot move workspace.
 
 ## Limits
 - DBusMenu submenus are told `AboutToShow` only at the top level; apps that build deeper submenus lazily show them as last built.

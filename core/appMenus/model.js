@@ -8,8 +8,9 @@
 //   File    New Window, Close Window (+ what the app adds: New Tab, Open…, Save, Print…)
 //   Edit    only when the app exports edit actions (Undo, Cut, Copy, Paste, Select All, Find)
 //   View    only when the app exports view actions (zoom, reload, full screen)
-//   Window  Minimize, Zoom, Full Screen, Tile Left/Right, Move to Workspace, Always on Top,
-//           Bring All to Front, then the app's windows
+//   Window  Minimize, Zoom, Fill, Center, Move & Resize (halves, quarters, Return to Previous
+//           Size), Full Screen, Move to Workspace, Move to Display (2+ monitors), Always on
+//           Visible Workspace, Always on Top, Bring All to Front, then the app's windows
 //   Help    a search field over every item, the app's help and keyboard shortcuts
 //
 //   const menus = buildMenus({ appName, actions, generic, accels, _ });
@@ -96,8 +97,6 @@ const GENERIC = Object.freeze({
     'minimize': 'minimize',
     'zoom': 'zoom',
     'fullscreen': 'fullscreen',
-    'tile-left': 'tile-left',
-    'tile-right': 'tile-right',
     'always-on-top': 'always-on-top',
     'bring-all-to-front': 'bring-all-to-front',
 });
@@ -110,8 +109,23 @@ export const WM_ACCEL_SLOTS = Object.freeze({
     'fullscreen': ['wm', 'toggle-fullscreen'],
     'close-window': ['wm', 'close'],
     'always-on-top': ['wm', 'always-on-top'],
+    'sticky': ['wm', 'toggle-on-all-workspaces'],
     'tile-left': ['mutter', 'toggle-tiled-left'],
     'tile-right': ['mutter', 'toggle-tiled-right'],
+});
+
+// Guava's own shortcuts (org.gnome.shell.extensions.guava-os) for these slots; a non-empty one
+// wins over the wm shortcut (Guava's tiling engine and Hide answer the menu's commands).
+export const GUAVA_ACCEL_SLOTS = Object.freeze({
+    'hide': 'windows-hide-shortcut',
+    'hide-others': 'windows-hide-others-shortcut',
+    'tile-left': 'windows-tile-left-shortcut',
+    'tile-right': 'windows-tile-right-shortcut',
+    'tile-top': 'windows-tile-top-shortcut',
+    'tile-bottom': 'windows-tile-bottom-shortcut',
+    'fill': 'windows-fill-shortcut',
+    'center': 'windows-center-shortcut',
+    'restore': 'windows-restore-shortcut',
 });
 
 const SEP = Object.freeze({ kind: 'separator' });
@@ -191,8 +205,9 @@ function tidy(items) {
  * @param {string} p.appName shown bold and in "About/Hide/Quit <app>"
  * @param {object[]} [p.actions] provider actions ({group, name, enabled, parameterized, state, provider?})
  * @param {object} [p.generic] what the Shell can do for this app:
- *   {canNewWindow, hasAbout, hasWindow, maximized, fullscreen, above,
- *    workspaces: {count, active, current}, windows: [{id, title, focused}]}
+ *   {canNewWindow, hasAbout, hasWindow, maximized, fullscreen, above, sticky,
+ *    canMoveWorkspace, workspaces: {count, active, current}, monitors: {count, current},
+ *    windows: [{id, title, focused}]}
  * @param {object} [p.accels] slot -> accelerator string (wm shortcuts, Guava shortcuts)
  * @param {Function} p._ gettext
  * @returns {{id: string, title: string, items: object[]}[]}
@@ -255,15 +270,18 @@ export function buildMenus({ appName, actions = [], generic = {}, accels = {}, _
     const windowItems = [
         item('minimize', _('Minimize')),
         item('zoom', generic.maximized ? _('Unzoom') : _('Zoom')),
+        tileItem('fill', _('Fill'), accels),
+        tileItem('center', _('Center'), accels), SEP,
+        moveResizeSubmenu(accels, _),
         item('fullscreen', generic.fullscreen ? _('Exit Full Screen') : _('Enter Full Screen')), SEP,
-        item('tile-left', _('Tile Window to Left of Screen')),
-        item('tile-right', _('Tile Window to Right of Screen')),
-        workspaceSubmenu(generic.workspaces, _), SEP,
-        { ...item('always-on-top', _('Always on Top')), checked: !!generic.above }, SEP,
+        workspaceSubmenu(generic.workspaces, _, generic.canMoveWorkspace !== false),
+        monitorSubmenu(generic.monitors, _),
+        toggleItem('sticky', _('Always on Visible Workspace'), !!generic.sticky, accels),
+        toggleItem('always-on-top', _('Always on Top'), !!generic.above, accels), SEP,
         item('bring-all-to-front', _('Bring All to Front')),
     ];
     for (const it of windowItems) {
-        if (it && it.kind === 'item' && it.id !== 'bring-all-to-front' && !win)
+        if (it && it.kind !== 'separator' && it.id !== 'bring-all-to-front' && !win)
             it.enabled = false;
     }
     const windows = (generic.windows ?? []).map(w => ({
@@ -291,7 +309,41 @@ export function buildMenus({ appName, actions = [], generic = {}, accels = {}, _
     return menus.filter(m => m.items.some(i => i.kind === 'item') || m.id === 'help');
 }
 
-function workspaceSubmenu(ws, _) {
+// The macOS 15 Move & Resize zones (core/tileActions.js), asked for through the tiling engine
+const MOVE_RESIZE = Object.freeze([
+    ['tile-left', 'left', 'Left'], ['tile-right', 'right', 'Right'],
+    ['tile-top', 'top', 'Top'], ['tile-bottom', 'bottom', 'Bottom'], null,
+    ['tile-top-left', 'top-left', 'Top Left'], ['tile-top-right', 'top-right', 'Top Right'],
+    ['tile-bottom-left', 'bottom-left', 'Bottom Left'], ['tile-bottom-right', 'bottom-right', 'Bottom Right'], null,
+    ['restore', 'restore', 'Return to Previous Size'],
+]);
+
+function tileItem(id, label, accels, zone = id) {
+    return {
+        kind: 'item', id, label, enabled: true, accel: accels[id] ?? null, checked: null,
+        command: { provider: 'generic', name: 'tile', target: zone },
+    };
+}
+
+function toggleItem(id, label, checked, accels) {
+    return {
+        kind: 'item', id, label, enabled: true, accel: accels[id] ?? null, checked,
+        command: { provider: 'generic', name: id },
+    };
+}
+
+function moveResizeSubmenu(accels, _) {
+    // _() with a literal per label keeps the strings extractable
+    const labels = {
+        'Left': _('Left'), 'Right': _('Right'), 'Top': _('Top'), 'Bottom': _('Bottom'),
+        'Top Left': _('Top Left'), 'Top Right': _('Top Right'), 'Bottom Left': _('Bottom Left'),
+        'Bottom Right': _('Bottom Right'), 'Return to Previous Size': _('Return to Previous Size'),
+    };
+    const items = MOVE_RESIZE.map(e => (e ? tileItem(e[0], labels[e[2]], accels, e[1]) : SEP));
+    return { kind: 'submenu', id: 'move-resize', label: _('Move & Resize'), enabled: true, items };
+}
+
+function workspaceSubmenu(ws, _, enabled = true) {
     const count = ws?.count ?? 1;
     const current = ws?.current ?? ws?.active ?? 0;
     const items = [];
@@ -302,12 +354,30 @@ function workspaceSubmenu(ws, _) {
             command: { provider: 'generic', name: 'move-to-workspace', target: i },
         });
     }
+    // 'new': a new workspace at the end, and the user follows the window there
     items.push(SEP, {
         kind: 'item', id: 'workspace:new', label: _('New Workspace'),
         enabled: true, accel: null, checked: null,
-        command: { provider: 'generic', name: 'move-to-workspace', target: count },
+        command: { provider: 'generic', name: 'move-to-workspace', target: 'new' },
     });
-    return { kind: 'submenu', id: 'move-to-workspace', label: _('Move to Workspace'), enabled: true, items };
+    return { kind: 'submenu', id: 'move-to-workspace', label: _('Move to Workspace'), enabled, items };
+}
+
+// Move to Display: only with more than one monitor
+function monitorSubmenu(monitors, _) {
+    const count = monitors?.count ?? 1;
+    if (count < 2)
+        return null;
+    const items = [];
+    for (let i = 0; i < count; i++) {
+        const here = i === monitors.current;
+        items.push({
+            kind: 'item', id: `monitor:${i}`, label: _('Display %d').replace('%d', () => String(i + 1)),
+            enabled: !here, accel: null, checked: here,
+            command: { provider: 'generic', name: 'move-to-monitor', target: i },
+        });
+    }
+    return { kind: 'submenu', id: 'move-to-monitor', label: _('Move to Display'), enabled: true, items };
 }
 
 /**

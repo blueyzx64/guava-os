@@ -19,6 +19,7 @@
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
+import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -28,7 +29,7 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
 import { skipsTaskbar } from '../../core/windowState.js';
 import { PanelLayout } from '../../core/panelLayout.js';
-import { menuEntries, searchMenus, WM_ACCEL_SLOTS } from '../../core/appMenus/model.js';
+import { GUAVA_ACCEL_SLOTS, menuEntries, searchMenus, WM_ACCEL_SLOTS } from '../../core/appMenus/model.js';
 import { GtkMenusProvider } from '../../core/appMenus/gtkMenus.js';
 import { DBusMenuProvider } from '../../core/appMenus/dbusMenu.js';
 import { AtspiProvider } from '../../core/appMenus/atspi.js';
@@ -359,6 +360,10 @@ export class AppMenuBar {
             maximized: !!win && win.maximized_horizontally && win.maximized_vertically,
             fullscreen: !!win?.is_fullscreen(),
             above: !!win?.is_above(),
+            sticky: !!win?.is_on_all_workspaces(),
+            canMoveWorkspace: !!win && !win.is_always_on_all_workspaces() &&
+                (!Meta.prefs_get_workspaces_only_on_primary() || win.is_on_primary_monitor()),
+            monitors: { count: global.display.get_n_monitors(), current: win?.get_monitor() ?? -1 },
             workspaces: {
                 count: wm.get_n_workspaces(), active,
                 current: win?.is_on_all_workspaces() ? -1 : win?.get_workspace()?.index() ?? active,
@@ -372,6 +377,12 @@ export class AppMenuBar {
         for (const [slot, [schema, key]] of Object.entries(WM_ACCEL_SLOTS)) {
             const settings = schema === 'wm' ? this._wm : this._mutter;
             out[slot] = settings.get_strv(key)[0] ?? null;
+        }
+        const guava = this._ctx.settings;
+        for (const [slot, key] of Object.entries(GUAVA_ACCEL_SLOTS)) {
+            const accel = guava.get_strv(key)[0];
+            if (accel)
+                out[slot] = accel;
         }
         return out;
     }
@@ -530,6 +541,7 @@ export class AppMenuBar {
                 if (checks)
                     sub.setOrnament(PopupMenu.Ornament.NONE);
                 this._addItems(sub.menu, it.items, button);
+                sub.setSensitive(it.enabled !== false);
                 menu.addMenuItem(sub);
                 break;
             }
