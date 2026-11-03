@@ -32,6 +32,12 @@ assert "X11 window goes full screen" "($W1).is_fullscreen()"
 shot x11-fullscreen
 P "($W1).unmake_fullscreen(); return 1" >/dev/null; sleep 4
 assert "X11 window leaves full screen" "!($W1).is_fullscreen()"
+# The green button on the titlebar Mutter draws for X11 (its x11-frames client): a real click on
+# the maximize button enters full screen, as on GTK apps (B12). Buttons sit 71 px from the right end.
+read fx fy fw <<<"$(_kjs "const f=($W1).get_frame_rect(); return [f.x,f.y,f.width].join(' ')" | grep -o '[0-9-]\+ [0-9-]\+ [0-9]\+')"
+click_at $((fx + fw - 71)) $((fy + 19)) >/dev/null; sleep 3
+assert "X11 green button enters full screen" "($W1).is_fullscreen()"
+P "($W1).unmake_fullscreen(); return 1" >/dev/null; sleep 3
 P "($W1).delete(global.get_current_time()); return 1" >/dev/null; sleep 2
 assert "X11 window closed" "!($W1)"
 assert_summary
