@@ -12,7 +12,9 @@ headerbar button.titlebutton,
 .titlebar button.titlebutton {
   min-width: 16px;
   min-height: 16px;
-  margin: 0px;
+  /* GtkHeaderBar puts 6 px between its children (a widget property, not CSS): -1.5 px on each side
+     brings the buttons to the 23 px pitch of GTK4 and libadwaita apps (measured in the harness) */
+  margin: 0px -1.5px;
   padding: 1px;
   background-repeat: no-repeat;
   background-size: 16px 16px;

@@ -24,6 +24,25 @@ windowcontrols {
   margin-right: 10px;
 }
 
+/* Plain GTK4 header bars (apps without libadwaita, and Mutter's own titlebars for X11 apps,
+   mutter-x11-frames) use GTK's built-in theme, which gives each window button a 30 px round image
+   (`windowcontrols button > image { min-width: 30px; min-height: 30px }`), 6 px gaps, and extra
+   padding on the last button. The buttons came out 34 px wide and 40 px apart instead of 20 px and
+   23 px as in libadwaita apps (measured in the harness). Undo exactly those three. */
+windowcontrols button > image {
+  min-width: 16px;
+  min-height: 16px;
+}
+
+headerbar windowcontrols.end > button:last-child,
+headerbar windowcontrols.start > button:last-child {
+  padding-right: 1px;
+}
+
+windowcontrols {
+  border-spacing: 3px;
+}
+
 windowcontrols button.close,
 windowcontrols button.maximize,
 windowcontrols button.minimize {
