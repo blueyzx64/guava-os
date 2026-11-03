@@ -1,5 +1,5 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Arnis Kemlers
+# Copyright (C) YEAR blueyzx64
 # This file is distributed under the same license as the Guava OS package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -7,9 +7,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Guava OS 3.0.0\n"
-"Report-Msgid-Bugs-To: https://github.com/kem-a/kiwi-kemma/issues\n"
-"POT-Creation-Date: 2026-10-28 06:53+0000\n"
+"Project-Id-Version: Guava OS 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/blueyzx64/guava-os/issues\n"
+"POT-Creation-Date: 2026-11-03 09:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,267 +19,284 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: prefs.js:37
+#: prefs.js:44
 msgid "Guava OS"
 msgstr ""
 
-#: core/appMenus/model.js:208
+#: core/appMenus/model.js:271
 #, javascript-format
 msgid "About %s"
 msgstr ""
 
-#: core/appMenus/model.js:211 features/dock/appMenu.js:81
+#: core/appMenus/model.js:274 features/dock/appMenu.js:81
 msgid "New Window"
 msgstr ""
 
-#: core/appMenus/model.js:214
+#: core/appMenus/model.js:277
 msgid "Close Window"
 msgstr ""
 
-#: core/appMenus/model.js:220
+#: core/appMenus/model.js:283
 msgid "Settings…"
 msgstr ""
 
-#: core/appMenus/model.js:221
+#: core/appMenus/model.js:284
 #, javascript-format
 msgid "Hide %s"
 msgstr ""
 
-#: core/appMenus/model.js:222
+#: core/appMenus/model.js:285
 msgid "Hide Others"
 msgstr ""
 
-#: core/appMenus/model.js:223
+#: core/appMenus/model.js:286
 msgid "Show All"
 msgstr ""
 
-#: core/appMenus/model.js:224
+#: core/appMenus/model.js:287
 #, javascript-format
 msgid "Quit %s"
 msgstr ""
 
-#: core/appMenus/model.js:229
+#: core/appMenus/model.js:292
 msgid "New Tab"
 msgstr ""
 
-#: core/appMenus/model.js:230
+#: core/appMenus/model.js:293
 msgid "Open…"
 msgstr ""
 
-#: core/appMenus/model.js:232
+#: core/appMenus/model.js:295
 msgid "Save"
 msgstr ""
 
-#: core/appMenus/model.js:233
+#: core/appMenus/model.js:296
 msgid "Save As…"
 msgstr ""
 
-#: core/appMenus/model.js:234
+#: core/appMenus/model.js:297
 msgid "Print…"
 msgstr ""
 
-#: core/appMenus/model.js:238
+#: core/appMenus/model.js:301
 msgid "Undo"
 msgstr ""
 
-#: core/appMenus/model.js:239
+#: core/appMenus/model.js:302
 msgid "Redo"
 msgstr ""
 
-#: core/appMenus/model.js:240
+#: core/appMenus/model.js:303
 msgid "Cut"
 msgstr ""
 
-#: core/appMenus/model.js:241 features/notch/pills.js:87
+#: core/appMenus/model.js:304 features/notch/pills.js:87
 #: features/notch/tabs.js:305
 msgid "Copy"
 msgstr ""
 
-#: core/appMenus/model.js:242 features/clipboard/quickPaste.js:97
+#: core/appMenus/model.js:305 features/clipboard/quickPaste.js:97
 msgid "Paste"
 msgstr ""
 
-#: core/appMenus/model.js:243
+#: core/appMenus/model.js:306
 msgid "Select All"
 msgstr ""
 
-#: core/appMenus/model.js:244
+#: core/appMenus/model.js:307
 msgid "Find…"
 msgstr ""
 
-#: core/appMenus/model.js:248
+#: core/appMenus/model.js:311
 msgid "Zoom In"
 msgstr ""
 
-#: core/appMenus/model.js:249
+#: core/appMenus/model.js:312
 msgid "Zoom Out"
 msgstr ""
 
-#: core/appMenus/model.js:250
+#: core/appMenus/model.js:313
 msgid "Actual Size"
 msgstr ""
 
-#: core/appMenus/model.js:251
+#: core/appMenus/model.js:314
 msgid "Reload"
 msgstr ""
 
-#: core/appMenus/model.js:252
+#: core/appMenus/model.js:315
 msgid "Toggle Full Screen"
 msgstr ""
 
-#: core/appMenus/model.js:256
+#: core/appMenus/model.js:324
 msgid "Minimize"
 msgstr ""
 
-#: core/appMenus/model.js:257
+#: core/appMenus/model.js:325
 msgid "Unzoom"
 msgstr ""
 
-#: core/appMenus/model.js:257
+#: core/appMenus/model.js:325
 msgid "Zoom"
 msgstr ""
 
-#: core/appMenus/model.js:258
+#: core/appMenus/model.js:326 features/windows/prefs.js:18
+msgid "Fill"
+msgstr ""
+
+#: core/appMenus/model.js:327 features/windows/prefs.js:19
+msgid "Center"
+msgstr ""
+
+#: core/appMenus/model.js:329 features/menuBar/fullscreenReveal.js:140
 msgid "Exit Full Screen"
 msgstr ""
 
-#: core/appMenus/model.js:258
+#: core/appMenus/model.js:329
 msgid "Enter Full Screen"
 msgstr ""
 
-#: core/appMenus/model.js:259
-msgid "Tile Window to Left of Screen"
+#: core/appMenus/model.js:332
+msgid "Always on Visible Workspace"
 msgstr ""
 
-#: core/appMenus/model.js:260
-msgid "Tile Window to Right of Screen"
-msgstr ""
-
-#: core/appMenus/model.js:262
+#: core/appMenus/model.js:333
 msgid "Always on Top"
 msgstr ""
 
-#: core/appMenus/model.js:263
+#: core/appMenus/model.js:334
 msgid "Bring All to Front"
 msgstr ""
 
-#: core/appMenus/model.js:277 features/clipboard/popover.js:64
+#: core/appMenus/model.js:348 features/clipboard/popover.js:64
 #: features/clipboard/popover.js:189 features/emoji/view.js:49
-#: features/launchpad/view.js:337 features/menuBar/appMenuBar.js:554
+#: features/launchpad/view.js:337 features/menuBar/appMenuBar.js:581
 #: features/spotlight/providers/settingsCatalog.js:23
 #: features/spotlight/view.js:116 features/spotlight/view.js:117
 #: prefs/window.js:128
 msgid "Search"
 msgstr ""
 
-#: core/appMenus/model.js:278
+#: core/appMenus/model.js:349
 #, javascript-format
 msgid "%s Help"
 msgstr ""
 
-#: core/appMenus/model.js:279
+#: core/appMenus/model.js:350
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: core/appMenus/model.js:284
+#: core/appMenus/model.js:355
 msgid "File"
 msgstr ""
 
-#: core/appMenus/model.js:285
+#: core/appMenus/model.js:356
 msgid "Edit"
 msgstr ""
 
-#: core/appMenus/model.js:286
+#: core/appMenus/model.js:357
 msgid "View"
 msgstr ""
 
-#: core/appMenus/model.js:287 features/splitView/index.js:134
-#: features/stageManager/view.js:433
+#: core/appMenus/model.js:358 features/splitView/index.js:134
+#: features/stageManager/view.js:221
 msgid "Window"
 msgstr ""
 
-#: core/appMenus/model.js:288
+#: core/appMenus/model.js:359
 msgid "Help"
 msgstr ""
 
-#: core/appMenus/model.js:300
-#, javascript-format
-msgid "Workspace %d"
-msgstr ""
-
-#: core/appMenus/model.js:306
-msgid "New Workspace"
-msgstr ""
-
-#: core/appMenus/model.js:310
-msgid "Move to Workspace"
-msgstr ""
-
-#: core/tileActions.js:77
-msgid "Move & Resize"
-msgstr ""
-
-#: core/tileActions.js:79 features/appButtons/prefs.js:27
+#: core/appMenus/model.js:391 features/appButtons/prefs.js:27
 #: features/dock/prefs.js:105 features/onboarding/model.js:75
 #: features/onboarding/model.js:98 features/stageManager/prefs.js:65
 #: features/windows/prefs.js:14
 msgid "Left"
 msgstr ""
 
-#: core/tileActions.js:79 features/appButtons/prefs.js:27
+#: core/appMenus/model.js:391 features/appButtons/prefs.js:27
 #: features/dock/prefs.js:105 features/onboarding/model.js:75
 #: features/onboarding/model.js:98 features/stageManager/prefs.js:65
 #: features/windows/prefs.js:15
 msgid "Right"
 msgstr ""
 
-#: core/tileActions.js:79 features/windows/prefs.js:16
+#: core/appMenus/model.js:391 features/windows/prefs.js:16
 msgid "Top"
 msgstr ""
 
-#: core/tileActions.js:79 features/dock/prefs.js:105
+#: core/appMenus/model.js:391 features/dock/prefs.js:105
 #: features/onboarding/model.js:75 features/windows/prefs.js:17
 msgid "Bottom"
 msgstr ""
 
-#: core/tileActions.js:80 features/hotCorners/prefs.js:26
+#: core/appMenus/model.js:392 features/hotCorners/prefs.js:26
 msgid "Top Left"
 msgstr ""
 
-#: core/tileActions.js:80 features/hotCorners/prefs.js:26
+#: core/appMenus/model.js:392 features/hotCorners/prefs.js:26
 msgid "Top Right"
 msgstr ""
 
-#: core/tileActions.js:81 features/hotCorners/prefs.js:27
+#: core/appMenus/model.js:392 features/hotCorners/prefs.js:27
 msgid "Bottom Left"
 msgstr ""
 
-#: core/tileActions.js:81 features/hotCorners/prefs.js:27
+#: core/appMenus/model.js:393 features/hotCorners/prefs.js:27
 msgid "Bottom Right"
 msgstr ""
 
-#: core/tileActions.js:85
-msgid "Fill & Arrange"
+#: core/appMenus/model.js:393 features/windows/prefs.js:20
+msgid "Return to Previous Size"
 msgstr ""
 
-#: core/tileActions.js:87 features/windows/prefs.js:18
-msgid "Fill"
+#: core/appMenus/model.js:396
+msgid "Move & Resize"
 msgstr ""
 
-#: core/tileActions.js:87 features/windows/prefs.js:23
-msgid "Left & Right"
+#: core/appMenus/model.js:405
+#, javascript-format
+msgid "Workspace %d"
 msgstr ""
 
-#: core/tileActions.js:88 features/windows/prefs.js:24
-msgid "Right & Left"
+#: core/appMenus/model.js:412
+msgid "New Workspace"
 msgstr ""
 
-#: core/tileActions.js:88 features/windows/prefs.js:25
-msgid "Top & Bottom"
+#: core/appMenus/model.js:416
+msgid "Move to Workspace"
 msgstr ""
 
-#: core/tileActions.js:89
-msgid "Quarters"
+#: core/appMenus/model.js:428
+#, javascript-format
+msgid "Display %d"
+msgstr ""
+
+#: core/appMenus/model.js:433
+msgid "Move to Display"
+msgstr ""
+
+#: core/tileActions.js:69
+msgid "Two Halves"
+msgstr ""
+
+#: core/tileActions.js:71
+msgid "Two Thirds and One Third"
+msgstr ""
+
+#: core/tileActions.js:75
+msgid "One Third and Two Thirds"
+msgstr ""
+
+#: core/tileActions.js:79
+msgid "Three Columns"
+msgstr ""
+
+#: core/tileActions.js:83
+msgid "Large Left and Two Stacked"
+msgstr ""
+
+#: core/tileActions.js:87
+msgid "Four Quarters"
 msgstr ""
 
 #: core/widgets/data.js:28
@@ -374,7 +391,7 @@ msgid "Next"
 msgstr ""
 
 #: core/widgets/kinds/nowPlaying.js:101 features/menuBarItems/pinned.js:417
-#: features/notch/tabs.js:44 lib/mpris.js:260
+#: features/notch/tabs.js:44 lib/mpris.js:233
 msgid "Unknown title"
 msgstr ""
 
@@ -390,6 +407,7 @@ msgstr ""
 
 #: core/widgets/kinds/system.js:28 core/widgets/kinds/system.js:29
 #: features/controlCenter/customModel.js:26 features/menuBar/aboutDialog.js:65
+#: features/pointer/prefs.js:59
 #: features/spotlight/providers/settingsCatalog.js:36
 msgid "System"
 msgstr ""
@@ -492,13 +510,23 @@ msgid "Size of the macOS traffic lights"
 msgstr ""
 
 #: features/appButtons/prefs.js:52 features/dock/prefs.js:99
-#: features/widgets/gallery.js:231 prefs/setupAssistant.js:115
+#: features/widgets/gallery.js:241 prefs/setupAssistant.js:115
 msgid "Small"
 msgstr ""
 
 #: features/appButtons/prefs.js:52 features/menuBarItems/pinned.js:396
-#: features/showDesktop/prefs.js:39
+#: features/pointer/prefs.js:59 features/showDesktop/prefs.js:39
 msgid "Normal"
+msgstr ""
+
+#: features/appButtons/prefs.js:55
+msgid "Maximize Button Enters Full Screen"
+msgstr ""
+
+#: features/appButtons/prefs.js:56
+msgid ""
+"As on macOS: the green button makes the window full screen, and leaves full "
+"screen again. Double-clicking the titlebar and Super+Up still maximize"
 msgstr ""
 
 #: features/appearance/prefs.js:13 features/onboarding/model.js:39
@@ -544,7 +572,7 @@ msgstr ""
 
 #: features/appearance/prefs.js:71
 #: features/spotlight/providers/settingsCatalog.js:21
-#: prefs/pages/appearance.js:16
+#: prefs/pages/appearance.js:18
 msgid "Appearance"
 msgstr ""
 
@@ -680,6 +708,7 @@ msgid "All"
 msgstr ""
 
 #: features/clipboard/popover.js:76 features/clipboard/quickPaste.js:205
+#: features/typography/prefs.js:31
 msgid "Text"
 msgstr ""
 
@@ -799,8 +828,8 @@ msgstr ""
 
 #: features/clipboard/prefs.js:76
 msgid ""
-"Kept in ~/.local/share/guava/clipboard/, readable only by you. Needed to keep "
-"history across lock and log out."
+"Kept in ~/.local/share/guava/clipboard/, readable only by you. Needed to "
+"keep history across lock and log out."
 msgstr ""
 
 #: features/clipboard/prefs.js:78
@@ -835,7 +864,7 @@ msgid "Colour"
 msgstr ""
 
 #: features/clipboard/quickPaste.js:205 features/clipboard/view.js:49
-#: features/notch/index.js:619 features/spotlight/providers/clipboard.js:17
+#: features/notch/index.js:625 features/spotlight/providers/clipboard.js:17
 msgid "Image"
 msgstr ""
 
@@ -859,7 +888,7 @@ msgid "%d d ago"
 msgstr ""
 
 #: features/clipboard/view.js:117 features/clipboard/view.js:169
-#: features/dock/view.js:359 features/focus/prefs.js:76
+#: features/dock/view.js:365 features/focus/prefs.js:76
 #: features/roundedCorners/prefs.js:56 features/spotlight/prefs.js:123
 #: features/spotlight/prefs.js:125 features/widgets/layer.js:88
 msgid "Remove"
@@ -1029,12 +1058,12 @@ msgstr ""
 msgid "Focus"
 msgstr ""
 
-#: features/controlCenter/customModel.js:51 features/controlCenter/index.js:245
+#: features/controlCenter/customModel.js:51 features/controlCenter/index.js:244
 #: features/osd/model.js:53
 msgid "Display"
 msgstr ""
 
-#: features/controlCenter/customModel.js:52 features/controlCenter/index.js:246
+#: features/controlCenter/customModel.js:52 features/controlCenter/index.js:245
 #: features/menuBarItems/pinned.js:160
 #: features/spotlight/providers/settingsCatalog.js:16 lib/menuBarPins.js:17
 msgid "Sound"
@@ -1143,11 +1172,12 @@ msgid "Edit Controls"
 msgstr ""
 
 #: features/controlCenter/editor.js:81 features/controlCenter/prefs.js:38
+#: features/pointer/prefs.js:74
 msgid "Reset"
 msgstr ""
 
 #: features/controlCenter/editor.js:83 features/notch/pills.js:45
-#: features/widgets/gallery.js:90
+#: features/widgets/gallery.js:97
 msgid "Done"
 msgstr ""
 
@@ -1194,24 +1224,24 @@ msgstr ""
 msgid "No controls match."
 msgstr ""
 
-#: features/controlCenter/index.js:247
+#: features/controlCenter/index.js:246
 msgid "More"
 msgstr ""
 
-#: features/controlCenter/index.js:272
+#: features/controlCenter/index.js:271
 msgid "Edit Controls…"
 msgstr ""
 
-#: features/controlCenter/model.js:77 features/notch/view.js:128
-#: features/notch/view.js:134 features/osd/prefs.js:21 prefs/pages/index.js:53
+#: features/controlCenter/model.js:77 features/notch/view.js:129
+#: features/notch/view.js:135 features/osd/prefs.js:21 prefs/pages/index.js:53
 msgid "Notch"
 msgstr ""
 
 #: features/controlCenter/model.js:78 features/onboarding/model.js:104
 #: features/onboarding/model.js:107
 #: features/spotlight/providers/settingsCatalog.js:43
-#: features/stageManager/prefs.js:48 features/stageManager/view.js:129
-#: features/stageManager/view.js:131 prefs/pages/index.js:48
+#: features/stageManager/prefs.js:48 features/stageManager/view.js:76
+#: features/stageManager/view.js:78 prefs/pages/index.js:48
 msgid "Stage Manager"
 msgstr ""
 
@@ -1363,13 +1393,13 @@ msgid "A file with that name already exists."
 msgstr ""
 
 #: features/desktopIcons/index.js:462 features/dock/appMenu.js:84
-#: features/dock/index.js:775 features/dock/index.js:815
+#: features/dock/index.js:789 features/dock/index.js:829
 #: features/notch/tabs.js:303 features/spotlight/results.js:126
 msgid "Open"
 msgstr ""
 
 #: features/desktopIcons/index.js:462 features/dock/appMenu.js:93
-#: features/dock/index.js:819 features/notch/tabs.js:304
+#: features/dock/index.js:833 features/notch/tabs.js:304
 #: features/screenshots/thumbnail.js:249
 msgid "Show in Files"
 msgstr ""
@@ -1378,7 +1408,7 @@ msgstr ""
 msgid "Rename"
 msgstr ""
 
-#: features/desktopIcons/index.js:463 features/dock/index.js:830
+#: features/desktopIcons/index.js:463 features/dock/index.js:844
 msgid "Move to Trash"
 msgstr ""
 
@@ -1391,7 +1421,7 @@ msgid "New Folder"
 msgstr ""
 
 #: features/desktopIcons/index.js:504 features/desktopIcons/prefs.js:49
-#: features/menuBar/prefs.js:24 features/onboarding/model.js:87
+#: features/menuBar/prefs.js:25 features/onboarding/model.js:87
 #: features/screenshots/prefs.js:46 features/screenshots/toolbar.js:257
 msgid "None"
 msgstr ""
@@ -1532,42 +1562,42 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
-#: features/dock/index.js:777
+#: features/dock/index.js:791
 msgid "Empty Trash…"
 msgstr ""
 
-#: features/dock/index.js:786 features/dock/stack.js:401
-#: features/dock/stack.js:474
+#: features/dock/index.js:800 features/dock/stack.js:422
+#: features/dock/stack.js:495
 msgid "Open in Files"
 msgstr ""
 
-#: features/dock/index.js:788 features/dock/prefs.js:52
+#: features/dock/index.js:802 features/dock/prefs.js:52
 #: features/dock/prefs.js:54
 msgid "Remove from Dock"
 msgstr ""
 
-#: features/dock/index.js:795 features/dock/prefs.js:138
+#: features/dock/index.js:809 features/dock/prefs.js:138
 msgid "View content as"
 msgstr ""
 
-#: features/dock/index.js:796 features/dock/prefs.js:139
+#: features/dock/index.js:810 features/dock/prefs.js:139
 #: features/widgets/prefs.js:25
 msgid "Automatic"
 msgstr ""
 
-#: features/dock/index.js:796 features/dock/prefs.js:139
+#: features/dock/index.js:810 features/dock/prefs.js:139
 msgid "Fan"
 msgstr ""
 
-#: features/dock/index.js:796 features/dock/prefs.js:139
+#: features/dock/index.js:810 features/dock/prefs.js:139
 msgid "Grid"
 msgstr ""
 
-#: features/dock/index.js:796 features/dock/prefs.js:139
+#: features/dock/index.js:810 features/dock/prefs.js:139
 msgid "List"
 msgstr ""
 
-#: features/dock/index.js:824
+#: features/dock/index.js:838
 msgid "Add to Dock"
 msgstr ""
 
@@ -1602,8 +1632,8 @@ msgstr ""
 msgid "Add Folder to the Dock"
 msgstr ""
 
-#: features/dock/prefs.js:88 features/dock/view.js:105
-#: features/dock/view.js:132 features/liquidGlass/prefs.js:19
+#: features/dock/prefs.js:88 features/dock/view.js:111
+#: features/dock/view.js:138 features/liquidGlass/prefs.js:19
 #: prefs/pages/dock.js:14
 msgid "Dock"
 msgstr ""
@@ -1638,8 +1668,8 @@ msgstr ""
 msgid "Magnified size"
 msgstr ""
 
-#: features/dock/prefs.js:99 features/widgets/gallery.js:231
-#: prefs/setupAssistant.js:117
+#: features/dock/prefs.js:99 features/pointer/prefs.js:59
+#: features/widgets/gallery.js:241 prefs/setupAssistant.js:117
 msgid "Large"
 msgstr ""
 
@@ -1748,27 +1778,27 @@ msgstr ""
 msgid "Your newest downloads, before the Trash"
 msgstr ""
 
-#: features/dock/stack.js:232 features/notch/prefs.js:73
+#: features/dock/stack.js:233 features/notch/prefs.js:73
 msgid "Downloads"
 msgstr ""
 
-#: features/dock/stack.js:306
+#: features/dock/stack.js:327
 #, javascript-format
 msgid "%s (downloading)"
 msgstr ""
 
-#: features/dock/stack.js:400
+#: features/dock/stack.js:421
 #, javascript-format
 msgid "%d more in Files"
 msgid_plural "%d more in Files"
 msgstr[0] ""
 msgstr[1] ""
 
-#: features/dock/stack.js:468
+#: features/dock/stack.js:489
 msgid "No downloads"
 msgstr ""
 
-#: features/dock/stack.js:468
+#: features/dock/stack.js:489
 msgid "Empty folder"
 msgstr ""
 
@@ -1909,8 +1939,8 @@ msgid "Modes"
 msgstr ""
 
 #: features/focus/prefs.js:68 features/focus/prefs.js:116
-#: features/spotlight/prefs.js:95 features/widgets/gallery.js:184
-#: features/widgets/gallery.js:218
+#: features/spotlight/prefs.js:95 features/widgets/gallery.js:194
+#: features/widgets/gallery.js:228
 msgid "Add"
 msgstr ""
 
@@ -2328,12 +2358,12 @@ msgstr ""
 msgid "%s, %s available"
 msgstr ""
 
-#: features/menuBar/appMenuBar.js:231
+#: features/menuBar/appMenuBar.js:247
 msgid "More Menus"
 msgstr ""
 
 #: features/menuBar/forceQuit.js:42 features/menuBar/forceQuit.js:105
-#: features/menuBar/prefs.js:60
+#: features/menuBar/prefs.js:65
 msgid "Force Quit Applications"
 msgstr ""
 
@@ -2364,11 +2394,11 @@ msgstr ""
 msgid "Do you want to force “%s” to quit? You will lose any unsaved changes."
 msgstr ""
 
-#: features/menuBar/fullscreenReveal.js:97
+#: features/menuBar/fullscreenReveal.js:123
 msgid "Top Bar"
 msgstr ""
 
-#: features/menuBar/logoMenu.js:48 features/menuBar/prefs.js:22
+#: features/menuBar/logoMenu.js:48 features/menuBar/prefs.js:23
 msgid "Logo Menu"
 msgstr ""
 
@@ -2433,142 +2463,153 @@ msgstr ""
 msgid "Could not open %s"
 msgstr ""
 
-#: features/menuBar/prefs.js:18 features/osd/prefs.js:21
+#: features/menuBar/prefs.js:19 features/osd/prefs.js:21
 #: prefs/pages/menuBar.js:17
 msgid "Menu Bar"
 msgstr ""
 
-#: features/menuBar/prefs.js:19
+#: features/menuBar/prefs.js:20
 msgid ""
 "The logo menu, the app’s name and menus, then the status items, the Control "
 "Center and the clock, as on macOS."
 msgstr ""
 
-#: features/menuBar/prefs.js:22
+#: features/menuBar/prefs.js:23
 msgid ""
 "About This PC, System Settings, Force Quit, Sleep, Restart, Shut Down, Lock "
 "Screen and Log Out"
 msgstr ""
 
-#: features/menuBar/prefs.js:24
+#: features/menuBar/prefs.js:25
 msgid "System Logo"
 msgstr ""
 
-#: features/menuBar/prefs.js:24
+#: features/menuBar/prefs.js:25
 msgid "Guava Logo"
 msgstr ""
 
-#: features/menuBar/prefs.js:26
+#: features/menuBar/prefs.js:27
 msgid "App Menus"
 msgstr ""
 
-#: features/menuBar/prefs.js:27
+#: features/menuBar/prefs.js:28
 msgid ""
 "The focused app’s name in bold and its menus: App, File, Edit, Window and "
 "Help"
 msgstr ""
 
-#: features/menuBar/prefs.js:28
+#: features/menuBar/prefs.js:29
 msgid "Apps’ Own Menus"
 msgstr ""
 
-#: features/menuBar/prefs.js:29
+#: features/menuBar/prefs.js:30
 msgid ""
 "Show the menus apps export (GTK menu bars, and Qt, Electron or LibreOffice "
 "under Xwayland) in place of the generic File, Edit and View"
 msgstr ""
 
-#: features/menuBar/prefs.js:31
+#: features/menuBar/prefs.js:32
 msgid "Transparent Menu Bar"
 msgstr ""
 
-#: features/menuBar/prefs.js:32
+#: features/menuBar/prefs.js:33
 msgid "No background over the wallpaper, with text that follows its brightness"
 msgstr ""
 
-#: features/menuBar/prefs.js:34
+#: features/menuBar/prefs.js:35
 msgid "Solid When a Window Touches It"
 msgstr ""
 
-#: features/menuBar/prefs.js:35
+#: features/menuBar/prefs.js:36
 msgid ""
 "Off: the bar stays transparent over maximized windows. On: it turns solid "
 "while a window touches it"
 msgstr ""
 
-#: features/menuBar/prefs.js:37
+#: features/menuBar/prefs.js:38
 msgid "Always Show Menu Bar in Full Screen"
 msgstr ""
 
-#: features/menuBar/prefs.js:38
+#: features/menuBar/prefs.js:39
 msgid ""
 "Off: the menu bar hides in full screen and slides in when the pointer "
 "touches the top edge"
 msgstr ""
 
-#: features/menuBar/prefs.js:40
+#: features/menuBar/prefs.js:41
 msgid "Privacy Dots"
 msgstr ""
 
-#: features/menuBar/prefs.js:41
+#: features/menuBar/prefs.js:42
 msgid ""
 "Orange for the microphone, green for the camera, purple for screen sharing. "
 "Click to see which app"
 msgstr ""
 
-#: features/menuBar/prefs.js:43
+#: features/menuBar/prefs.js:44
 msgid "Alt-Click the Clock for Do Not Disturb"
 msgstr ""
 
-#: features/menuBar/prefs.js:44
+#: features/menuBar/prefs.js:45
 msgid "Clicking the clock opens the calendar and notifications"
 msgstr ""
 
 #: features/menuBar/prefs.js:47
-msgid "Experimental"
+msgid "Let Every App Share Its Menus"
 msgstr ""
 
 #: features/menuBar/prefs.js:48
+msgid ""
+"Turns on GNOME accessibility while Guava runs, so Firefox, Chromium and apps "
+"without a menu bar can show their menus here. Apps already open may need a "
+"restart. Your own setting comes back when this is off"
+msgstr ""
+
+#: features/menuBar/prefs.js:52
+msgid "Experimental"
+msgstr ""
+
+#: features/menuBar/prefs.js:53
 msgid ""
 "Menus read from the accessibility tree. Apps must expose it (GTK always "
 "does; Firefox, Chromium and Qt only with accessibility turned on)."
 msgstr ""
 
-#: features/menuBar/prefs.js:50
+#: features/menuBar/prefs.js:55
 msgid "Read Menus Through Accessibility"
 msgstr ""
 
-#: features/menuBar/prefs.js:51
+#: features/menuBar/prefs.js:56
 msgid ""
 "Mirror the menu bar inside windows of apps that do not export their menus"
 msgstr ""
 
-#: features/menuBar/prefs.js:52
+#: features/menuBar/prefs.js:57
 msgid "Read Primary Menus"
 msgstr ""
 
-#: features/menuBar/prefs.js:53
+#: features/menuBar/prefs.js:58
 msgid ""
 "For apps without a menu bar, open the ☰ menu out of sight, read it into the "
 "app menu and remember it. The app sees its menu open and close"
 msgstr ""
 
-#: features/menuBar/prefs.js:56
+#: features/menuBar/prefs.js:61
 #: features/spotlight/providers/settingsCatalog.js:18
-#: features/stageManager/prefs.js:173 prefs/pages/keyboard.js:13
+#: features/stageManager/prefs.js:180 prefs/pages/keyboard.js:13
 msgid "Keyboard"
 msgstr ""
 
-#: features/menuBar/prefs.js:57
+#: features/menuBar/prefs.js:62
 msgid "Shortcut Symbols"
 msgstr ""
 
-#: features/menuBar/prefs.js:58
+#: features/menuBar/prefs.js:63
 msgid ""
 "Write shortcuts in menus as ⌘ ⌥ ⌃ ⇧ (Super is ⌘). Off writes them in words"
 msgstr ""
 
-#: features/menuBar/prefs.js:59
+#: features/menuBar/prefs.js:64
 msgid "Use the Menu Bar with the Keyboard"
 msgstr ""
 
@@ -2828,11 +2869,11 @@ msgstr ""
 msgid "Remove Desktop"
 msgstr ""
 
-#: features/notch/index.js:607 features/notch/index.js:713
+#: features/notch/index.js:613 features/notch/index.js:719
 msgid "Copied"
 msgstr ""
 
-#: features/notch/index.js:685
+#: features/notch/index.js:691
 msgid "Code copied"
 msgstr ""
 
@@ -2861,7 +2902,7 @@ msgstr ""
 msgid "%d downloads"
 msgstr ""
 
-#: features/notch/pills.js:75 features/notch/view.js:671
+#: features/notch/pills.js:75 features/notch/view.js:735
 msgid "Now"
 msgstr ""
 
@@ -3074,17 +3115,17 @@ msgstr ""
 msgid "Start a %d minute timer"
 msgstr ""
 
-#: features/notch/view.js:671
+#: features/notch/view.js:735
 msgid "Tray"
 msgstr ""
 
-#: features/notch/view.js:671 features/notificationCenter/prefs.js:16
-#: features/widgets/gallery.js:57 features/widgets/gallery.js:73
+#: features/notch/view.js:735 features/notificationCenter/prefs.js:16
+#: features/widgets/gallery.js:64 features/widgets/gallery.js:80
 #: prefs/pages/index.js:50
 msgid "Widgets"
 msgstr ""
 
-#: features/notch/view.js:965
+#: features/notch/view.js:1029
 msgid "Dismiss"
 msgstr ""
 
@@ -3277,6 +3318,72 @@ msgstr ""
 
 #: features/osd/prefs.js:21
 msgid "Standard Pop-up"
+msgstr ""
+
+#: features/pointer/prefs.js:47
+msgid "Pointer"
+msgstr ""
+
+#: features/pointer/prefs.js:48
+msgid ""
+"Make the pointer easier to find and see, like macOS Accessibility > Display "
+"> Pointer."
+msgstr ""
+
+#: features/pointer/prefs.js:50
+msgid "Shake mouse pointer to locate"
+msgstr ""
+
+#: features/pointer/prefs.js:51
+msgid ""
+"Shake the mouse or move quickly side to side on the touchpad to make the "
+"pointer big for a moment"
+msgstr ""
+
+#: features/pointer/prefs.js:53
+msgid "Hide pointer while typing"
+msgstr ""
+
+#: features/pointer/prefs.js:54
+msgid ""
+"The pointer comes back as soon as you move the mouse. Works in apps that "
+"report their text cursor"
+msgstr ""
+
+#: features/pointer/prefs.js:57
+msgid "Pointer size"
+msgstr ""
+
+#: features/pointer/prefs.js:59
+msgid "Larger"
+msgstr ""
+
+#: features/pointer/prefs.js:59
+msgid "Largest"
+msgstr ""
+
+#: features/pointer/prefs.js:59
+msgid "Huge"
+msgstr ""
+
+#: features/pointer/prefs.js:63
+msgid "Custom colours"
+msgstr ""
+
+#: features/pointer/prefs.js:64
+msgid "A recoloured copy of your cursor theme, made in your icons folder"
+msgstr ""
+
+#: features/pointer/prefs.js:69
+msgid "Pointer outline colour"
+msgstr ""
+
+#: features/pointer/prefs.js:72
+msgid "Pointer fill colour"
+msgstr ""
+
+#: features/pointer/prefs.js:79
+msgid "Reset colours"
 msgstr ""
 
 #: features/roundedCorners/prefs.js:18
@@ -3474,7 +3581,7 @@ msgstr ""
 msgid "A small button next to the system menu"
 msgstr ""
 
-#: features/showDesktop/prefs.js:38 features/stageManager/prefs.js:146
+#: features/showDesktop/prefs.js:38 features/stageManager/prefs.js:153
 msgid "Animation speed"
 msgstr ""
 
@@ -3818,7 +3925,7 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-#: features/spotlight/providers/settingsCatalog.js:37 prefs/pages/about.js:16
+#: features/spotlight/providers/settingsCatalog.js:37 prefs/pages/about.js:130
 msgid "About"
 msgstr ""
 
@@ -3967,129 +4074,135 @@ msgid ""
 msgstr ""
 
 #: features/stageManager/prefs.js:88
-msgid "Hide recent apps under windows"
+msgid "Strip background"
 msgstr ""
 
 #: features/stageManager/prefs.js:89
+msgid ""
+"A soft glass panel behind the recent apps, so they stand out from the "
+"windows behind"
+msgstr ""
+
+#: features/stageManager/prefs.js:95
+msgid "Hide recent apps under windows"
+msgstr ""
+
+#: features/stageManager/prefs.js:96
 msgid ""
 "The strip steps aside while a window overlaps it; push the screen edge to "
 "bring it back"
 msgstr ""
 
-#: features/stageManager/prefs.js:96
+#: features/stageManager/prefs.js:103
 msgid "Windows from an app"
 msgstr ""
 
-#: features/stageManager/prefs.js:97
+#: features/stageManager/prefs.js:104
 msgid ""
 "All at once: one stack per app. One at a time: each window has its own entry"
 msgstr ""
 
-#: features/stageManager/prefs.js:98
+#: features/stageManager/prefs.js:105
 msgid "All at once"
 msgstr ""
 
-#: features/stageManager/prefs.js:98
+#: features/stageManager/prefs.js:105
 msgid "One at a time"
 msgstr ""
 
-#: features/stageManager/prefs.js:114
+#: features/stageManager/prefs.js:121
 msgid "Tilt the windows"
 msgstr ""
 
-#: features/stageManager/prefs.js:115
+#: features/stageManager/prefs.js:122
 msgid "The windows in the strip turn toward the stage, as on macOS"
 msgstr ""
 
-#: features/stageManager/prefs.js:118
+#: features/stageManager/prefs.js:125
 msgid "Tilt angle"
 msgstr ""
 
-#: features/stageManager/prefs.js:119
+#: features/stageManager/prefs.js:126
 msgid "Degrees"
 msgstr ""
 
-#: features/stageManager/prefs.js:147
+#: features/stageManager/prefs.js:154
 msgid "1 is normal, 2 twice as fast"
 msgstr ""
 
-#: features/stageManager/prefs.js:156
+#: features/stageManager/prefs.js:163
 msgid "Sets"
 msgstr ""
 
-#: features/stageManager/prefs.js:157
+#: features/stageManager/prefs.js:164
 msgid ""
 "Drag an app from the strip onto the stage, or Shift-click it, to use it with "
 "the windows already there. Drag a window onto the strip to take it out. Alt-"
 "click an app in the dock or the app grid to open it into the current stage."
 msgstr ""
 
-#: features/stageManager/prefs.js:159
+#: features/stageManager/prefs.js:166
 msgid "New windows"
 msgstr ""
 
-#: features/stageManager/prefs.js:160
+#: features/stageManager/prefs.js:167
 msgid "What a newly opened app window does"
 msgstr ""
 
-#: features/stageManager/prefs.js:161
+#: features/stageManager/prefs.js:168
 msgid "Replace the stage"
 msgstr ""
 
-#: features/stageManager/prefs.js:161
+#: features/stageManager/prefs.js:168
 msgid "Join the current set"
 msgstr ""
 
-#: features/stageManager/prefs.js:163
+#: features/stageManager/prefs.js:170
 msgid "Remove from set shortcut"
 msgstr ""
 
-#: features/stageManager/prefs.js:166
+#: features/stageManager/prefs.js:173
 msgid "Click wallpaper to show the desktop"
-msgstr ""
-
-#: features/stageManager/prefs.js:167
-msgid ""
-"The windows on the stage step into the strip; click again to bring them back"
 msgstr ""
 
 #: features/stageManager/prefs.js:174
 msgid ""
+"The windows on the stage step into the strip; click again to bring them back"
+msgstr ""
+
+#: features/stageManager/prefs.js:181
+msgid ""
 "Every set operation has a shortcut. They work while Stage Manager is on."
 msgstr ""
 
-#: features/stageManager/prefs.js:177
+#: features/stageManager/prefs.js:184
 msgid "Next set"
 msgstr ""
 
-#: features/stageManager/prefs.js:180
+#: features/stageManager/prefs.js:187
 msgid "Previous set"
 msgstr ""
 
-#: features/stageManager/prefs.js:182
+#: features/stageManager/prefs.js:189
 msgid "Strip entries 1 to 6"
 msgstr ""
 
-#: features/stageManager/prefs.js:182
+#: features/stageManager/prefs.js:189
 msgid "Super+Alt+1 to 6"
 msgstr ""
 
 #. TRANSLATORS: %d is a position in the Stage Manager strip, counted from the top
-#: features/stageManager/prefs.js:187
+#: features/stageManager/prefs.js:194
 #, javascript-format
 msgid "Entry %d"
 msgstr ""
 
-#: features/stageManager/prefs.js:203
+#: features/stageManager/prefs.js:210
 msgid "Paused while Stage Manager is on"
 msgstr ""
 
-#: features/stageManager/prefs.js:207
+#: features/stageManager/prefs.js:214
 msgid "Full screen in its own Space"
-msgstr ""
-
-#: features/stageManager/view.js:97
-msgid "Add to Stage"
 msgstr ""
 
 #: features/switcher/index.js:123
@@ -4142,27 +4255,82 @@ msgid ""
 "release Super"
 msgstr ""
 
-#: features/widgets/gallery.js:76 features/widgets/gallery.js:77
+#: features/typography/prefs.js:32
+msgid ""
+"Fonts and text rendering for the whole desktop, like macOS. Your own choices "
+"come back when these go off."
+msgstr ""
+
+#: features/typography/prefs.js:34
+msgid "macOS Text Rendering"
+msgstr ""
+
+#: features/typography/prefs.js:35
+msgid "Smooth, unhinted letters with grayscale antialiasing, as on a Mac"
+msgstr ""
+
+#: features/typography/prefs.js:37
+msgid "Font Smoothing"
+msgstr ""
+
+#: features/typography/prefs.js:38
+msgid ""
+"Slightly heavier text, like a Mac. Takes effect after you log out and in."
+msgstr ""
+
+#: features/typography/prefs.js:40
+msgid "macOS Font"
+msgstr ""
+
+#: features/typography/prefs.js:44
+msgid "Install Inter"
+msgstr ""
+
+#: features/typography/prefs.js:45
+msgid ""
+"The open typeface drawn after San Francisco. SF Pro is used instead when you "
+"install it yourself."
+msgstr ""
+
+#: features/typography/prefs.js:47
+msgid "Install"
+msgstr ""
+
+#: features/typography/prefs.js:58
+#, javascript-format
+msgid "Uses %s, and %s for code"
+msgstr ""
+
+#: features/typography/prefs.js:58
+#, javascript-format
+msgid "Uses %s"
+msgstr ""
+
+#: features/typography/prefs.js:59
+msgid "Needs SF Pro or Inter: install one to use it"
+msgstr ""
+
+#: features/widgets/gallery.js:83 features/widgets/gallery.js:84
 msgid "Search Widgets"
 msgstr ""
 
-#: features/widgets/gallery.js:85
+#: features/widgets/gallery.js:92
 msgid "Add Default Widgets"
 msgstr ""
 
-#: features/widgets/gallery.js:101
+#: features/widgets/gallery.js:108
 msgid "All Widgets"
 msgstr ""
 
-#: features/widgets/gallery.js:165
+#: features/widgets/gallery.js:175
 msgid "No Widgets"
 msgstr ""
 
-#: features/widgets/gallery.js:231
+#: features/widgets/gallery.js:241
 msgid "Medium"
 msgstr ""
 
-#: features/widgets/gallery.js:231
+#: features/widgets/gallery.js:241
 msgid "Extra Large"
 msgstr ""
 
@@ -4221,16 +4389,16 @@ msgstr ""
 msgid "Remove All"
 msgstr ""
 
-#: features/windows/picker.js:28
-msgid "Layouts"
+#: features/windows/prefs.js:23
+msgid "Left & Right"
 msgstr ""
 
-#: features/windows/prefs.js:19
-msgid "Center"
+#: features/windows/prefs.js:24
+msgid "Right & Left"
 msgstr ""
 
-#: features/windows/prefs.js:20
-msgid "Return to Previous Size"
+#: features/windows/prefs.js:25
+msgid "Top & Bottom"
 msgstr ""
 
 #: features/windows/prefs.js:26
@@ -4259,9 +4427,9 @@ msgstr ""
 
 #: features/windows/prefs.js:47
 msgid ""
-"Drag windows to the edges, corners or top bar (the top centre opens a layout "
-"picker), or use the shortcuts. GNOME's own edge tiling is off while this is "
-"on and comes back when it is turned off."
+"Drag windows to the edges, corners or top bar (dragging to the top centre "
+"opens the snap layouts), or use the shortcuts. GNOME's own edge tiling is "
+"off while this is on and comes back when it is turned off."
 msgstr ""
 
 #: features/windows/prefs.js:50
@@ -4289,13 +4457,13 @@ msgid "Fills the screen without going full screen"
 msgstr ""
 
 #: features/windows/prefs.js:57
-msgid "Layout picker at the top centre"
+msgid "Snap layouts at the top centre"
 msgstr ""
 
 #: features/windows/prefs.js:58
 msgid ""
-"Drag to the middle of the top bar for halves, quarters and arrangements; "
-"release elsewhere on the bar to fill"
+"Drag to the middle of the top edge: a handle appears, move onto it for a bar "
+"of layouts (halves, thirds, quarters), then drop on a zone"
 msgstr ""
 
 #: features/windows/prefs.js:60
@@ -4392,119 +4560,120 @@ msgstr ""
 msgid "While recording"
 msgstr ""
 
-#: lib/mpris.js:255
+#: lib/mpris.js:232
 msgid "Unknown artist"
 msgstr ""
 
-#: prefs/pages/about.js:62
+#: prefs/appMenusSetup.js:96
+msgid "Chromium and Electron Apps"
+msgstr ""
+
+#: prefs/appMenusSetup.js:97
+msgid ""
+"These apps only share their menus when they run through X11 (XWayland). "
+"Turning an app on writes one line to its flags file and takes effect the "
+"next time the app starts. The cost: XWayland windows can look softer on "
+"fractional scaling and lose some Wayland input features. Turning it off "
+"removes only that line."
+msgstr ""
+
+#: prefs/appMenusSetup.js:104
+msgid "No Chromium or Electron app found"
+msgstr ""
+
+#: prefs/appMenusSetup.js:105
+msgid "Installed Flatpak apps are listed below"
+msgstr ""
+
+#: prefs/appMenusSetup.js:110
+msgid "Use X11 so the menus show in the menu bar"
+msgstr ""
+
+#: prefs/appMenusSetup.js:128
+msgid "Flatpak Apps"
+msgstr ""
+
+#: prefs/appMenusSetup.js:129
+msgid ""
+"A Flatpak app can only share its menus if its sandbox may talk to Guava’s "
+"menu service. Allowing it changes that one app’s permissions (flatpak "
+"override --user); turning it off takes the permission away again. Restart "
+"the app afterwards."
+msgstr ""
+
+#: prefs/appMenusSetup.js:131
+msgid "Looking for Flatpak apps…"
+msgstr ""
+
+#: prefs/appMenusSetup.js:137
+msgid "No Flatpak apps installed"
+msgstr ""
+
+#: prefs/appMenusSetup.js:141
+msgid "Allow the menu service"
+msgstr ""
+
+#: prefs/appMenusSetup.js:159
+msgid "Flatpak is not installed"
+msgstr ""
+
+#: prefs/pages/about.js:47
 msgid "Change log"
+msgstr ""
+
+#: prefs/pages/about.js:62
+msgid "Credits"
+msgstr ""
+
+#: prefs/pages/about.js:63
+msgid "Code and inspiration"
+msgstr ""
+
+#: prefs/pages/about.js:72 prefs/pages/about.js:105
+msgid "Legal"
+msgstr ""
+
+#: prefs/pages/about.js:77
+msgid "License"
+msgstr ""
+
+#: prefs/pages/about.js:78
+msgid "Guava is free and open source software"
+msgstr ""
+
+#: prefs/pages/about.js:81
+msgid "View the full license text on GitHub"
+msgstr ""
+
+#: prefs/pages/about.js:84
+msgid "Copyright"
 msgstr ""
 
 #: prefs/pages/about.js:99
 msgid "Website"
 msgstr ""
 
-#: prefs/pages/about.js:103
+#: prefs/pages/about.js:101
 msgid "Report an Issue"
 msgstr ""
 
-#: prefs/pages/about.js:108
-msgid "Credits"
-msgstr ""
-
-#: prefs/pages/about.js:111 prefs/pages/about.js:126
-msgid "Legal"
-msgstr ""
-
-#: prefs/pages/about.js:134
-msgid "License"
-msgstr ""
-
-#: prefs/pages/about.js:135
-msgid "Guava is free and open source software"
-msgstr ""
-
-#: prefs/pages/about.js:140
-msgid "GNU General Public License v3.0"
-msgstr ""
-
-#: prefs/pages/about.js:142
-msgid "View the full license text on GitHub"
-msgstr ""
-
-#: prefs/pages/about.js:149 prefs/pages/about.js:150
-msgid "Copyright"
-msgstr ""
-
-#: prefs/pages/about.js:150
-msgid ""
-"This program is free software: you can redistribute it and/or modify it "
-"under the terms of the GNU General Public License as published by the Free "
-"Software Foundation, either version 3 of the License, or (at your option) "
-"any later version."
-msgstr ""
-
-#: prefs/pages/about.js:204
-msgid "Become a sponsor on GitHub"
-msgstr ""
-
-#: prefs/pages/about.js:217
-msgid "Support Me ♡"
-msgstr ""
-
-#: prefs/pages/about.js:240
-msgid "More of my work..."
-msgstr ""
-
-#: prefs/pages/about.js:244
-msgid "Kiwi Menu"
-msgstr ""
-
-#: prefs/pages/about.js:244
-msgid "MacOS style menu for GNOME"
-msgstr ""
-
-#: prefs/pages/about.js:245
-msgid "AppManager"
-msgstr ""
-
-#: prefs/pages/about.js:245
-msgid "MacOS style AppImage installer and management application"
-msgstr ""
-
-#: prefs/pages/about.js:246
-msgid "Catalina Reloaded Icon Pack"
-msgstr ""
-
-#: prefs/pages/about.js:246
-msgid "macOS Tahoe icon theme for Linux"
-msgstr ""
-
-#: prefs/pages/about.js:247
-msgid "GDM Wallpaper"
-msgstr ""
-
-#: prefs/pages/about.js:247
-msgid "Set custom GDM login screen wallpaper"
-msgstr ""
-
-#: prefs/pages/about.js:259
+#: prefs/pages/about.js:115
 msgid "Other Recommended Extensions"
 msgstr ""
 
-#: prefs/pages/about.js:260
+#: prefs/pages/about.js:116
 msgid "Extensions that are compatible with Guava"
 msgstr ""
 
-#: prefs/pages/appearance.js:27
+#: prefs/pages/appearance.js:31
 msgid "Menus"
 msgstr ""
 
-#: prefs/pages/appearance.js:28
+#: prefs/pages/appearance.js:32
 msgid "Menu and App Styling"
 msgstr ""
 
-#: prefs/pages/appearance.js:29
+#: prefs/pages/appearance.js:33
 msgid ""
 "Narrower shell menu items with accent-colored hover and selection, plus the "
 "GTK app fixes"

@@ -14,7 +14,7 @@
 - **`global.display.get_grab_op()` does not exist in Mutter 50.** Track `grab-op-begin` /
   `grab-op-end` on `global.display`.
 - **Read the user's own setup before assuming the source of a behaviour** (B13): "shake to find
-  the cursor" was not GNOME (Mutter 50.6 has none) but a feature of the user's own Kiwi fork.
+  the cursor" was not GNOME (Mutter 50.6 has none) but a feature of the user's own earlier extension.
   Ask which extensions run, then grep their code and history (all branches).
 
 - **Mutter emits `kill-window-effects` synchronously before the next effect** on the same actor

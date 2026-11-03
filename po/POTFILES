@@ -79,6 +79,7 @@ features/onboarding/model.js
 features/onboarding/prefs.js
 features/osd/model.js
 features/osd/prefs.js
+features/pointer/prefs.js
 features/roundedCorners/prefs.js
 features/screenshots/countdown.js
 features/screenshots/index.js
@@ -101,15 +102,16 @@ features/stageManager/prefs.js
 features/stageManager/view.js
 features/switcher/index.js
 features/switcher/prefs.js
+features/typography/prefs.js
 features/widgets/gallery.js
 features/widgets/index.js
 features/widgets/layer.js
 features/widgets/prefs.js
-features/windows/picker.js
 features/windows/prefs.js
 lib/menuBarPins.js
 lib/mpris.js
 prefs.js
+prefs/appMenusSetup.js
 prefs/pages/about.js
 prefs/pages/appearance.js
 prefs/pages/controlCenter.js

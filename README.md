@@ -26,8 +26,7 @@ much more, all in one design language.
   create.
 - **Built for GNOME 50.** Tested on Fedora 44 Workstation with Wayland.
 
-Guava OS is unofficial and not affiliated with Apple. It grew out of the
-[Kiwi (is not Apple)](#credits) extension.
+Guava OS is unofficial and not affiliated with Apple.
 
 ## Showcase
 
@@ -127,11 +126,11 @@ make helper-rpm    # optional: builds the shelf helper RPM (needs rpm-build)
 
 Then log out and back in, and run `gnome-extensions enable guava-os@blueyzx64`.
 
-### Coming from Kiwi?
+### Other macOS-style extensions
 
-Guava OS is its own extension, with its own settings (`/org/gnome/shell/extensions/guava-os/`),
-so it installs next to Kiwi without touching Kiwi's settings. Turn Kiwi off before you turn Guava
-OS on: both take over the same parts of the Shell.
+Guava OS keeps its own settings (`/org/gnome/shell/extensions/guava-os/`). Turn off any other
+extension that reshapes the same parts of the Shell (dock, top bar, overview) before you turn
+Guava OS on.
 
 ## Your first login
 
@@ -215,12 +214,8 @@ To help translate Guava OS, see the [translation guide](translating/README.md).
 
 ## Credits
 
-Guava OS is based on **[Kiwi (is not Apple)](https://github.com/blueyzx64/kiwi-is-not-apple)**,
-which began as **[kiwi-kemma](https://github.com/kem-a/kiwi-kemma)** by Arnis Kemlers
-([kem-a](https://github.com/kem-a)). Thanks to everyone who built them; their work is the root
-Guava OS grew from. More from the Kiwi author: [Kiwi Menu](https://github.com/kem-a/Kiwi-Menu),
-[Catalina Reloaded icons](https://github.com/kem-a/Catalina-reloaded) and
-[GDM Wallpaper](https://github.com/kem-a/gnome-gdm-wallpaper).
+Guava OS was inspired by the [Kiwi (is not Apple)](https://github.com/blueyzx64/kiwi-is-not-apple)
+extension.
 
 These projects helped shape parts of Guava OS, as references for how to do something in GNOME
 Shell or as extensions a feature had to work alongside:
@@ -239,5 +234,5 @@ Shell or as extensions a feature had to work alongside:
 ## License
 
 Guava OS is free software under the **GNU General Public License v3.0 or later**; see
-[LICENSE](LICENSE). Copyright © 2025 Arnis Kemlers (Kiwi) and © 2026 blueyzx64 (Guava OS).
+[LICENSE](LICENSE). Copyright © 2026 blueyzx64.
 The guava logos in [assets/logo](assets/logo) are Guava OS's own.

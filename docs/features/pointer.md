@@ -14,7 +14,7 @@ slow back-and-forth, small wiggles, a long straight move and vertical shaking do
 (moving or resizing a window), the overview is open or a Shell modal is up (`isBlocked`), the
 detector says no and drops its history; a big pointer already showing goes away. So dragging a
 window can never make the pointer big, and motion from the drag cannot complete a shake after the
-release. (This is the gate that was missing in Kiwi, where `_onMotion()` ignored `_blocked()`.)
+release. (This gate was missing from the earlier implementation, which checked it for typing only.)
 
 **Crisp.** The big pointer is the theme's real large cursor, not the small sprite scaled up:
 `theme.js` `loadCursorImage` reads the arrow from the Xcursor file at the smallest size that is
