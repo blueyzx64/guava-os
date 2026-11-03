@@ -4,6 +4,19 @@
 > orchestrator writes here (agents propose entries as `LEARN:` lines in their memory file).
 > Format: **Context** · what worked / what failed · **Do instead**.
 
+## Windows (Mutter 50)
+
+- **Tell an app's own maximize request from the Shell's** (B12, green button):
+  `Clutter.get_current_event()` is null inside `notify::maximized-*` when a Wayland client asked
+  (its titlebar button, a titlebar double-click); Super+Up and Shell menus run inside a key or
+  button event. Combine it with the pointer position over the button band. Do instead: never
+  guess from timing alone.
+- **`global.display.get_grab_op()` does not exist in Mutter 50.** Track `grab-op-begin` /
+  `grab-op-end` on `global.display`.
+- **Read the user's own setup before assuming the source of a behaviour** (B13): "shake to find
+  the cursor" was not GNOME (Mutter 50.6 has none) but a feature of the user's own Kiwi fork.
+  Ask which extensions run, then grep their code and history (all branches).
+
 ## Test environment
 
 - **Fedora's `/etc/ssl/certs` is an absolute symlink** to `/etc/pki/tls/certs`. Writing through
