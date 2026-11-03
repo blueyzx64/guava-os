@@ -14,7 +14,8 @@ X2=/tmp/claude-0/x2 tools/scenarios/run-perf.sh
 |---|---|
 | `run-perf.sh` | Runs the unit level, then two harness runs in parallel (stock GNOME login, Guava login), then the comparison. |
 | `perf-latency.sh` | D-021 response latency: `lat_all` drives real virtual input (Super tap, Ctrl+Up, Super+A, Super+Tab, panel clicks, menu-bar click, dock click, notch hover, titlebar press + move) and times input to the first stage `after-paint` where the response is visible. Prints `LAT label n= miss= min= median= p95= max=`. |
-| `latency-cold.sh`, `latency-coldprobe.sh`, `overview-bisect.sh` | Investigation scenarios (L19): cold first opens (Notification Center, notch hover, Mission Control), sync vs first-paint time of a first open (`WARM=1` tries a warm-up), and the overview / burst frame cost with each feature switched off in turn (`BISECT="dock notch"` picks the features). Not part of the suite. |
+| `latency-cold.sh`, `latency-coldprobe.sh`, `overview-bisect.sh` | Investigation scenarios (L19): cold first opens (Notification Center, notch hover, Mission Control), sync vs first-paint time of a first open (`WARM=1` tries a full, visible warm-up: flickers the dock), and the overview / burst frame cost with each feature switched off in turn (`BISECT="dock notch"` picks the features). Not part of the suite. |
+| `mission-control-warm.sh` | Q2 (B39): the invisible first-open warm-up of Mission Control (`missionControl/warm.js`): it ran, was invisible, emitted no `showing`/`hidden`, left nothing behind, and the first real open paints in < 250 ms. |
 | `perf-suite.sh` | The real-Shell scenario, run in both logins: idle, core interactions, burst, CPU overload. |
 | `perf-compare.py` | Reads both runs' `STARTUP`/`IDLE`/`PERF`/`JITTER` lines and applies the thresholds below. |
 | `tests/motionSmoothness.test.js` | Unit level: the motion contract of `core/motionModel.js`. |

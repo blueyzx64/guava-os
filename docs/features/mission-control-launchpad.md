@@ -6,6 +6,7 @@ GNOME's overview restyled: a Spaces bar on top, the current Space's windows spre
 - **App Exposé:** Ctrl+Down (`app-expose-shortcut`), the dock's Show All Windows, a four-finger swipe down. Shows one app's windows with its minimized ones in a strip at the bottom.
 - **Spaces bar:** add with +, remove with x, drag to reorder. While the Shell misses its frame budget (`ctx.motion.env.degraded`) the thumbnails show their Space without the live window pictures, and get them back when the load clears (B28). App Exposé's minimized-window strip is static pictures already.
 - **Settings (default):** `mc-static-spaces` on (Spaces stay until you remove them; GNOME's dynamic workspaces are off meanwhile) · `mc-rearrange-spaces` off · `mc-group-by-app` off · `mc-switch-to-app-space` on · `mc-start-on-desktop` on (the desktop, not the overview, after login).
+- **First open (B39):** the first paint of the overview (Spaces bar wallpapers, labels, window picker) cost ~280 ms. About 4 s after login, once the user has been still for 1.5 s, `warm.js` paints the overview once at 1/255 opacity, hidden from pointer picks, without `Overview.show()` (so no `showing` signal: the dock, Stage Manager and notch do not react), and puts everything back. First open ~140 ms. It runs once per Shell process and ends at once if a real open starts. Scenario: `mission-control-warm.sh`.
 - The dock and the Stage Manager strip hide while it is open. Code: `features/missionControl/`.
 
 ## Launchpad (`launchpad`, on)

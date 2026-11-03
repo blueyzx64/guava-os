@@ -1,7 +1,7 @@
 // Run: gjs -m tests/missionControlModel.test.js
 import {
     MODE, canRemoveSpace, centringShift, exposeView, fullscreenAppOf, groupedOrder, mruOrder, reorderIndex,
-    skipStartupOverview, spaceLabels, spacePreviewsLive, stripCardSize, touchRecent, windowPlace,
+    skipStartupOverview, spaceLabels, spacePreviewsLive, stripCardSize, touchRecent, warmVerdict, windowPlace,
 } from '../src/features/missionControl/model.js';
 
 let failed = 0;
@@ -138,6 +138,15 @@ test('centringShift: more Spaces than fit: the group is centred in the room ther
 test('centringShift: thumbnails at the maximum, no Space collapsing: none', () => {
     eq(centringShift({ ...SHIFT, maxWidth: 114, collapse: [0, 0] }) === 0, true);
 });
+
+const QUIET = { warmed: false, startingUp: false, overviewVisible: false, modal: false, degraded: false, idleMs: 5000, tries: 0 };
+test('warmVerdict: a quiet finished login: go', () => eq(warmVerdict(QUIET), 'go'));
+test('warmVerdict: once only', () => eq(warmVerdict({ ...QUIET, warmed: true }), 'skip'));
+test('warmVerdict: login, overview open, modal, load or recent input: wait', () => {
+    for (const k of [{ startingUp: true }, { overviewVisible: true }, { modal: true }, { degraded: true }, { idleMs: 200 }])
+        eq(warmVerdict({ ...QUIET, ...k }), 'wait');
+});
+test('warmVerdict: gives up after the retries', () => eq(warmVerdict({ ...QUIET, idleMs: 0, tries: 20 }), 'skip'));
 
 if (failed) {
     print(`${failed} test(s) failed`);
