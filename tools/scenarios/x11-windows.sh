@@ -33,9 +33,13 @@ shot x11-fullscreen
 P "($W1).unmake_fullscreen(); return 1" >/dev/null; sleep 4
 assert "X11 window leaves full screen" "!($W1).is_fullscreen()"
 # The green button on the titlebar Mutter draws for X11 (its x11-frames client): a real click on
-# the maximize button enters full screen, as on GTK apps (B12). Buttons sit 71 px from the right end.
-read fx fy fw <<<"$(_kjs "const f=($W1).get_frame_rect(); return [f.x,f.y,f.width].join(' ')" | grep -o '[0-9-]\+ [0-9-]\+ [0-9]\+')"
-click_at $((fx + fw - 71)) $((fy + 19)) >/dev/null; sleep 3
+# the maximize button enters full screen, as on GTK apps (B12). The button is found on screen (the
+# frames client draws with GTK4 and Guava's button CSS, so its offset follows that CSS): the
+# centre of the green run of pixels nearest the right end of the titlebar's middle row.
+gb=$(_kjs "const f=($W1).get_frame_rect(); const path='/tmp/x11-titlebar.png'; const file=Gio.File.new_for_path(path); const st=file.replace(null,false,0,null); const sh=new Shell.Screenshot(); await new Promise((res,rej)=>sh.screenshot_area(f.x,f.y,f.width,40,st,(o,r)=>{try{o.screenshot_area_finish(r);res()}catch(e){rej(e)}})); st.close(null); const pb=imports.gi.GdkPixbuf.Pixbuf.new_from_file(path); const px=pb.get_pixels(), rs=pb.get_rowstride(), n=pb.get_n_channels(); const sc=pb.get_width()/f.width; let best=null; for(let y=0;y<pb.get_height();y++){let run=[];for(let x=pb.get_width()-1;x>=0;x--){const i=y*rs+x*n; const g=px[i+1]-Math.max(px[i],px[i+2]); if(g>60)run.push(x); else if(run.length>=6)break; else run=[];} if(run.length>=6&&(!best||run.length>best.w))best={x:(run[0]+run[run.length-1])/2/sc,y:y/sc,w:run.length};} return best?Math.round(f.x+best.x)+' '+Math.round(f.y+best.y):'none'" | grep -o '[0-9]\+ [0-9]\+' | head -1)
+echo "green button at: ${gb:-none}"
+[ -n "$gb" ] && click_at ${gb% *} ${gb#* } >/dev/null; sleep 3
+assert "X11 green button found on screen" "'${gb:-}'.length>0"
 assert "X11 green button enters full screen" "($W1).is_fullscreen()"
 P "($W1).unmake_fullscreen(); return 1" >/dev/null; sleep 3
 P "($W1).delete(global.get_current_time()); return 1" >/dev/null; sleep 2
