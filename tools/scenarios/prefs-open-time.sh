@@ -5,7 +5,15 @@
 # llvmpipe, and the call itself must come back at once (it timed out after 25 s at the first login).
 gs onboarding "'done'"; sleep 1
 PREFS="global.get_window_actors().map(a=>a.meta_window).find(w=>(w.get_title()??'').includes('Guava'))"
-closeprefs() { P "global.get_window_actors().map(a=>a.meta_window).filter(w=>(w.get_title()??'').includes('Guava')).forEach(w=>w.delete(global.get_current_time())); return 1" >/dev/null; sleep 2; }
+# A close request first dismisses a dialog on top (the Setup Assistant), not the window: repeat until
+# no Guava window is left, and say so if one stays
+closeprefs() {
+  for _ in 1 2 3 4 5; do
+    r=$(_kjs "return !!($PREFS)"); case "$r" in *true*) ;; *) return 0;; esac
+    P "global.get_window_actors().map(a=>a.meta_window).filter(w=>(w.get_title()??'').includes('Guava')).forEach(w=>w.delete(global.get_current_time())); return 1" >/dev/null; sleep 1.5
+  done
+  echo "PREFSTIME a Guava window did not close"
+}
 now() { date +%s.%N; }
 open_timed() {
   local label=$1 t0 t1 t2 r

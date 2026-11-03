@@ -1,3 +1,4 @@
+# harness-env: GUAVA_MONITORS="1280x800 1280x800"
 # Scenario for the real-Shell harness (GUAVA_EXTRA). Run with GUAVA_MONITORS="1280x800 1280x800".
 # RV5-1: an auto-hiding dock on a side shared with another monitor must not put a pressure barrier
 #        across that shared edge: the pointer has to cross to the neighbour.

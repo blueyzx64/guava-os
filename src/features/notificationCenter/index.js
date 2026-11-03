@@ -87,7 +87,15 @@ export class NotificationCenter {
     // must answer within 250 ms).
     _warmAfterLogin() {
         const cleanup = this._cleanup;
+        // GNOME does not disable extensions when the Shell exits: Main.uiGroup can be gone before
+        // a pending warm-up step runs. Stop as soon as it is destroyed.
+        let shellGone = false;
+        cleanup.connect(Main.uiGroup, 'destroy', () => {
+            shellGone = true;
+        });
         const start = () => {
+            if (shellGone)
+                return;
             const content = new St.BoxLayout({ style_class: 'guava-nc-content', orientation: Clutter.Orientation.VERTICAL, opacity: 0, reactive: false });
             const steps = [
                 () => {
@@ -108,7 +116,7 @@ export class NotificationCenter {
                 gone = true;
             };
             const next = () => {
-                if (gone)
+                if (gone || shellGone)
                     return;
                 if (this.isOpen) {
                     drop();
