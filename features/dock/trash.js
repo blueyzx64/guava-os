@@ -34,10 +34,10 @@ export class TrashItem extends DockItem {
     constructor(host, spec) {
         super(host, spec, host.gettext('Trash'));
         const m = host.metrics;
-        this._icon = new St.Icon({
-            icon_name: 'user-trash', icon_size: m.icon,
+        this._icon = this.sharp(new St.Icon({
+            icon_name: 'user-trash',
             x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER,
-        });
+        }), m.icon);
         this.content.add_child(this._icon);
         const style = IconStyle.apply(this._icon);
         this.cleanup.add(() => style.destroy());

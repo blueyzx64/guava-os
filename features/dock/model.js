@@ -26,6 +26,8 @@ export const RECENT_MAX = 3;
 /** Icon sizes the Size setting allows (macOS's slider spans about 16..128). */
 export const ICON_SIZE_MIN = 24;
 export const ICON_SIZE_MAX = 128;
+/** Largest icon texture (logical px) the dock asks for. */
+export const ICON_TEXTURE_MAX = 256;
 
 /** Largest magnified icon (macOS's slider ends at about two and a half times the default). */
 export const MAGNIFIED_SIZE_MAX = 160;
@@ -609,6 +611,54 @@ export function magnify({ centres, sizes, weights, count, pointer, tile, maxScal
 
 /** Scale under the pointer for a magnified size (never below 1). */
 export const magnifyScale = (iconSize, magnifiedSize) => Math.max(1, magnifiedSize / Math.max(1, iconSize));
+
+/**
+ * Pixel size an app icon is rendered at (the icon's logical size; St multiplies it by the monitor
+ * scale). With magnification on, the icon is drawn once at the largest size it grows to, so the
+ * magnified icon is a sharp texture shown smaller, never a small one stretched.
+ *
+ * @param {number} iconSize dock icon size
+ * @param {boolean} magnification dock-magnification
+ * @param {number} magnifiedSize dock-magnification-size
+ * @returns {number}
+ */
+export function iconTextureSize(iconSize, magnification, magnifiedSize) {
+    if (!magnification)
+        return iconSize;
+    return Math.min(ICON_TEXTURE_MAX, Math.max(iconSize, Math.round(magnifiedSize)));
+}
+
+/**
+ * The Shell removing an extension from enabled-extensions "re-bases" every extension that sits
+ * after it in its order: it disables them, then enables them again. Guava sitting after Dash to
+ * Dock would start twice at login. Taking Guava out of the order list for the length of the
+ * write keeps the Shell from touching it.
+ *
+ * @param {string[]} order Main.extensionManager._extensionOrder
+ * @param {string} self Guava's uuid
+ * @param {string[]} docks uuids of the docks Guava takes out
+ * @returns {{shield: boolean, after: string[]}} shield: Guava is behind a dock; after: the
+ *   extensions behind Guava (they stay behind it)
+ */
+export function rebaseShield(order, self, docks) {
+    const i = order.indexOf(self);
+    const dock = order.findIndex(u => docks.includes(u));
+    if (i < 0 || dock < 0 || dock > i)
+        return { shield: false, after: [] };
+    return { shield: true, after: order.slice(i + 1) };
+}
+
+/** Where Guava goes back into `order`: in front of the first extension that was behind it. */
+export function rebaseRestoreIndex(order, after) {
+    const i = order.findIndex(u => after.includes(u));
+    return i < 0 ? order.length : i;
+}
+
+/**
+ * Magnification runs only while the Shell keeps its frame budget (motion `degraded`) and the
+ * option is on; the dock then rests at plain size until the load clears.
+ */
+export const magnificationActive = (config, degraded) => !!config.magnification && !degraded;
 
 // ---- bounce ------------------------------------------------------------------------------------
 

@@ -14,7 +14,7 @@
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
 
-import { magnify, magnifyScale } from './model.js';
+import { magnificationActive, magnify, magnifyScale } from './model.js';
 
 // Icons grow away from the screen edge
 const PIVOTS = Object.freeze({ bottom: [0.5, 1], left: [0, 0.5], right: [1, 0.5] });
@@ -53,7 +53,8 @@ export class Magnifier {
 
     /** The pointer entered or left the dock. */
     setHovered(hovered) {
-        if (!this._host.config.magnification)
+        // Off while the Shell misses its frame budget (core/motion env.degraded); back when it clears
+        if (!magnificationActive(this._host.config, this._host.motion.env.degraded))
             hovered = false;
         const target = hovered ? 1 : 0;
         if (target === this._target)

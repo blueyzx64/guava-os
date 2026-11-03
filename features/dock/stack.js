@@ -178,22 +178,22 @@ export class FolderStackItem extends DockItem {
         this._pile.destroy_all_children();
         const top = this.files.filter(f => !f.entry.partial).slice(0, PILE).reverse();
         if (!top.length) {
-            this._addPileIcon(new St.Icon({
-                icon_name: this.isDownloads ? 'folder-download' : 'folder', icon_size: m.icon,
+            this._addPileIcon(this.sharp(new St.Icon({
+                icon_name: this.isDownloads ? 'folder-download' : 'folder',
                 x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER,
-            }));
+            }), m.icon));
             return;
         }
         const size = Math.round(m.icon * 0.86);
         top.forEach((f, i) => {
             const depth = top.length - 1 - i;
-            this._addPileIcon(new St.Icon({
-                gicon: f.gicon, icon_size: size,
+            this._addPileIcon(this.sharp(new St.Icon({
+                gicon: f.gicon,
                 x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER,
                 translation_y: -depth * Math.round(m.icon * 0.05),
                 rotation_angle_z: depth * -4,
                 pivot_point: new Graphene.Point({ x: 0.5, y: 1 }),
-            }));
+            }), size));
         });
     }
 

@@ -5,7 +5,7 @@ import {
     autostartState, autostartText, badgeProgress, badgeText, bounceAgain, bounceSteps, clickAction,
     dockItems, dockMetrics, downloadEntry, downloadFinished, dropIndex, fanLayout, folderDropAccepted,
     magnify, magnifyScale, menuEntries, nextWindow, packageKind, pinPosition, pushRecent, readConfig,
-    isPartialWrite, rectContains, removeFolder, sortDownloads, stableOrder, stackView,
+    iconTextureSize, isPartialWrite, magnificationActive, rebaseRestoreIndex, rebaseShield, rectContains, removeFolder, sortDownloads, stableOrder, stackView,
 } from '../features/dock/model.js';
 
 let failed = 0;
@@ -367,6 +367,34 @@ test('rectContains: inside, the far edges excluded, null holds nothing', () => {
     eq(rectContains(r, 40, 30), false);
     eq(rectContains(r, 20, 60), false);
     eq(rectContains(null, 0, 0), false);
+});
+
+test('iconTextureSize: plain size without magnification; the magnified size with it, capped', () => {
+    eq(iconTextureSize(48, false, 96), 48);
+    eq(iconTextureSize(48, true, 96), 96);
+    eq(iconTextureSize(64, true, 48), 64);
+    eq(iconTextureSize(48, true, 999), 256);
+});
+
+test('magnificationActive: needs the option and a Shell that keeps its frame budget', () => {
+    eq(magnificationActive({ magnification: true }, false), true);
+    eq(magnificationActive({ magnification: true }, true), false);
+    eq(magnificationActive({ magnification: false }, false), false);
+});
+
+test('rebaseShield: only when Guava sits behind a dock; the extensions behind it are kept', () => {
+    const docks = ['dtd'];
+    eq(rebaseShield(['probe', 'dtd', 'guava', 'x', 'y'], 'guava', docks), { shield: true, after: ['x', 'y'] });
+    eq(rebaseShield(['guava', 'dtd'], 'guava', docks), { shield: false, after: [] });
+    eq(rebaseShield(['probe', 'guava'], 'guava', docks), { shield: false, after: [] });
+    eq(rebaseShield(['dtd', 'probe'], 'guava', docks), { shield: false, after: [] });
+});
+
+test('rebaseRestoreIndex: Guava returns in front of what was behind it, else last', () => {
+    eq(rebaseRestoreIndex(['probe', 'x', 'y'], ['x', 'y']), 1);
+    eq(rebaseRestoreIndex(['probe', 'y'], ['x', 'y']), 1);
+    eq(rebaseRestoreIndex(['probe'], []), 1);
+    eq(rebaseRestoreIndex(['probe', 'x'], ['x']), 1);
 });
 
 if (failed) {

@@ -16,12 +16,11 @@ export class LaunchpadItem extends DockItem {
     constructor(host, spec) {
         super(host, spec, host.gettext('Launchpad'));
         const file = host.iconFile(ICON);
-        this._icon = new St.Icon({
+        this._icon = this.sharp(new St.Icon({
             gicon: file ? new Gio.FileIcon({ file }) : null,
             fallback_icon_name: 'view-app-grid-symbolic',
-            icon_size: host.metrics.icon,
             x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER,
-        });
+        }), host.metrics.icon);
         this.content.add_child(this._icon);
         const style = IconStyle.apply(this._icon);
         this.cleanup.add(() => style.destroy());

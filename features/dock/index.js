@@ -45,7 +45,7 @@ import { LauncherEntryWatcher } from '../../lib/launcherEntry.js';
 import { BackgroundApps } from '../../lib/backgroundApps.js';
 import {
     Reveal, STACK_VIEWS, addFolder, bounceAgain, bounceSteps, clickAction, dockItems, dockMetrics,
-    folderDropAccepted, isHorizontal, menuEntries, pinPosition, pushRecent, readConfig, removeFolder,
+    folderDropAccepted, iconTextureSize, isHorizontal, menuEntries, pinPosition, pushRecent, readConfig, removeFolder,
     stableOrder,
 } from './model.js';
 import { DockView } from './view.js';
@@ -107,7 +107,7 @@ export class Dock {
         this._badges = new LauncherEntryWatcher(cleanup, appId => this._badgeChanged(appId));
         this._background = new BackgroundApps(cleanup, () => this._queueSync());
 
-        keepOtherDocksOff(ctx.originals, cleanup);
+        keepOtherDocksOff(ctx.originals, cleanup, ctx.extension.uuid);
 
         this._view = new DockView(this, cleanup);
         this._claim = this._layout.claim(cleanup, {
@@ -128,6 +128,8 @@ export class Dock {
         }, cleanup);
         events.on('app-focused', ({ appId }) => this._noteRecent(appId), cleanup);
         events.on('work-area-changed', () => this._place(), cleanup);
+        // Magnification is decorative: off while the Shell misses its frame budget (B28)
+        events.on('motion-changed', () => this._magnifier?.setHovered(this._view.frame.hover), cleanup);
         events.on('monitors-changed', () => {
             this._place();
             this._syncBarrier();
@@ -149,6 +151,9 @@ export class Dock {
         this._ks.watch(HIDE_KEYS, () => this._syncAutohide());
         this._ks.watch(MOTION_KEYS, () => {
             this.config = readConfig(this._ks);
+            // The icons are drawn at the magnified size (B18): the option or its size changed
+            for (const item of this._view.items())
+                item.retexture?.();
             this._magnifier?.setHovered(this._view.frame.hover);
         });
         this._ks.watch('dock-downloads-view', () => {
@@ -197,6 +202,15 @@ export class Dock {
         return this.horizontal
             ? { x: sep.x + sep.width, y: sep.y + Math.round(sep.height / 2 - t / 2), width: t, height: t }
             : { x: sep.x + Math.round(sep.width / 2 - t / 2), y: sep.y + sep.height, width: t, height: t };
+    }
+
+    /**
+     * How much larger than shown an icon is drawn: with magnification on, icons are rendered at
+     * the size they grow to, so a magnified icon is sharp (B18).
+     */
+    get textureRatio() {
+        const icon = this.metrics.icon;
+        return iconTextureSize(icon, this.config.magnification, this.config.magnifiedSize) / icon;
     }
 
     rectOf(item) {

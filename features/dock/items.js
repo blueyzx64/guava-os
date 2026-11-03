@@ -58,6 +58,33 @@ export class DockItem {
                 { duration: 'micro', curve: 'standard' }, this.cleanup));
     }
 
+    /**
+     * Draw `icon` (shown at `size` px) at the size magnification grows it to, so the magnified
+     * icon is sharp instead of a small bitmap stretched (B18). St multiplies by the monitor scale.
+     *
+     * @param {St.Icon} icon
+     * @param {number} size shown size, px
+     * @returns {St.Icon} icon
+     */
+    sharp(icon, size) {
+        if (!this._sharp) {
+            this._sharp = new Map();
+            this.cleanup.add(() => this._sharp.clear());
+        }
+        this._sharp.set(icon, size);
+        // The icon's own signal: it goes with the icon (the stack redraws its pile often)
+        icon.connect('destroy', () => this._sharp?.delete(icon));
+        icon.set_size(size, size);
+        icon.icon_size = Math.round(size * this._host.textureRatio);
+        return icon;
+    }
+
+    /** The magnification option or size changed: draw the icons at the new size. */
+    retexture() {
+        for (const [icon, size] of this._sharp ?? [])
+            icon.icon_size = Math.round(size * this._host.textureRatio);
+    }
+
     /** Rename (accessible name and hover label). */
     setName(name) {
         if (name === this.name)
@@ -140,7 +167,7 @@ export class AppItem extends DockItem {
         super(host, spec, app.get_name() ?? spec.id);
         this.app = app;
         const m = host.metrics;
-        this._icon = app.create_icon_texture(m.icon);
+        this._icon = this.sharp(app.create_icon_texture(m.icon), m.icon);
         this._icon.x_align = Clutter.ActorAlign.CENTER;
         this._icon.y_align = Clutter.ActorAlign.CENTER;
         this.content.add_child(this._icon);
@@ -320,7 +347,8 @@ export class WindowItem extends DockItem {
             this.content.add_child(this._clone);
         }
         if (app) {
-            const badge = app.create_icon_texture(Math.round(m.icon * 0.42));
+            const badgeSize = Math.round(m.icon * 0.42);
+            const badge = this.sharp(app.create_icon_texture(badgeSize), badgeSize);
             badge.x_expand = badge.y_expand = true;
             badge.x_align = Clutter.ActorAlign.END;
             badge.y_align = Clutter.ActorAlign.END;
