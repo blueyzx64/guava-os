@@ -17,6 +17,7 @@
  */
 
 import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 
@@ -39,6 +40,15 @@ import { FEATURES } from './features.js';
 const KEYS_THAT_NEVER_AFFECT_FEATURES = new Set(['clipboard-recording', STORE_KEY,
     STORE_BACKUP_KEY, 'dock-recent-apps', 'screenshots-last-selection', 'emoji-recents', 'emoji-skin-tone',
     'timers-state', 'notch-shelf', 'widgets-layout', 'desktop-icons-layout', 'menubar-item-registry', 'focus-state', 'focus-last']);
+
+// Staged start (login, B2): features that only answer input (a shortcut, a gesture, a click on
+// something stock) and show nothing until then. They are neither imported nor started until the
+// Shell's startup animation is over and the main loop is idle, so the login frames pay only for
+// the chrome the user sees (menu bar, dock, notch, glass, Mission Control's start). Anything
+// that changes what is on screen at login must NOT be here, or it would appear late.
+const STARTS_AFTER_LOGIN = new Set(['app-hide', 'window-tiling', 'launchpad', 'split-view', 'spotlight',
+    'minimize-effect', 'stage-manager-shortcut', 'input-indicator', 'emoji-picker', 'notification-center',
+    'screenshots', 'app-switcher', 'gestures', 'osd', 'dialogs', 'onboarding', 'low-power']);
 
 // Schemas whose keys Guava may own through core/originals.js
 const openSettings = schemaId =>
@@ -96,6 +106,7 @@ export default class GuavaExtension extends Extension {
 
         this._features = new FeatureRegistry(CleanupRegistry, {
             onChange: (id, active) => this._events?.emit('feature-changed', { id, active }),
+            now: () => GLib.get_monotonic_time() / 1000,
         });
         this._features.registerAll(FEATURES);
         // Many keys can change at once (Reset Everything): one pass for all of them
@@ -113,6 +124,7 @@ export default class GuavaExtension extends Extension {
             changedKeys.add(key);
         });
 
+        const holdBack = entry => STARTS_AFTER_LOGIN.has(entry.id);
         this._features.start({
             extension: this,
             settings: this._settings,
@@ -127,7 +139,18 @@ export default class GuavaExtension extends Extension {
             originals: this._originals,
             timers: this._timers,
             appMenus: this._appMenus,
-        });
+        }, { holdBack });
+        // After the startup animation (at login) and the first idle (always): the frames that
+        // show the session come first
+        const release = () => this._cleanup?.idle(() => this._features?.release(), { name: 'features: after login' });
+        if (Main.layoutManager._startingUp) {
+            const done = this._cleanup.connect(Main.layoutManager, 'startup-complete', () => {
+                this._cleanup.release(done);
+                release();
+            });
+        } else {
+            release();
+        }
 
         // After the dock took its entry (it does so from an idle queued before this one)
         this._features.settled().then(() => {

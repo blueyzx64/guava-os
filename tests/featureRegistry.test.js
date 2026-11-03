@@ -322,6 +322,50 @@ test('features.js: ids unique, every entry lazy, conflicts and needs name real i
     }
 });
 
+test('B2 staged start: held entries neither load nor start until release(), then start in order', () => {
+    let loads = 0;
+    const log = [];
+    const { reg, ctx } = setup([
+        { id: 'bar' },
+        { id: 'spot', load: async () => { loads++; return logged(log, 'spot'); } },
+        { id: 'dock' },
+    ], {}, {}, log);
+    reg.start(ctx, { holdBack: e => e.id === 'spot' });
+    settle(reg);
+    eq(log, ['+bar', '+dock']);
+    eq([loads, reg.status('spot')], [0, 'loading'], 'held: not even imported');
+    reg.refresh(null);
+    settle(reg);
+    eq(loads, 0, 'a refresh does not release it');
+    reg.release();
+    settle(reg);
+    eq(log, ['+bar', '+dock', '+spot']);
+    reg.release();
+    eq(log.length, 3, 'release twice is a no-op');
+    reg.stop();
+    reg.start(ctx);
+    settle(reg);
+    eq(log.filter(x => x === '+spot').length, 2, 'next enable without hold starts it at once');
+});
+test('B2 staged start: stop() while held drops the hold; a throwing predicate holds nothing', () => {
+    const { reg, log, ctx } = setup([{ id: 'a' }, { id: 'b' }]);
+    reg.start(ctx, { holdBack: e => e.id === 'b' });
+    reg.stop();
+    reg.release();
+    eq(log, ['+a', '-a']);
+    reg.start(ctx, { holdBack: () => { throw new Error('x'); } });
+    eq(log, ['+a', '-a', '+a', '+b']);
+});
+test('timings(): one row per entry with start time and enable cost', () => {
+    let t = 0;
+    const { reg, ctx } = setup([{ id: 'a', hooks: { onEnable: () => { t += 5; } } }, { id: 'b', setting: 'b' }],
+        {}, { now: () => t });
+    reg.start(ctx);
+    const tm = reg.timings();
+    eq(tm.passes, 1);
+    eq(tm.features.map(f => [f.id, f.startedAt, f.enableMs]), [['a', 5, 5], ['b', null, null]]);
+});
+
 for (const [name, fn] of tests) {
     try {
         fn();
