@@ -15,9 +15,11 @@ for f in metadata.json extension.js prefs.js features.js stylesheet.css \
          schemas/org.gnome.shell.extensions.guava-os.gschema.xml; do
     need "$f"
 done
-# Every tracked source the extension can load at run time
-while IFS= read -r f; do need "$f"; done < <(git ls-files 'lib/*.js' 'core/*.js' 'features/*.js' 'prefs/*' 'icons/*' \
-    'features/*/gtk/*.css')
+# Every tracked source the extension can load at run time. Listed first, so a missing git (or
+# any git failure) stops the check instead of silently checking nothing.
+sources=$(git ls-files 'lib/*.js' 'core/*.js' 'features/*.js' 'prefs/*' 'icons/*' 'features/*/gtk/*.css')
+[ -n "$sources" ] || { echo "check-pack: git listed no sources (is this a git checkout?)"; exit 2; }
+while IFS= read -r f; do need "$f"; done <<<"$sources"
 if grep -E '^(apps|advanced|css|coordinators|styles|tests|docs|tools|helpers)/' <<<"$list"; then
     echo 'zip holds files it must not (above)'; fail=1
 fi

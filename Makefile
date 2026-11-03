@@ -9,7 +9,7 @@ EXTRA_FLAGS := $(addprefix --extra-source=,$(EXTRA))
 # Shell styles: stylesheet.css is built from these (and committed)
 CSS_SRC := styles/base.css $(sort $(wildcard features/*/style.css))
 
-.PHONY: all css css-check pack pack-check pot install uninstall test lint schema-check check clean smoke helper-rpm helper-install
+.PHONY: refs all css css-check pack pack-check pot install uninstall test lint schema-check check clean smoke helper-rpm helper-install
 
 all: check
 
@@ -60,7 +60,11 @@ schema-check:
 	@d=$$(mktemp -d) && glib-compile-schemas --strict --dry-run schemas && \
 		glib-compile-schemas --strict --targetdir="$$d" schemas; r=$$?; rm -rf "$$d"; exit $$r
 
-check: lint schema-check css-check test
+# Imports resolve to real files and exports; every settings key read is in a schema
+refs:
+	NPM_ROOT="$$(npm root -g 2>/dev/null)" node tools/check-refs.mjs
+
+check: lint schema-check css-check refs test
 
 # The shelf drag-out helper is its own package (not in the extension zip): make helper-rpm
 # builds dist/helper/RPMS/noarch/guava-shelf-helper-*.rpm (needs rpmbuild)
