@@ -591,11 +591,8 @@ export class NotchView {
         this._applyShown();
         const done = cleanup.connect(Main.layoutManager, 'startup-complete', () => {
             cleanup.release(done);
-            cleanup.idle(() => {
-                this._loginHold = false;
-                if (!this._destroyed)
-                    this._applyShown();
-            }, { name: 'notch: after login' });
+            this._loginHold = false;
+            this._applyShown();
         });
     }
 
