@@ -368,3 +368,26 @@ export function nowRows(activityCount, notificationCount, maxRows = 3) {
     const notifications = fitsAll ? notificationCount : Math.max(0, room - 1);
     return { activities, notifications, more: notificationCount - notifications };
 }
+
+// ---- hover feedback ---------------------------------------------------------------------------
+// The dashboard opens after the hover dwell, but the pointer arriving gets a response on the first
+// frame (D-021): the collapsed pill swells by this much and returns when the pointer leaves.
+export const HOVER_SWELL = Object.freeze({ w: 16, h: 4 });
+
+/**
+ * @param {{w: number, h: number, r: number}} size a collapsed pill shape
+ * @returns {{w: number, h: number, r: number}} the same pill, swollen
+ */
+export function hoverSwell(size) {
+    return { w: size.w + HOVER_SWELL.w, h: size.h + HOVER_SWELL.h, r: size.r };
+}
+
+/**
+ * Whether a hovered notch shows the swell: hover-to-expand is on (else nothing follows it), no
+ * dashboard is open and the shape is a collapsed pill (a card has its own hover handling).
+ * @param {{enabled: boolean, open: boolean, height: number, idleHeight: number}} s
+ * @returns {boolean}
+ */
+export function swellWanted(s) {
+    return !!s.enabled && !s.open && s.height <= s.idleHeight;
+}

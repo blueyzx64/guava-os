@@ -23,6 +23,7 @@
 // only queue them, and they would pop up when the column closes.)
 
 import Clutter from 'gi://Clutter';
+import GLib from 'gi://GLib';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -53,6 +54,8 @@ export class NotificationCenter {
         this._widgets = [];
         this._refreshIdle = 0;
         this._section = null;
+        this._widgetsActor = null;    // the widget rows in the column (built after the first frame)
+        this._stageIdle = 0;
         this._content = null;
         this._host = null;
         this._bannerFilter = null;
@@ -75,6 +78,57 @@ export class NotificationCenter {
         WIDGET_ROWS.forEach((row, order) =>
             this.addWidget(cleanup, { id: `row-${order}`, order, create: () => this._widgetRow(row) }));
         cleanup.add(() => this._showBanners());
+        this._warmAfterLogin();
+    }
+
+    // The first open of a session pays for styles, icons and builders nobody has used yet. Once the
+    // login is over and the loop is idle, the column's cards are built once off screen (opacity 0,
+    // never mapped to input), laid out, and thrown away, a step per idle turn (D-021: a cold open
+    // must answer within 250 ms).
+    _warmAfterLogin() {
+        const cleanup = this._cleanup;
+        const start = () => {
+            const content = new St.BoxLayout({ style_class: 'guava-nc-content', orientation: Clutter.Orientation.VERTICAL, opacity: 0, reactive: false });
+            const steps = [
+                () => {
+                    Main.uiGroup.add_child(content);
+                    content.add_child(buildDateWidget(this._ctx.gettext, Date.now(), Shell.util_get_week_start()));
+                },
+                () => content.add_child(buildNotifications(groupByApp(this._items()), this._controller([]))),
+                () => content.get_preferred_height(WIDTH),
+            ];
+            let gone = false;
+            const drop = () => {
+                if (!gone)
+                    content.destroy();
+                gone = true;
+            };
+            const next = () => {
+                if (this.isOpen) {
+                    drop();
+                    return;
+                }
+                steps.shift()();
+                if (steps.length)
+                    cleanup.idle(next, { name: 'notification center warm' });
+                else
+                    drop();
+            };
+            cleanup.add(drop);
+            cleanup.idle(next, { name: 'notification center warm' });
+        };
+        const later = () => cleanup.timeout(2000, () => {
+            start();
+            return GLib.SOURCE_REMOVE;
+        }, { name: 'notification center warm delay' });
+        if (Main.layoutManager._startingUp) {
+            const id = cleanup.connect(Main.layoutManager, 'startup-complete', () => {
+                cleanup.release(id);
+                later();
+            });
+        } else {
+            later();
+        }
     }
 
     disable() {
@@ -267,7 +321,7 @@ export class NotificationCenter {
         scroll.set_child(content);
         frame.add_child(scroll);
         this._content = content;
-        this._fill();
+        this._fillStaged();
         return scroll;
     }
 
@@ -276,13 +330,42 @@ export class NotificationCenter {
         if (!content)
             return;
         content.destroy_all_children();
-        const _ = this._ctx.gettext;
-        content.add_child(buildDateWidget(_, Date.now(), Shell.util_get_week_start()));
+        this._widgetsActor = null;
+        content.add_child(buildDateWidget(this._ctx.gettext, Date.now(), Shell.util_get_week_start()));
         this._section = null;
         this._fillNotifications();
-        if (this._ks.bool('notification-center-widgets'))
-            content.add_child(buildWidgets(_, orderWidgets(this._widgets),
-                this._ctx.features.instance('desktop-widgets') ? () => this._editWidgets() : null));
+        this._fillWidgets();
+    }
+
+    // The first frame of an open carries the card with its date; the notifications and the widget
+    // rows are built in the idles after it, one per turn, so a cold open (modules, styles, icons
+    // not yet loaded) never holds the first frame (D-021). Each step checks its column is still the open one.
+    _fillStaged() {
+        const content = this._content;
+        content.destroy_all_children();
+        this._widgetsActor = null;
+        this._section = null;
+        content.add_child(buildDateWidget(this._ctx.gettext, Date.now(), Shell.util_get_week_start()));
+        const steps = [() => this._fillNotifications(), () => this._fillWidgets()];
+        const next = () => {
+            this._stageIdle = 0;
+            if (this._content !== content)
+                return;
+            steps.shift()();
+            if (steps.length)
+                this._stageIdle = this._cleanup.idle(next, { name: 'notification center build' });
+        };
+        this._stageIdle = this._cleanup.idle(next, { name: 'notification center build' });
+    }
+
+    _fillWidgets() {
+        this._widgetsActor?.destroy();
+        this._widgetsActor = null;
+        if (!this._content || !this._ks.bool('notification-center-widgets'))
+            return;
+        this._widgetsActor = buildWidgets(this._ctx.gettext, orderWidgets(this._widgets),
+            this._ctx.features.instance('desktop-widgets') ? () => this._editWidgets() : null);
+        this._content.add_child(this._widgetsActor);
     }
 
     _fillNotifications() {
@@ -329,8 +412,13 @@ export class NotificationCenter {
             this._cleanup.release(this._refreshIdle);
             this._refreshIdle = 0;
         }
+        if (this._stageIdle) {
+            this._cleanup.release(this._stageIdle);
+            this._stageIdle = 0;
+        }
         this._content = null;
         this._section = null;
+        this._widgetsActor = null;
         this._showAll = false;
     }
 }

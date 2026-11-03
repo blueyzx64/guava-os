@@ -34,6 +34,10 @@ test('mode: Genie, Scale, and the cases left to GNOME', () => {
     eq(chooseMode(base), 'genie');
     eq(chooseMode({ ...base, effect: 'scale' }), 'scale');
     eq(chooseMode({ ...base, effect: 'gnome' }), 'stock');
+    eq(chooseMode({ ...base, env: { ...base.env, degraded: true } }), 'scale', 'degraded: the Genie falls back to Scale');
+    eq(chooseMode({ ...base, env: { ...base.env, degraded: true }, effect: 'gnome' }), 'stock');
+    eq(chooseMode({ ...base, env: { ...base.env, degraded: true }, hasTarget: false }), 'stock');
+    eq(chooseMode({ ...base, env: { ...base.env, degraded: true }, overview: true }), 'none');
     eq(chooseMode({ ...base, flagged: true }), 'stock', 'Stage Manager owns its windows');
     eq(chooseMode({ ...base, normal: false }), 'stock');
     eq(chooseMode({ ...base, hasTarget: false }), 'stock');

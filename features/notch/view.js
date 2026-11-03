@@ -36,7 +36,7 @@ import * as A11y from '../../lib/a11y.js';
 import { CleanupRegistry } from '../../lib/disposables.js';
 import { SIZES } from './stateMachine.js';
 import { cardSize } from './dashboardModel.js';
-import { tabDirection, TABS } from './model.js';
+import { tabDirection, TABS, hoverSwell, swellWanted } from './model.js';
 import { label, icon, themed, button, artwork, track, CenterLayout } from './ui.js';
 import { pill, tickMs } from './pills.js';
 import { OutsideClick } from '../../lib/outsideClick.js';
@@ -90,6 +90,7 @@ export class NotchView {
         this._ears = null;
         this._wantShown = true;
         this._loginHold = false;
+        this._holdApplied = false;
         this._pinned = false;        // a clicked (pinned) dashboard is open
         this._open = false;          // a dashboard (pinned or hover-opened) is open
         this._captureId = 0;         // stage 'captured-event' (Escape) while pinned
@@ -107,6 +108,7 @@ export class NotchView {
         this._layout = null;         // shelfLayout() as last reported
         this._hoverIntent = { enabled: true, delayMs: 300 };
         this._hoverTimer = 0;
+        this._swelled = false;       // the collapsed pill is grown under the pointer (hover feedback)
         this._barTokens = null;      // followBar(): the panelBox signals while the notch slides with it
         this._anim = new CleanupRegistry();   // owner of running animations, disposed with the view
 
@@ -162,6 +164,9 @@ export class NotchView {
             const hover = this._island.hover;
             this._hoverSrc.island = hover;
             this._emitHover();
+            // The response to the pointer arriving comes at once: the pill swells on the first
+            // frame while the dwell (the hover intent) still decides whether the dashboard opens
+            this._setSwell(hover);
             if (hover)
                 this._startHoverIntent();
             else
@@ -539,6 +544,13 @@ export class NotchView {
         if (this._destroyed)
             return;
         this._size = size;
+        this._swelled = false;
+        this._shape(size, animate);
+    }
+
+    // The island takes `size`, centred on the primary monitor (the springs retarget from wherever
+    // a running one is, so a new shape never jumps)
+    _shape(size, animate) {
         const monitor = this._monitor();
         if (!monitor)
             return;
@@ -565,6 +577,18 @@ export class NotchView {
         ];
     }
 
+    // Hover feedback: a collapsed pill grows a little under the pointer and settles back when it
+    // leaves (or the dashboard takes over: _place clears the swell)
+    _setSwell(on) {
+        const want = on && swellWanted({
+            enabled: this._hoverIntent.enabled, open: this._open, height: this._size.h, idleHeight: SIZES.idle.h,
+        });
+        if (this._destroyed || !this._island.mapped || want === this._swelled)
+            return;
+        this._swelled = want;
+        this._shape(want ? hoverSwell(this._size) : this._size, true);
+    }
+
     /** @param {boolean} show the island is on screen at all (bar visible, not hidden by fullscreen) */
     setShown(show) {
         if (this._destroyed)
@@ -576,7 +600,19 @@ export class NotchView {
     // The island shows when it is wanted, the login is over (B27) and the screen is not locked
     // (D-018: the lock hides it, unlock gives it back through _applyShown)
     _applyShown() {
-        this._island.visible = this._wantShown && !this._loginHold && !Main.sessionMode.isLocked;
+        // During the login hold the island is laid out and styled but paints nothing (opacity 0,
+        // no input): its first render happens while the startup animation still runs, so the
+        // reveal at startup-complete is one cheap frame instead of a long one
+        const hold = this._loginHold;
+        this._island.visible = this._wantShown && !Main.sessionMode.isLocked;
+        if (hold) {
+            this._island.opacity = 0;
+            this._island.reactive = false;
+        } else if (this._holdApplied) {
+            this._island.reactive = !this._shelfDrag;
+            this._island.opacity = this._barTokens ? Main.layoutManager.panelBox.opacity : 255;
+        }
+        this._holdApplied = hold;
         if (this._outside)
             this._syncOutside();
     }

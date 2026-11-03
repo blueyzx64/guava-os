@@ -4,7 +4,7 @@
 GNOME's overview restyled: a Spaces bar on top, the current Space's windows spread out, no search and no dash. As on macOS, windows minimized into the Dock are not in the spread (a window minimized or restored while it is open leaves or joins it); App Exposé shows them in its strip.
 - **Open:** F3, Ctrl+Up (`mission-control-shortcut`; also the XF86LaunchA key), a three- or four-finger swipe up, the optional dock tile, a hot corner.
 - **App Exposé:** Ctrl+Down (`app-expose-shortcut`), the dock's Show All Windows, a four-finger swipe down. Shows one app's windows with its minimized ones in a strip at the bottom.
-- **Spaces bar:** add with +, remove with x, drag to reorder.
+- **Spaces bar:** add with +, remove with x, drag to reorder. While the Shell misses its frame budget (`ctx.motion.env.degraded`) the thumbnails show their Space without the live window pictures, and get them back when the load clears (B28). App Exposé's minimized-window strip is static pictures already.
 - **Settings (default):** `mc-static-spaces` on (Spaces stay until you remove them; GNOME's dynamic workspaces are off meanwhile) · `mc-rearrange-spaces` off · `mc-group-by-app` off · `mc-switch-to-app-space` on · `mc-start-on-desktop` on (the desktop, not the overview, after login).
 - The dock and the Stage Manager strip hide while it is open. Code: `features/missionControl/`.
 

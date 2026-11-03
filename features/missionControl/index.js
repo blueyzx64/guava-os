@@ -40,7 +40,7 @@ import { SettingOwner } from '../../core/originals.js';
 import { SpacesBar } from './spaces.js';
 import { ExposeStrip, STRIP_HEIGHT } from './expose.js';
 import {
-    MODE, exposeView, fullscreenAppOf, groupedOrder, mruOrder, skipStartupOverview, touchRecent,
+    MODE, exposeView, fullscreenAppOf, groupedOrder, mruOrder, skipStartupOverview, spacePreviewsLive, touchRecent,
     windowPlace,
 } from './model.js';
 
@@ -97,6 +97,9 @@ export class MissionControl {
         c.add(() => this._strip.hide());
         this._spaces = new SpacesBar(this, controls._thumbnailsBox, c);
         this._spaces.enable();
+        const syncLive = () => this._spaces.setLive(spacePreviewsLive(this._ctx.motion.env));
+        this._ctx.events.on('motion-changed', syncLive, c);
+        syncLive();
 
         c.connect(Main.overview, 'showing', () => this._onShowing());
         c.connect(Main.overview, 'hidden', () => this._onHidden());

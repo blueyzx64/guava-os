@@ -49,6 +49,7 @@ export class SpacesBar {
         this._plusWanted = false;
         this._hovered = null;
         this._dragging = false;
+        this._live = true;           // the thumbnails show their window pictures (B28)
     }
 
     enable() {
@@ -123,8 +124,24 @@ export class SpacesBar {
         c.connect(global.workspace_manager, 'notify::n-workspaces', () => this._refresh());
         c.connect(Main.overview, 'hidden', () => this._undecorateAll());
         c.add(() => this._undecorateAll());
+        c.add(() => this.setLive(true));
         c.add(() => this._plus?.destroy());
         this._refresh();
+    }
+
+    /**
+     * Live previews on or off (B28): off, each thumbnail hides its window clones and shows only
+     * its Space; on again when the Shell keeps its frame budget.
+     */
+    setLive(live) {
+        this._live = live;
+        for (const t of this._box._thumbnails ?? [])
+            this._applyLive(t);
+    }
+
+    _applyLive(thumbnail) {
+        if (thumbnail._contents)
+            thumbnail._contents.visible = this._live;
     }
 
     /** The live thumbnails (not sliding out), in workspace order. */
@@ -141,6 +158,7 @@ export class SpacesBar {
      */
     _refresh() {
         const thumbs = this._thumbnails();
+        thumbs.forEach(t => this._applyLive(t));
         for (const t of [...this._decor.keys()]) {
             if (!thumbs.includes(t))
                 this._undecorate(t);

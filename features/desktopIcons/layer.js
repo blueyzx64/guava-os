@@ -10,6 +10,7 @@
 
 import Atk from 'gi://Atk';
 import Clutter from 'gi://Clutter';
+import GLib from 'gi://GLib';
 import Meta from 'gi://Meta';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -18,6 +19,8 @@ import { CleanupRegistry } from '../../lib/disposables.js';
 import { RANKS } from '../../core/desktopLayers.js';
 import { IconTile } from './tile.js';
 import { bandRect, cellAt, cellRect, isDoubleClick, isDrag, rubberBandHits } from './model.js';
+
+const TILE_BUDGET_MS = 8;    // build time per turn for new tiles (sync)
 
 export class IconLayer {
     /**
@@ -31,6 +34,7 @@ export class IconLayer {
         this._cleanup = new CleanupRegistry();
         this._tiles = new Map();     // key -> IconTile
         this._cells = new Map();
+        this._backlog = 0;           // idle token while tiles wait for their turn (sync)
         this._grid = null;
         this._metrics = null;
         this._press = null;          // a press on a tile: {tile, startX, startY, dragging, ...}
@@ -82,16 +86,38 @@ export class IconLayer {
             if (!keys.has(key))
                 this._drop(key);
         }
+        // New tiles are built within a time budget per turn: the first sync after login (every
+        // icon is new) would otherwise hold the main loop for one long first render. The rest
+        // follow in the idles after the frame that shows the first ones.
+        if (this._backlog) {
+            this._cleanup.release(this._backlog);
+            this._backlog = 0;
+        }
+        const started = GLib.get_monotonic_time();
+        let created = 0;
+        let deferred = false;
         for (const entry of entries) {
             let tile = this._tiles.get(entry.key);
             const fresh = !tile;
-            if (fresh)
+            if (fresh && created > 0 && (GLib.get_monotonic_time() - started) / 1000 > TILE_BUDGET_MS) {
+                deferred = true;
+                continue;
+            }
+            if (fresh) {
                 tile = this._create(entry);
-            else
+                created++;
+            } else {
                 tile.update(entry);
+            }
             this._place(tile, cells.get(entry.key), animate && !fresh);
         }
         this.refresh();
+        if (deferred) {
+            this._backlog = this._cleanup.idle(() => {
+                this._backlog = 0;
+                this.sync(entries, cells, grid, metrics, false);
+            }, { name: 'desktop icons tiles' });
+        }
     }
 
     _create(entry) {

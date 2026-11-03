@@ -4,7 +4,7 @@ import {
     removeFromShelf, parseUriList, parseGnomeCopiedFiles, parsePlainFiles, displayName, batteryChange,
     UPOWER, connectedHeadphones, newlyConnected, downloadSummary, formatBytes, nextEvent, minutesUntil,
     formatCountdown, formatElapsed, tabDirection, nowRows, pillWidth, SHELF_LIMIT, DROP_FILE_TYPES, inDropZone,
-    dropZone,
+    dropZone, hoverSwell, swellWanted, HOVER_SWELL,
 } from '../features/notch/model.js';
 
 let failed = 0;
@@ -17,6 +17,19 @@ function eq(a, b, msg = '') {
 }
 const act = (key, kind, at) => ({ key, kind, at, ...activityTiming(kind, at) });
 
+test('hover swell grows a collapsed pill and keeps its radius', () => {
+    const idle = { w: 190, h: 32, r: 16 };
+    const sw = hoverSwell(idle);
+    eq(sw, { w: 190 + HOVER_SWELL.w, h: 32 + HOVER_SWELL.h, r: 16 });
+    eq(idle.w, 190, 'input untouched');
+});
+test('swell only for a collapsed pill, hover expand on, no dashboard open', () => {
+    const base = { enabled: true, open: false, height: 32, idleHeight: 32 };
+    eq(swellWanted(base), true);
+    eq(swellWanted({ ...base, enabled: false }), false);
+    eq(swellWanted({ ...base, open: true }), false);
+    eq(swellWanted({ ...base, height: 140 }), false);
+});
 test('every kind has a priority; unknown kinds throw', () => {
     for (const [k, v] of Object.entries(KINDS))
         eq(typeof v.priority, 'number', k);

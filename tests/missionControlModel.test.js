@@ -1,7 +1,7 @@
 // Run: gjs -m tests/missionControlModel.test.js
 import {
     MODE, canRemoveSpace, centringShift, exposeView, fullscreenAppOf, groupedOrder, mruOrder, reorderIndex,
-    skipStartupOverview, spaceLabels, stripCardSize, touchRecent, windowPlace,
+    skipStartupOverview, spaceLabels, spacePreviewsLive, stripCardSize, touchRecent, windowPlace,
 } from '../features/missionControl/model.js';
 
 let failed = 0;
@@ -16,6 +16,11 @@ function eq(a, b) {
 
 const desk = n => `Desktop ${n}`;
 
+test('Spaces previews are live unless the frame budget is blown', () => {
+    eq(spacePreviewsLive({ degraded: false }), true);
+    eq(spacePreviewsLive({}), true);
+    eq(spacePreviewsLive({ degraded: true }), false);
+});
 test('spaceLabels: desktops numbered on their own, full-screen Spaces named after the app', () => {
     eq(spaceLabels([{ fullscreenApp: null }, { fullscreenApp: 'Files' }, { fullscreenApp: null }], desk), [
         { label: 'Desktop 1', fullscreen: false },

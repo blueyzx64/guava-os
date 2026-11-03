@@ -203,3 +203,12 @@ export function centringShift({ maxWidth, thumbnailWidth, spacing, collapse, ava
     });
     return (Math.min(box, available) - group) / 2 - (maxWidth - thumbnailWidth) * n / 2;
 }
+
+/**
+ * Whether the Spaces bar shows its thumbnails' window pictures. They are live clones that repaint
+ * whenever a window does; while the Shell is over its frame budget (env.degraded) the bar keeps
+ * its frames and drops the pictures until the load clears (B28).
+ * @param {{degraded?: boolean}} env core/motion env
+ * @returns {boolean}
+ */
+export const spacePreviewsLive = env => !env?.degraded;

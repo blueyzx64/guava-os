@@ -85,9 +85,9 @@ lat_all() {
     lat dock-click 3 "(()=>{const it=globalThis.__lat.it;return !!it&&(Math.abs(it.content.translation_y)>0.5||Math.abs(it.content.translation_x)>0.5);})()" \
       "const d=inst('dock'); const sys=Shell.AppSystem.get_default(); for(const [id,it] of d._view._items){const ap=sys.lookup_app(id); if(ap&&ap.get_n_windows()===0&&it.actor.mapped){globalThis.__lat.it=it;break;}} await kclickM(globalThis.__lat.it.actor,mark);" \
       "await away(); await sl(2500); kwins().filter(w=>(w.get_wm_class()||'')!=='org.x2.Perf').forEach(w=>w.delete(global.get_current_time())); await sl(1000);"
-    # notch hover: the dashboard opens
-    lat notch-hover $reps "shown(find('guava-notch-dash'))" \
-      "await away(); await sl(600); const n=find('guava-notch'); const [x,y]=ctr(n); await kmove(x,y+30); await sl(100); mark(); await kmove(x,y);" \
+    # notch hover: the pill swells on the first frame (the response); the dashboard follows the dwell
+    lat notch-hover $reps "(()=>{const n=find('guava-notch');return shown(find('guava-notch-dash'))||(!!n&&n.width>globalThis.__lat.w0+3);})()" \
+      "await away(); await sl(600); const n=find('guava-notch'); globalThis.__lat.w0=n.width; const [x,y]=ctr(n); await kmove(x,y+30); await sl(100); mark(); await kmove(x,y);" \
       "await away(); await sl(1500);"
   fi
   # titlebar press, then the first moves: the window follows the pointer (drag start)

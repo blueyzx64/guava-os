@@ -49,7 +49,7 @@ export function readConfig(get) {
  *
  * @param {object} p
  * @param {string} p.effect config.effect
- * @param {{animations: boolean, reducedMotion: boolean}} p.env core/motion env
+ * @param {{animations: boolean, reducedMotion: boolean, degraded?: boolean}} p.env core/motion env
  * @param {boolean} p.normal a normal window or dialog (the Shell animates only those)
  * @param {boolean} p.flagged WindowState says another feature set it aside
  * @param {boolean} p.hasTarget a target rect is known (edgeTarget() gives one on any monitor)
@@ -66,7 +66,8 @@ export function chooseMode({ effect, env, normal, flagged, hasTarget, overview }
         return 'fade';
     if (!hasTarget)
         return 'stock';
-    return effect === 'scale' ? 'scale' : 'genie';
+    // The Genie warps the window mesh every frame: a Shell over its frame budget plays Scale instead
+    return effect === 'scale' || env.degraded ? 'scale' : 'genie';
 }
 
 /**
