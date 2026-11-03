@@ -395,8 +395,10 @@ export class MissionControl {
             });
             this._static = { count, dynamic };
             c.add(() => {
-                count.release();
+                // Dynamic first: while Mutter is still static, writing the old (lower) num-workspaces
+                // could fold the Spaces above it
                 dynamic.release();
+                count.release();
                 this._static = null;
             });
         }

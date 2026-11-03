@@ -363,13 +363,19 @@ export class WindowTiling {
         // Back from full screen: Mutter restores the pre-fullscreen frame (the tile); re-apply
         // it so it matches the work area of now
         cleanup.connect(win, 'notify::fullscreen', () => {
-            if (!win.is_fullscreen())
+            if (win.is_fullscreen())
+                this._motion.cancel(win);
+            else
                 this._reapply(win);
         });
+        // A flight must not fight the minimize effect or a workspace switch over the same actor
+        cleanup.connect(win, 'notify::minimized', () => this._motion.cancel(win));
+        cleanup.connect(win, 'workspace-changed', () => this._motion.cancel(win));
         // Maximized by something else (double-click, Super+Up): it no longer holds its tile
         const onMaximized = () => {
             if (!isMaximized(win))
                 return;
+            this._motion.cancel(win);
             this._book.untile(win.get_stable_sequence());
             this._forget(win, true);
         };

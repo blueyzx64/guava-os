@@ -17,8 +17,6 @@
 // Shell API: Meta.Window get_frame_rect / get_compositor_private, Clutter.Actor
 // pivot_point / scale / translation. Checked on GNOME 50.6.
 
-import Graphene from 'gi://Graphene';
-
 import { frameTransform, isSettled, lerpRect, planTile } from './tileMotionModel.js';
 
 const rectOf = r => ({ x: r.x, y: r.y, width: r.width, height: r.height });
@@ -52,7 +50,7 @@ export class TileMotion {
     move(win, to, apply) {
         const actor = win.get_compositor_private();
         const prev = this._runs.get(win);
-        const from = prev ? prev.visual : rectOf(win.get_frame_rect());
+        const from = rectOf(prev ? prev.visual : win.get_frame_rect());
         const mode = actor ? planTile({
             from, to, env: this._ctx.motion.env,
             visible: actor.visible && !win.minimized, fullscreen: win.is_fullscreen(),
@@ -67,22 +65,30 @@ export class TileMotion {
             prev.superseded = true;
             prev.handle?.cancel();
         }
-        const run = { actor, visual: from, handle: null, superseded: false };
+        const run = { actor, visual: rectOf(from), handle: null, superseded: false };
         this._runs.set(win, run);
         this.stats.flights++;
         const motion = this._ctx.motion;
 
+        // One scratch rect and transform per flight: nothing is allocated per frame
+        const scratch = { x: 0, y: 0, width: 0, height: 0 };
+        const transform = { scaleX: 1, scaleY: 1, tx: 0, ty: 0 };
+        // Draws the window at `want`; returns the app's frame it measured, or null
         const step = want => {
-            run.visual = want;
+            if (want !== run.visual) {
+                run.visual.x = want.x;
+                run.visual.y = want.y;
+                run.visual.width = want.width;
+                run.visual.height = want.height;
+            }
             if (!win.get_compositor_private())
-                return;
+                return null;
             const cur = win.get_frame_rect();
-            const t = frameTransform(want, cur);
-            const bw = actor.width || 1;
-            const bh = actor.height || 1;
-            actor.pivot_point = new Graphene.Point({ x: (cur.x - actor.x) / bw, y: (cur.y - actor.y) / bh });
+            const t = frameTransform(want, cur, transform);
+            actor.set_pivot_point((cur.x - actor.x) / (actor.width || 1), (cur.y - actor.y) / (actor.height || 1));
             actor.set({ scale_x: t.scaleX, scale_y: t.scaleY, translation_x: t.tx, translation_y: t.ty });
             this.stats.frames++;
+            return cur;
         };
         const clear = () => {
             if (this._runs.get(win) !== run)
@@ -97,8 +103,8 @@ export class TileMotion {
                 duration: 'short', curve: 'linear',
                 onDone: () => !run.superseded && clear(),
             }, () => {
-                step(to);
-                if (isSettled(win.get_frame_rect(), to))
+                const cur = step(to);
+                if (cur && isSettled(cur, to))
                     run.handle?.cancel();
             }, this._cleanup);
         };
@@ -115,7 +121,7 @@ export class TileMotion {
                 else
                     clear();
             },
-        }, t => step(lerpRect(from, to, t)), this._cleanup);
+        }, t => step(lerpRect(from, to, t, scratch)), this._cleanup);
     }
 
     /** Stop a flight where it is and give the actor back to Mutter. */

@@ -34,6 +34,7 @@ import { Keybindings } from '../../lib/keybindings.js';
 import { isCandidate, preSplitRect, splitRects, survivorAfter, thumbnailRects } from './model.js';
 
 const FLAG = 'splitView';
+const SETTLE_MS = 500;   // how long a window may take to leave full screen
 
 const isNormal = w => w.get_window_type() === Meta.WindowType.NORMAL;
 
@@ -95,6 +96,10 @@ export class SplitView {
         const rects = splitRects(area, side);
         const ws = win.get_workspace();
         WindowState.set(win, FLAG, true);
+        // Zoomed, then full screen: leaving full screen would bring the maximized state back, and
+        // Mutter keeps a maximized window at the work area, so it would never take the half
+        if (isMaximized(win))
+            unmaximizeWindow(win);
         win.unmake_fullscreen();
         // The window's own size comes back with its first resize: that is the size it returns
         // to when it leaves the pair. The half is only asked for after that.
@@ -112,6 +117,12 @@ export class SplitView {
             settle.dispose();
             this._settling = null;
         });
+        // A client that ignores the resize (or has the same size in both states) sends no
+        // size-changed: place the half anyway, or the window would be stuck flagged
+        settle.timeout(SETTLE_MS, () => {
+            if (this._settling === settle)
+                place();
+        }, { name: 'split view settle' });
         return true;
     }
 
@@ -146,6 +157,11 @@ export class SplitView {
             });
             label.clutter_text.ellipsize = 3;  // Pango.EllipsizeMode.END
             overlay.add_child(label);
+            // A candidate that closes while the picker is open is gone from it
+            reg.connect(w, 'unmanaged', () => {
+                button.destroy();
+                label.destroy();
+            });
         });
         Main.layoutManager.uiGroup.add_child(overlay);
         global.focus_manager.add_group(overlay);
@@ -188,7 +204,7 @@ export class SplitView {
 
     _pick(other) {
         const picker = this._picker;
-        if (!picker)
+        if (!picker || !other.get_compositor_private())
             return;
         const { win, ws, half, before } = picker;
         this._picker = null;

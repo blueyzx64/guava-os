@@ -401,8 +401,13 @@ export class FullscreenSpace {
         }))
             return;
         const first = this._manager.get_workspace_by_index(0);
+        const watching = this._manager.get_active_workspace() === ws;
         win.change_workspace(first);
         this._setHome(info, first);
+        // The user is looking at the full-screen Space and asked for this window (Spotlight, the
+        // dock, a shortcut): follow it, as macOS switches to the app's Space
+        if (watching && first !== ws && !win.minimized)
+            this._activate(first, win);
     }
 
     // Moving a dialog would drag its parent along, so these stay where they are
@@ -433,7 +438,9 @@ export class FullscreenSpace {
             return;
         }
         const switching = this._manager.get_active_workspace() !== ws;
-        this._slowDown();
+        // Slowing the Shell's animations only makes sense for a slide that will happen
+        if (switching)
+            this._slowDown();
         if (win)
             animation.movingWindow = win;
         this._pin = win ? { win, token: 0 } : null;

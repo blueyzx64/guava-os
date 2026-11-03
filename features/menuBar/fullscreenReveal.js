@@ -51,6 +51,7 @@ export class FullscreenReveal {
         this._armed = false;     // the pointer was off the edge since it appeared
         this._anim = null;
         this._menuWatch = 0;     // token of the one handler waiting for the open menu to close
+        this._concealCheck = 0;  // token of the pending conceal check
         this._exit = null;       // the green exit-full-screen button
     }
 
@@ -219,7 +220,18 @@ export class FullscreenReveal {
         this._maybeConceal();
     }
 
+    // Deferred to idle: while a menu opens, the key focus moves into it before the menu manager
+    // knows it is the active menu, and concealing then would hide the bar under the opening menu
     _maybeConceal() {
+        if (this._concealCheck || !this._revealed)
+            return;
+        this._concealCheck = this._cleanup.idle(() => {
+            this._concealCheck = 0;
+            this._concealIfIdle();
+        }, { name: 'menu bar conceal check' });
+    }
+
+    _concealIfIdle() {
         if (!this._revealed || Main.panel.hover || A11y.focusWithin(Main.panel))
             return;
         const menu = Main.panel.menuManager.activeMenu;

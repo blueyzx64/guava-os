@@ -39,14 +39,16 @@ export function planTile({ from, to, env, visible, fullscreen }) {
     return area(to) >= area(from) ? 'grow' : 'shrink';
 }
 
-/** The rect at progress t (0 = a, 1 = b). */
-export function lerpRect(a, b, t) {
-    return {
-        x: a.x + (b.x - a.x) * t,
-        y: a.y + (b.y - a.y) * t,
-        width: a.width + (b.width - a.width) * t,
-        height: a.height + (b.height - a.height) * t,
-    };
+/**
+ * The rect at progress t (0 = a, 1 = b). Per-frame callers pass `out` to reuse one object.
+ * `out` may be `a`.
+ */
+export function lerpRect(a, b, t, out = {}) {
+    out.x = a.x + (b.x - a.x) * t;
+    out.y = a.y + (b.y - a.y) * t;
+    out.width = a.width + (b.width - a.width) * t;
+    out.height = a.height + (b.height - a.height) * t;
+    return out;
 }
 
 /**
@@ -54,15 +56,16 @@ export function lerpRect(a, b, t) {
  * rect `want`. The pivot is the frame's top-left corner, so the actor's position is untouched:
  * scale about the corner, then shift the corner.
  *
+ * `out` is reused by per-frame callers.
+ *
  * @returns {{scaleX: number, scaleY: number, tx: number, ty: number}}
  */
-export function frameTransform(want, cur) {
-    return {
-        scaleX: cur.width > 0 ? want.width / cur.width : 1,
-        scaleY: cur.height > 0 ? want.height / cur.height : 1,
-        tx: want.x - cur.x,
-        ty: want.y - cur.y,
-    };
+export function frameTransform(want, cur, out = {}) {
+    out.scaleX = cur.width > 0 ? want.width / cur.width : 1;
+    out.scaleY = cur.height > 0 ? want.height / cur.height : 1;
+    out.tx = want.x - cur.x;
+    out.ty = want.y - cur.y;
+    return out;
 }
 
 /** The app's frame is where it was asked to be (within a pixel). */

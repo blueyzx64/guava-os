@@ -121,7 +121,49 @@ export class MinimizeEffect {
 
     // ---- effects -------------------------------------------------------------------------
 
+    // Mutter waits for completed_minimize/unminimize (Guava blocked the Shell's handlers), so any
+    // failure in here must still complete: the window would stay drawn and unreachable otherwise
     _play(shellwm, actor, restoring) {
+        // Shell.WM's own methods: another extension (Magic Lamp) replaces them on the instance with
+        // no-ops, and Mutter would then wait for this window forever
+        let completed = false;
+        const complete = () => {
+            if (completed)
+                return;
+            completed = true;
+            if (restoring)
+                Shell.WM.prototype.completed_unminimize.call(shellwm, actor);
+            else
+                Shell.WM.prototype.completed_minimize.call(shellwm, actor);
+        };
+        try {
+            this._playEffect(shellwm, actor, restoring, complete);
+        } catch (e) {
+            console.error('[Guava] minimize effect failed, the window goes at once:', e);
+            this._abort(actor, restoring, complete);
+        }
+    }
+
+    _abort(actor, restoring, complete) {
+        try {
+            const run = this._running.get(actor);
+            if (run)
+                run.finish();       // drops the picture and completes
+        } catch (e) {
+            console.error('[Guava] minimize effect: cleanup failed:', e);
+            this._running.delete(actor);
+        }
+        try {
+            if (restoring)
+                actor.show();
+            actor.opacity = 255;
+        } catch (_e) {
+            // the actor is gone
+        }
+        complete();
+    }
+
+    _playEffect(shellwm, actor, restoring, complete) {
         const win = actor.meta_window;
         // A run Mutter cut off just now (kill-window-effects) for this window
         const carried = this._carried.get(actor) ?? null;
@@ -148,11 +190,6 @@ export class MinimizeEffect {
                 Main.wm._minimizeWindow(shellwm, actor);
             return;
         }
-        // Shell.WM's own methods: another extension (Magic Lamp) replaces them on the instance with
-        // no-ops, and Mutter would then wait for this window forever
-        const complete = () => (restoring
-            ? Shell.WM.prototype.completed_unminimize.call(shellwm, actor)
-            : Shell.WM.prototype.completed_minimize.call(shellwm, actor));
         if (mode === 'none') {
             if (restoring)
                 actor.show();

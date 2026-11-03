@@ -52,6 +52,9 @@ while i<len(L):
         # GLib puts one between a CRITICAL and its JS stack (the Guava frame is in that stack)
         while j<len(L) and not hdr.search(L[j]) and not L[j].startswith('(') and not re.match(r'^(Gjs-Message|GNOME Shell-Message|WARNING|\S+-(Message|WARNING|DEBUG))',L[j]): b.append(L[j]);j+=1
         t='\n'.join(b);m=fr.search(t)
+        # A scenario that throws on purpose marks its error text, so the failure path can be tested
+        if 'GUAVA-TEST-EXPECTED' in t:
+            i=j;continue
         if m or '[Guava]' in t:
             msg=re.sub(r'^.*?(CRITICAL|JS ERROR)[^:]*:\s*(\d\d:\d\d:\d\d\.\d+:\s*)?','',L[i])[:120]
             g[(m.group(1) if m else '(no frame)',msg)]+=1

@@ -58,3 +58,17 @@ test('isSettled tolerates a pixel', () => {
 
 if (failed)
     imports.system.exit(1);
+
+test('lerpRect and frameTransform write into a reused object (no per-frame allocation)', () => {
+    const out = {};
+    const r = lerpRect(A, B, 0.5, out);
+    eq(r === out, true);
+    eq(out, { x: 50, y: 66, width: 520, height: 500 });
+    const t = {};
+    eq(frameTransform(A, B, t) === t, true);
+    eq(t, { scaleX: 400 / 640, scaleY: 300 / 700, tx: 100, ty: 68 });
+    // out may be the source
+    const a = { ...A };
+    lerpRect(a, B, 1, a);
+    eq(a, B);
+});

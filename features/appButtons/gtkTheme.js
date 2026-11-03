@@ -78,7 +78,7 @@ export class GtkTheme {
         const ks = new GuavaSettings(this._ctx.settings);
         ks.attach(this._cleanup);
         ks.watch(KEYS, () => this._update(ks));
-        // On stop (lock, disable): Guava's imports out of the user's files again
+        // On stop (disable; a lock only suspends, B21): Guava's imports out of the user's files again
         this._cleanup.add(() => this._write(() => ''));
         this._update(ks);
     }
