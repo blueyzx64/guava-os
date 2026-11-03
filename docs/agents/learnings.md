@@ -72,8 +72,12 @@
   costs ~40 ms, unlock ~45-70 ms, against ~250 ms of blocking for a full disable.
 - **Sub-registries are not reached by the registry's per-feature suspend:** a feature's own child
   cleanup registries (67 of them) need the extension-level sweep that hides `guava-` actors.
-- **Login readiness is bound by module parsing (~500 ms), not `enable()` (~270 ms):** deferring
-  features with `later` barely helps; fewer and smaller modules on the login path do.
+- **Login readiness is NOT bound by parsing** (L18 disproved the earlier guess): the whole extension
+  parses in ~50 ms; Shell imports cost ~0.17 ms/KB (~250 ms for the 1.5 MB login path) and
+  `enable()` ~290 ms. The desktop counts as ready at the first frame of the notch and desktop icons
+  after startup-complete, behind a ~285 ms stall from their first render: spread first builds out.
+- **Re-importing a GObject module with a `?query` URL segfaults the Shell.** Don't use cache-busting
+  imports to time module loads.
 
 ## Test environment
 
