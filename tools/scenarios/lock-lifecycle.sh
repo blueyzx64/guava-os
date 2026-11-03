@@ -85,4 +85,12 @@ assert "RV2-10 the timer alert was shown at the unlock and dismissed" "!ctx().ti
 assert "unlock: the late chrome came back" "globalThis.__late.visible"
 G 'globalThis.__late.destroy(); kwin("org.x2.LockFs").unmake_fullscreen(); await sl(1500); return 1' >/dev/null
 assert "leaving full screen shows the dock again" "tracked().length>0 && tracked().some(d=>d.actor.visible)"
+
+echo "-- RV2-10: the Timer done pill shows at the unlock (no full-screen window now, so the notch is visible)"
+G 'lock(); ctx().timers.startTimer({seconds:2,label:"Pill tea"}); await sl(3500); return 1' >/dev/null
+assert "RV2-10 still waiting while locked" "ctx().timers.list().some(t=>t.state==='finished') && gv().length===0"
+G 'unlock(); return 1' >/dev/null
+sleep 1
+echo "LOCKLC after second unlock: $(G 'return names()')"
+assert "RV2-10 the Timer done pill is on screen after the unlock" "names().includes('timer-done')"
 assert_summary

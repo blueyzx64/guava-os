@@ -10,7 +10,7 @@
 // Cost while idle: one GLib timeout armed for the next timer that rings, none without timers.
 // Nothing ticks per second here; a view that shows a countdown runs its own tick while shown.
 // The list is stored in the Guava key `timers-state` (wall-clock times), so timers survive the
-// lock screen (which disables the extension) and a Shell restart.
+// lock screen (Guava stays loaded but its UI is hidden, D-018: a timer that rings meanwhile stays in the list until the notch shows it after the unlock) and a Shell restart.
 
 import GLib from 'gi://GLib';
 
