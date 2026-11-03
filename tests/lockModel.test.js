@@ -122,6 +122,88 @@ test('registry: a feature that starts while locked starts suspended', () => {
     eq([...cleanups.a._surfaces][0].visible, true);
 });
 
+// An actor with a working 'notify::visible' (what Clutter does when `visible` changes)
+class SignalActor {
+    constructor(visible) {
+        this.reactive = true;
+        this._vis = visible;
+        this._handlers = new Map();
+        this._id = 0;
+    }
+
+    get visible() { return this._vis; }
+
+    set visible(v) {
+        if (v === this._vis)
+            return;
+        this._vis = v;
+        for (const fn of [...this._handlers.values()])
+            fn();
+    }
+
+    connect(_sig, fn) { this._handlers.set(++this._id, fn); return this._id; }
+    disconnect(h) { this._handlers.delete(h); }
+    get handlerCount() { return this._handlers.size; }
+}
+const signalActor = (visible = true) => new SignalActor(visible);
+
+test('ledger.guard: an actor shown while held is hidden again, and remembered for restore', () => {
+    const l = new SurfaceLedger();
+    const a = actor(true, true), b = actor(false, true);
+    l.hide([a, b]);
+    a.visible = true;
+    a.reactive = true;
+    eq(l.guard(a), true);
+    eq([a.visible, a.reactive], [false, false]);
+    b.visible = true;
+    l.guard(b);
+    eq(l.guard(actor()), false, 'not held');
+    l.restore();
+    eq([a.visible, a.reactive, b.visible], [true, true, true], 'what was wanted comes back');
+});
+
+test('lock: a surface eased/shown while suspended stays hidden (RV2-5)', () => {
+    const c = new CleanupRegistry();
+    const a = signalActor(true);
+    c.surface(a);
+    c.suspend(true);
+    eq(a.visible, false);
+    a.visible = true;     // ctx.motion.ease() -> actor.show() on a hidden actor
+    eq(a.visible, false, 'hidden again at once');
+    a.visible = true;
+    eq(a.visible, false, 'every time, not one-shot');
+    c.suspend(false);
+    eq(a.visible, true);
+    eq(a.handlerCount, 0, 'guard released');
+    a.visible = false;
+    eq(a.visible, false, 'no guard after unlock');
+});
+
+test('lock: a surface registered while suspended is hidden at once; dispose frees the guard', () => {
+    const c = new CleanupRegistry();
+    c.suspend(true);
+    const a = signalActor(true);
+    c.surface(a);
+    eq(a.visible, false);
+    a.visible = true;
+    eq(a.visible, false);
+    c.dispose();
+    eq(a.visible, true, 'dispose gives it back');
+    eq(a.handlerCount, 0);
+});
+
+test('lock: Shell chrome re-shown while locked is re-hidden; hidden at lock (full screen) stays hidden at unlock only if nobody wanted it', () => {
+    const c = new CleanupRegistry();
+    const dock = signalActor(false);   // hidden by the Shell over a full-screen window
+    c.surface(dock);
+    c.suspend(true);
+    dock.visible = true;               // layoutManager._updateVisibility() while locked
+    eq(dock.visible, false);
+    c.suspend(false);
+    // restore cannot tell the Shell from a feature: extension.js re-runs the Shell's own pass (below)
+    eq(dock.visible, true);
+});
+
 if (failed) {
     print(`${failed} failed`);
     imports.system.exit(1);

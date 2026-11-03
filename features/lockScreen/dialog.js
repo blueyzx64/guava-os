@@ -131,6 +131,38 @@ export class StyledDialog {
 
     /** @returns {boolean} false when the dialog does not look like GNOME Shell 50's */
     apply() {
+        try {
+            return this._apply();
+        } catch (e) {
+            // Half-styled is worse than stock: undo what was done (the clock comes back, the scrim and
+            // the overrides go) and report that the lock screen is left stock
+            console.error('[Guava] lock screen: styling failed midway, undone:', e);
+            this._rollback();
+            return false;
+        }
+    }
+
+    _rollback() {
+        const c = this._c;
+        this._c = null;
+        this._applied = false;
+        try {
+            c?.dispose();
+        } finally {
+            const d = this._d;
+            if (c && !this._dead && d?._adjustment) {
+                try {
+                    d._setTransitionProgress(d._adjustment.value);
+                    if (this._restoreBackgrounds)
+                        d._updateBackgrounds?.();
+                } catch (e) {
+                    console.error('[Guava] lock screen: rollback incomplete:', e);
+                }
+            }
+        }
+    }
+
+    _apply() {
         const d = this._d;
         const missing = REQUIRED.filter(k => !d[k]);
         const mainBox = d._stack?.get_parent?.();
@@ -191,7 +223,6 @@ export class StyledDialog {
         d._setTransitionProgress(d._adjustment.value);
         this._prompt();
 
-        c.connect(d, 'failed', () => this._failed(teaser));
 
         // our own layout manager for the main box
         const stockLayout = mainBox.layout_manager;
@@ -324,6 +355,9 @@ export class StyledDialog {
             return;
         const _ = this._ctx.gettext;
         p.add_style_class_name('guava-lock-prompt');
+        // Only a wrong password counts: the dialog's own 'failed' also fires when the prompt is
+        // cancelled (suspend, the idle escape, "log in as another user"), which showed the hint early
+        this._c?.connect(p, 'failed', () => this._failed(this._teaserBox));
         p.cancelButton?.hide();   // unused when unlocking (invisible but it takes room and off-centres the field)
         if (p._userWell)
             p._userWell.visible = this._o.showUser;

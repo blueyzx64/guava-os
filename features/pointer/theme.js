@@ -67,8 +67,8 @@ async function copyRecolored(src, dest, fill, outline, cancellable) {
 }
 
 /**
- * Make (or reuse) the theme for these colours, based on `baseTheme`, and remove Guava's older
- * ones.
+ * Make (or reuse) the theme for these colours, based on `baseTheme`, . Guava's older ones stay
+ * until removeOthers() runs after the switch.
  *
  * @returns {Promise<?string>} the theme name, or null when no base cursors were found
  */
@@ -99,7 +99,8 @@ export async function ensureTheme(baseTheme, fill, outline, cancellable) {
             return null;
         await writeText(index, indexTheme(base));
     }
-    await removeOthers(icons, name);
+    // The older themes are removed by the caller once the setting names this one: deleting the live
+    // theme first leaves the cursor loads of Mutter, Xwayland and GTK without it
     return name;
 }
 

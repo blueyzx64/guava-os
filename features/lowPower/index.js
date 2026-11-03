@@ -40,6 +40,7 @@ export class LowPower {
         this._upower = null;         // Gio.DBusProxy of UPower
         this._battery = null;        // Gio.DBusProxy of the first battery device
         this._cookie = 0;
+        this._releasedSub = 0;       // signal_subscribe id of ProfileReleased
         this._pending = false;       // a HoldProfile call is in flight
         this._userOverride = false;  // the user picked a profile while Guava held one
         this._active = false;
@@ -95,8 +96,8 @@ export class LowPower {
             this._userOverride = false;
             this._sync();
         });
-        this._findDaemon(0);
-        this._connectUPower();
+        this._watchDaemons();
+        this._watchUPower();
     }
 
     disable() {
@@ -112,52 +113,81 @@ export class LowPower {
         };
     }
 
-    _findDaemon(index) {
-        const ppd = PPD[index];
-        if (!ppd)
+    // The daemons are bus-activated and may not be on the bus yet when Guava enables (login race with
+    // the Shell's own quick settings); watching the names picks them up whenever they appear and lets
+    // go when they leave (RV4-6)
+    _watchDaemons() {
+        for (const ppd of PPD) {
+            const id = Gio.bus_watch_name(Gio.BusType.SYSTEM, ppd.name, Gio.BusNameWatcherFlags.NONE,
+                () => this._daemonAppeared(ppd), () => this._daemonVanished(ppd));
+            this._cleanup.add(() => Gio.bus_unwatch_name(id));
+        }
+        this._cleanup.add(() => this._unsubscribeReleased());
+    }
+
+    _daemonAppeared(ppd) {
+        if (this._ppd)
             return;
-        Gio.DBus.system.call('org.freedesktop.DBus', '/org/freedesktop/DBus', 'org.freedesktop.DBus',
-            'NameHasOwner', new GLib.Variant('(s)', [ppd.name]), new GLib.VariantType('(b)'),
-            Gio.DBusCallFlags.NONE, -1, this._cancellable, (conn, res) => {
-                let owned = false;
-                try {
-                    [owned] = conn.call_finish(res).deepUnpack();
-                } catch (e) {
-                    if (e.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
-                        return;
-                }
-                if (!owned) {
-                    this._findDaemon(index + 1);
+        this._ppd = { ...ppd, iface: ppd.name };
+        // The daemon drops our hold when the user picks a profile by hand
+        this._releasedSub = Gio.DBus.system.signal_subscribe(ppd.name, ppd.name, 'ProfileReleased',
+            ppd.path, null, Gio.DBusSignalFlags.NONE, (_c, _s, _p, _i, _n, params) => {
+                const [cookie] = params.deepUnpack();
+                if (cookie !== this._cookie)
                     return;
-                }
-                this._ppd = { ...ppd, iface: ppd.name };
-                // The daemon drops our hold when the user picks a profile by hand
-                const id = Gio.DBus.system.signal_subscribe(ppd.name, ppd.name, 'ProfileReleased',
-                    ppd.path, null, Gio.DBusSignalFlags.NONE, (_c, _s, _p, _i, _n, params) => {
-                        const [cookie] = params.deepUnpack();
-                        if (cookie !== this._cookie)
-                            return;
-                        this._cookie = 0;
-                        this._userOverride = true;
-                        this._setActive(false);
-                    });
-                this._cleanup.add(() => Gio.DBus.system.signal_unsubscribe(id));
-                this._sync();
+                this._cookie = 0;
+                this._userOverride = true;
+                this._setActive(false);
+            });
+        this._sync();
+        this._emit();
+    }
+
+    _daemonVanished(ppd) {
+        if (this._ppd?.name !== ppd.name)
+            return;
+        // Its holds went with it
+        this._unsubscribeReleased();
+        this._ppd = null;
+        this._cookie = 0;
+        this._pending = false;
+        this._userOverride = false;
+        this._setActive(false);
+        this._emit();
+    }
+
+    _unsubscribeReleased() {
+        if (this._releasedSub)
+            Gio.DBus.system.signal_unsubscribe(this._releasedSub);
+        this._releasedSub = 0;
+    }
+
+    _watchUPower() {
+        const id = Gio.bus_watch_name(Gio.BusType.SYSTEM, UPOWER.name, Gio.BusNameWatcherFlags.NONE,
+            () => this._connectUPower(), () => {
+                this._upower = this._battery = null;
                 this._emit();
             });
+        this._cleanup.add(() => Gio.bus_unwatch_name(id));
     }
 
     _connectUPower() {
+        if (this._upower)
+            return;
         Gio.DBusProxy.new_for_bus(Gio.BusType.SYSTEM, Gio.DBusProxyFlags.DO_NOT_AUTO_START, null,
             UPOWER.name, UPOWER.path, UPOWER.name, this._cancellable, (_o, res) => {
+                let proxy;
                 try {
-                    this._upower = Gio.DBusProxy.new_for_bus_finish(res);
+                    proxy = Gio.DBusProxy.new_for_bus_finish(res);
                 } catch (e) {
                     if (!e.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
                         console.warn(`[Guava] Low Power Mode: no UPower: ${e.message}`);
                     return;
                 }
-                this._cleanup.connect(this._upower, 'g-properties-changed', (_p, changed) => {
+                if (this._upower)
+                    return;
+                this._upower = proxy;
+                this._cleanup.connect(proxy, 'g-properties-changed', (_p, changed) => {
                     if (changed.lookup_value('OnBattery', null)) {
                         this._userOverride = false;
                         this._sync();

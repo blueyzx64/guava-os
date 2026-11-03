@@ -34,20 +34,35 @@ export function watchTimers(cleanup, ctx, sink, _) {
         if (Number.isFinite(seconds) && seconds > 0)
             ctx.timers.startTimer({ seconds, label });
     }, cleanup);
+    const present = t => {
+        sink.activity(`timer-done:${t.id}`, 'timer-done', { id: t.id, label: t.label || _('Timer') }, { fresh: true });
+        ctx.timers.cancel(t.id);
+    };
+    // Rung while the screen is locked: the island is hidden then (D-018), so the alert waits for the unlock
+    const waiting = new Map();
     ctx.events.on('timer-finished', ({ timer }) => {
-        sink.activity(`timer-done:${timer.id}`, 'timer-done', { id: timer.id, label: timer.label || _('Timer') }, { fresh: true });
         try {
             global.display.get_sound_player().play_from_theme('complete', _('Timer done'), null);
         } catch (_e) {
             // No sound theme; the pill still shows it.
         }
-        ctx.timers.cancel(timer.id);
+        if (ctx.session?.locked)
+            waiting.set(timer.id, timer);
+        else
+            present(timer);
+    }, cleanup);
+    ctx.events.on('session-unlocked', () => {
+        const due = [...waiting.values()];
+        waiting.clear();
+        due.forEach(present);
     }, cleanup);
     sync(ctx.timers.list());
-    // Finished while the notch was off or the screen locked: show them once now
+    // Finished while the notch was off: show them once now (still locked: at the unlock)
     for (const t of ctx.timers.list().filter(x => x.state === 'finished')) {
-        sink.activity(`timer-done:${t.id}`, 'timer-done', { id: t.id, label: t.label || _('Timer') }, { fresh: true });
-        ctx.timers.cancel(t.id);
+        if (ctx.session?.locked)
+            waiting.set(t.id, t);
+        else
+            present(t);
     }
     cleanup.add(() => {
         for (const id of shown)

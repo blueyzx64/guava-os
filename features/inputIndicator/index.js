@@ -102,6 +102,9 @@ export class InputIndicator {
     }
 
     _show(event) {
+        // D-018: no Guava UI on the lock screen (Caps Lock while typing the password)
+        if (this._ctx.session?.locked || Main.sessionMode.isLocked)
+            return;
         const content = badgeFor(event, this._config);
         if (!content)
             return;

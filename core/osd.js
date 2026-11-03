@@ -35,7 +35,8 @@ export class OsdRouter {
         }
         const router = this;
         cleanup.inject(manager, '_showOsdWindow', function (orig, monitorIndex, icon, label, level, maxLevel) {
-            if (monitorIndex === Main.layoutManager.primaryIndex &&
+            // D-018: on the lock screen the stock OSD shows (Guava's surfaces are suspended)
+            if (!Main.sessionMode.isLocked && monitorIndex === Main.layoutManager.primaryIndex &&
                 router._deliver(icon, label, level, maxLevel))
                 return undefined;
             return orig.call(this, monitorIndex, icon, label, level, maxLevel);

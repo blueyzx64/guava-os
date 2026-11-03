@@ -664,11 +664,11 @@ export class NotchFeature {
     }
 
     _startSource(id, reg, sink) {
-        const { events, timers, gettext } = this._ctx;
+        const { events, timers, gettext, session } = this._ctx;
         switch (id) {
         case 'battery': watchPower(reg, sink); break;
         case 'bluetooth': watchBluetooth(reg, sink); break;
-        case 'timers': watchTimers(reg, { events, timers }, sink, gettext); break;
+        case 'timers': watchTimers(reg, { events, timers, session }, sink, gettext); break;
         case 'recording': watchRecording(reg, events, sink); break;
         case 'calendar': watchCalendar(reg, sink); break;
         case 'downloads':

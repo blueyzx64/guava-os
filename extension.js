@@ -51,6 +51,23 @@ let _heldAcrossLock = false;
 
 export default class GuavaExtension extends Extension {
     enable() {
+        try {
+            this._enable();
+        } catch (e) {
+            // The Shell does not call disable() for an extension whose enable() threw: undo what was
+            // set up so far (the OSD injection, session and settings handlers, the services), then
+            // let it mark the extension as errored
+            console.error('[Guava] enable failed, undoing:', e);
+            try {
+                this.disable();
+            } catch (e2) {
+                console.error('[Guava] disable after a failed enable also failed:', e2);
+            }
+            throw e;
+        }
+    }
+
+    _enable() {
         this._cleanup = new CleanupRegistry();
         this._settings = this.getSettings();
         Glass.configure(this._settings);
@@ -93,36 +110,74 @@ export default class GuavaExtension extends Extension {
         const session = this._session = { locked: Main.sessionMode.isLocked };
         // Safety net for Guava-named chrome and panel buttons that no feature registered as a surface
         const sweep = new SurfaceLedger();
-        const sweepWatch = new Map(); // actor -> 'destroy' handler: a destroyed actor leaves the ledger
-        const sweepRestore = () => {
-            for (const [a, id] of sweepWatch)
-                a.disconnect(id);
+        const sweepWatch = new Map(); // actor -> [handler ids]: destroyed leaves the ledger, shown is hidden again
+        const sweepStop = () => {
+            for (const [a, ids] of sweepWatch)
+                ids.forEach(id => a.disconnect(id));
             sweepWatch.clear();
+        };
+        const sweepRestore = () => {
+            sweepStop();
             sweep.restore();
         };
         const sweepNow = () => {
             const boxes = [Main.panel._leftBox, Main.panel._centerBox, Main.panel._rightBox];
             const top = [...Main.layoutManager.uiGroup.get_children(), ...boxes.flatMap(b => b?.get_children() ?? [])];
             for (const a of sweep.hide(sweepTargets(top, this._features.lockSurfaces())))
-                sweepWatch.set(a, a.connect('destroy', () => {
-                    sweepWatch.delete(a);
-                    sweep.forget(a);
-                }));
+                sweepWatch.set(a, [
+                    a.connect('destroy', () => {
+                        sweepWatch.delete(a);
+                        sweep.forget(a);
+                    }),
+                    a.connect('notify::visible', () => sweep.guard(a)),
+                ]);
         };
+        // Chrome a sub-registry adds while the screen is locked is swept as it arrives
+        let sweepLater = 0;
+        const sweepWatchAdds = [];
         const onSessionMode = () => {
             const locked = Main.sessionMode.isLocked;
             if (locked === session.locked)
                 return;
             session.locked = locked;
             this._features?.setLocked(locked);
-            if (locked)
+            if (locked) {
                 sweepNow();
-            else
+                const boxes = [Main.layoutManager.uiGroup, Main.panel._leftBox, Main.panel._centerBox, Main.panel._rightBox];
+                for (const box of boxes.filter(Boolean)) {
+                    sweepWatchAdds.push([box, box.connect('child-added', () => {
+                        sweepLater ||= GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                            sweepLater = 0;
+                            if (Main.sessionMode.isLocked && this._features)
+                                sweepNow();
+                            return GLib.SOURCE_REMOVE;
+                        });
+                    })]);
+                }
+            } else {
+                for (const [box, id] of sweepWatchAdds.splice(0))
+                    box.disconnect(id);
+                if (sweepLater) {
+                    GLib.Source.remove(sweepLater);
+                    sweepLater = 0;
+                }
                 sweepRestore();
+                // The Shell's pass for its tracked chrome ran before ours (it connected first) and was
+                // undone by the guard while locked: run it again so the dock stays hidden over a
+                // full-screen window (RV2-2)
+                Main.layoutManager._updateVisibility?.();
+            }
             this._events?.emit(locked ? 'session-locked' : 'session-unlocked', {});
         };
         this._cleanup.connect(Main.sessionMode, 'updated', onSessionMode);
-        this._cleanup.add(sweepRestore);
+        this._cleanup.add(() => {
+            for (const [box, id] of sweepWatchAdds.splice(0))
+                box.disconnect(id);
+            if (sweepLater)
+                GLib.Source.remove(sweepLater);
+            sweepLater = 0;
+            sweepRestore();
+        });
         // Many keys can change at once (Reset Everything): one pass for all of them
         const changedKeys = new Set();
         this._cleanup.connect(this._settings, 'changed', (_settings, key) => {

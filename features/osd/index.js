@@ -109,6 +109,8 @@ export class OsdPill {
     }
 
     _show(osd) {
+        if (this._ctx.session?.locked || Main.sessionMode.isLocked)
+            return;
         if (!this._view)
             this._build();
         const v = this._view;

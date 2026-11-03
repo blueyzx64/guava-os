@@ -191,6 +191,9 @@ export class Pointer {
             this._themeName = made;
             this._themeOwner.sync(true);
             this._themeOwner.reapply();
+            // Only now that the setting names the new theme do the older ones go; `this._themeName`
+            // is read when the job runs, so a change queued meanwhile keeps its own theme
+            enqueueUserFileJob(() => (this._themeName ? removeOthers(iconsDir(), this._themeName) : null));
         });
     }
 
@@ -209,8 +212,8 @@ export class Pointer {
             this._tracker.uninhibit_cursor_visibility();
     }
 
-    _blocked() {
-        const [, , mods] = global.get_pointer();
+    // `mods`: the pointer state a caller already read (a motion event reads it once, not twice)
+    _blocked(mods = global.get_pointer()[2]) {
         return isBlocked({
             buttons: !!(mods & BUTTONS),
             grabbed: !!global.display.is_grabbed?.(),
@@ -231,11 +234,11 @@ export class Pointer {
             this._show('typing');
         if (!this._config.shake && !this._shaking)
             return;
-        const [x, y] = global.get_pointer();
+        const [x, y, mods] = global.get_pointer();
         const now = GLib.get_monotonic_time() / 1000;
         // Blocked (a drag, a grab, overview, modal): the detector forgets its history and says no,
         // and a big pointer already showing goes away
-        const blocked = this._blocked();
+        const blocked = this._blocked(mods);
         const shaking = this._config.shake && this._shake.update(x, y, now, blocked);
         if (blocked && this._shaking) {
             this._hideBig(false);
