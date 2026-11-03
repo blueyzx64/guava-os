@@ -33,9 +33,10 @@
 //   {type: 'strip-visible', visible} slide the strip in or out
 //   {type: 'desktop', shown}         Show Desktop changed
 //   {type: 'timer', key, ms} / {type: 'cancel', key}
+//
+// No grace period (D-017): a stage emptied by a close or minimize is refilled at once by the most
+// recent set; a clicked set takes the stage in the same dispatch.
 
-/** A stage emptied by a close waits this long for a new window before the next set returns. */
-export const GRACE_MS = 400;
 /** After a switch the model made, focus moving to other sets is not obeyed this long. */
 export const QUIET_MS = 300;
 /** "Open in current stage" waits this long for the app's window. */
@@ -87,7 +88,7 @@ export class StageModel {
         this._win = new Map();      // id -> window description
         this._setOf = new Map();    // managed window id -> set id
         this._sets = new Map();     // set id -> {id, ws, ids}
-        this._spaces = new Map();   // ws -> {stage, strip, desktop, stash, grace}
+        this._spaces = new Map();   // ws -> {stage, strip, desktop, stash}
         this._active = 0;
         this._primary = 0;
         this._focus = null;
@@ -181,6 +182,7 @@ export class StageModel {
         case 'slot': this._onSlot(event.n, now); break;
         case 'unset': this._onUnset(event.id, now, false); break;
         case 'stash': this._onUnset(event.id, now, true); break;
+        case 'move-to': this._onMoveTo(event, now); break;
         case 'toggle-desktop': this._onToggleDesktop(now); break;
         case 'join-next': this._join = { appId: event.appId ?? null, until: now + JOIN_MS }; break;
         case 'overlap': this._ui.overlapped = !!event.on; break;
@@ -269,7 +271,7 @@ export class StageModel {
         if (set.ws !== this._active || (space.stage === setId && !space.desktop))
             return;
         // Mutter's own focus after a close or minimize, or windows raising each other
-        if (space.grace || now < this._quietUntil) {
+        if (now < this._quietUntil) {
             if (space.stage !== null)
                 this._out.push({ type: 'focus', id: this._lead(space.stage) });
             return;
@@ -331,8 +333,35 @@ export class StageModel {
         } else if (stash && space.stage === setId) {
             space.stage = null;
             space.strip.unshift(setId);
-            this._startGrace(set.ws);
             this._dirty = true;
+            this._refill(space, set.ws, now, setId);
+        }
+    }
+
+    // A window dropped on a thumbnail leaves its set and joins that set (B31)
+    _onMoveTo({ id, set: targetId }, now) {
+        const srcId = this._setOf.get(id);
+        const target = this._sets.get(targetId);
+        if (srcId === undefined || !target || srcId === targetId)
+            return;
+        const src = this._sets.get(srcId);
+        if (src.ws !== target.ws)
+            return;
+        const space = this._space(src.ws);
+        src.ids = src.ids.filter(x => x !== id);
+        target.ids = [id, ...target.ids];
+        this._setOf.set(id, targetId);
+        this._dirty = true;
+        this._quietUntil = now + QUIET_MS;
+        if (src.ids.length > 0) {
+            if (space.stage === srcId && src.ws === this._active)
+                this._out.push({ type: 'focus', id: this._lead(srcId) });
+            return;
+        }
+        this._drop(src);
+        if (space.stage === srcId) {
+            space.stage = null;
+            this._refill(space, src.ws, now);
         }
     }
 
@@ -353,7 +382,6 @@ export class StageModel {
         space.strip.unshift(space.stage);
         space.stage = null;
         space.desktop = true;
-        this._cancelGrace(space);
         this._dirty = true;
         this._out.push({ type: 'desktop', shown: true });
     }
@@ -384,14 +412,6 @@ export class StageModel {
         } else if (key === 'leave') {
             if (!this._ui.atEdge && !this._ui.inStrip)
                 this._ui.revealed = false;
-        } else if (key.startsWith('grace:')) {
-            const ws = Number(key.slice(6));
-            const space = this._space(ws);
-            if (!space.grace)
-                return;
-            space.grace = false;
-            if (space.stage === null && space.strip.length > 0)
-                this._switchTo(this._sets.get(space.strip[0]), now);
         }
     }
 
@@ -420,7 +440,7 @@ export class StageModel {
     _space(ws) {
         let s = this._spaces.get(ws);
         if (!s) {
-            s = { stage: null, strip: [], desktop: false, stash: null, grace: false };
+            s = { stage: null, strip: [], desktop: false, stash: null };
             this._spaces.set(ws, s);
         }
         return s;
@@ -489,7 +509,7 @@ export class StageModel {
         if (init)
             return;
         if (ws !== this._active || moved) {
-            if (space.stage === null && !space.desktop && !space.grace)
+            if (space.stage === null && !space.desktop)
                 this._promote(set);
             else if (space.stage !== set.id && !space.strip.includes(set.id))
                 space.strip.unshift(set.id);
@@ -520,7 +540,7 @@ export class StageModel {
         if (space.stage === setId) {
             space.stage = null;
             this._quietUntil = now + QUIET_MS;
-            this._startGrace(set.ws);
+            this._refill(space, set.ws, now);
         }
     }
 
@@ -545,7 +565,6 @@ export class StageModel {
     // The set becomes the stage; the old stage goes to the front of the strip (SM-2)
     _switchTo(set, now = 0) {
         const space = this._space(set.ws);
-        this._cancelGrace(space);
         if (space.stage === set.id && !space.desktop) {
             this._out.push({ type: 'focus', id: this._lead(set.id) });
             return;
@@ -565,20 +584,18 @@ export class StageModel {
         this._out.push({ type: 'focus', id: this._lead(set.id) });
     }
 
-    _startGrace(ws) {
-        const space = this._space(ws);
-        space.grace = true;
-        this._out.push({ type: 'timer', key: `grace:${ws}`, ms: GRACE_MS });
-    }
-
-    _cancelGrace(space) {
-        if (!space.grace)
+    // An emptied stage is filled at once by the most recent set (not `skip`) when the workspace
+    // is the active one; another workspace gets its stage without hide/show effects.
+    _refill(space, ws, now, skip = null) {
+        if (space.stage !== null || space.desktop)
             return;
-        space.grace = false;
-        for (const [ws, s] of this._spaces) {
-            if (s === space)
-                this._out.push({ type: 'cancel', key: `grace:${ws}` });
-        }
+        const id = space.strip.find(x => x !== skip);
+        if (id === undefined)
+            return;
+        if (ws === this._active)
+            this._switchTo(this._sets.get(id), now);
+        else
+            this._promote(this._sets.get(id));
     }
 
     // ---- the strip's visibility (SM-13 to SM-19) --------------------------------------------

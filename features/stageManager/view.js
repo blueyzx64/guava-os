@@ -11,7 +11,11 @@
 //     flights     the layer where flights.js flies clones
 //   barrier     Meta.Barrier + Layout.PressureBarrier on the edge: a push reveals (SM-17)
 //
-// Input out (env): onActivate(setId, {add}), onEdge(on), onHover(on), onPush(), onReveal().
+//     drop        St.Widget .guava-stage-drop over the stage while a thumbnail is dragged onto it;
+//                 .guava-stage-drop-card around the thumbnail a dragged window would join (SM-34)
+//
+// Input out (env): onActivate(setId, {add}), onDropThumb(setId), onEdge(on), onHover(on),
+// onPush(), onReveal().
 // Private API: none. Main.layoutManager and Layout.PressureBarrier are public Shell modules.
 
 import Clutter from 'gi://Clutter';
@@ -24,6 +28,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as A11y from '../../lib/a11y.js';
 import { Glass } from '../../lib/glass.js';
 import { attachThumbEffect } from './thumbEffect.js';
+import { DRAG_PX, dragStarted, thumbDropTarget } from './dragModel.js';
 import {
     METRICS, clonePose, edgeBarrier, layerRect, slotBox, stackLayers, stripLayout, tiltAngle,
 } from './geometry.js';
@@ -32,6 +37,8 @@ const PRESSURE_THRESHOLD = 40;   // px pushed against the edge, as the auto-hide
 const PRESSURE_TIMEOUT = 600;
 const SLIDE_MS = 220;
 const EDGE_PX = 2;
+const DRAG_DIM = 70;            // opacity of the thumbnail whose copy is being dragged
+const DROP_MS = 140;
 
 export class StripView {
     /**
@@ -51,6 +58,8 @@ export class StripView {
         this._barrier = null;
         this._barrierKey = '';
         this._dead = false;
+        this._drag = null;           // a thumbnail being dragged: {entry, proxy, token, ...}
+        this._cardRects = [];        // [{id, rect}] screen rects of the thumbnails
 
         this.container = new Clutter.Actor({ name: 'guava-stage-manager', reactive: false, width: 1, height: 1 });
         cleanup.actor(this.container);
@@ -83,6 +92,12 @@ export class StripView {
             },
         });
 
+        // Drop highlights: the stage a dragged thumbnail would join, the thumbnail a dragged window would join
+        this._dropStage = new St.Widget({ style_class: 'guava-stage-drop', reactive: false, visible: false, opacity: 0 });
+        this.container.add_child(this._dropStage);
+        this._dropCard = new St.Widget({ style_class: 'guava-stage-drop-card', reactive: false, visible: false, opacity: 0 });
+        this.container.add_child(this._dropCard);
+
         this.flightLayer = new Clutter.Actor({ reactive: false });
         this.container.add_child(this.flightLayer);
 
@@ -98,6 +113,7 @@ export class StripView {
             this._pressure.destroy();
         });
         cleanup.add(() => this._slide?.cancel());
+        cleanup.add(() => this._endDrag(false, true));
     }
 
     /** Show or hide the glass backdrop of the strip. */
@@ -124,11 +140,14 @@ export class StripView {
             return;
         this._layout = stripLayout({ workArea, side, count: entries.length });
         this._placeEdge(workArea, side);
+        // A redraw under a drag (the set changed): the drag ends where it is
+        this._endDrag(false, true);
         for (const card of this._cards.values())
             card.destroy();
         this._cards.clear();
         this._thumbs.clear();
         const { floor, slots, scale } = this._layout;
+        this._cardRects = entries.map((e, i) => ({ id: e.id, rect: slots[i] })).filter(c => c.rect);
         if (!floor) {
             this._floor.visible = false;
             this._dropBarrier();
@@ -170,6 +189,21 @@ export class StripView {
         }, this._cleanup);
     }
 
+    /**
+     * The workspace changed (SM-27): the strip, already redrawn for the new workspace, slides in
+     * from its edge again, like the workspace does. A hidden strip stays hidden.
+     */
+    replay() {
+        if (this._dead || this._shown !== true)
+            return;
+        this._slide?.cancel();
+        this._strip.set({ translation_x: this._awayX(), opacity: 0 });
+        this._strip.visible = true;
+        this._slide = this._env.motion.ease(this._strip, { translation_x: 0, opacity: 255 }, {
+            duration: this._env.ms(SLIDE_MS), curve: 'standard',
+        }, this._cleanup);
+    }
+
     /** Where a window's thumbnail is (screen rect, with its tilt), or null. */
     thumbRect(win) {
         const t = this._thumbs.get(win);
@@ -190,6 +224,224 @@ export class StripView {
             this._flying.delete(win);
         if (t)
             t.actor.opacity = on ? 0 : t.opacity;
+    }
+
+    /** Screen rects of the thumbnails, [{id, rect}], for the drop test of a dragged window. */
+    get cards() {
+        return this._shown === false ? [] : this._cardRects;
+    }
+
+    /** Light the thumbnail a dragged window would join (null: none). */
+    highlightCard(id) {
+        if (this._dead)
+            return;
+        const card = id === null ? null : this._cardRects.find(c => c.id === id);
+        if (!card) {
+            this._fadeDrop(this._dropCard, false);
+            return;
+        }
+        const pad = 6;
+        const r = card.rect;
+        this._dropCard.set_position(Math.round(r.x - pad), Math.round(r.y - pad));
+        this._dropCard.set_size(Math.round(r.width + 2 * pad), Math.round(r.height + 2 * pad));
+        this._fadeDrop(this._dropCard, true);
+    }
+
+    // ---- dragging a thumbnail onto the stage (SM-34) ------------------------------------------
+
+    _press(entry, event) {
+        if (this._dead || event.get_button() !== 1)
+            return Clutter.EVENT_PROPAGATE;
+        this._endDrag(false, true);
+        const [x, y] = event.get_coords();
+        const drag = { entry, start: { x, y }, active: false, proxy: null, token: 0, target: null };
+        this._drag = drag;
+        drag.token = this._cleanup.connect(global.stage, 'captured-event', (_s, ev) => this._dragEvent(drag, ev));
+        return Clutter.EVENT_PROPAGATE;
+    }
+
+    _dragEvent(drag, ev) {
+        if (this._drag !== drag)
+            return Clutter.EVENT_PROPAGATE;
+        const type = ev.type();
+        if (type === Clutter.EventType.MOTION) {
+            const [x, y] = ev.get_coords();
+            if (!drag.active) {
+                if (!dragStarted(drag.start, { x, y }, DRAG_PX))
+                    return Clutter.EVENT_PROPAGATE;
+                this._beginDrag(drag);
+                if (this._drag !== drag)
+                    return Clutter.EVENT_PROPAGATE;
+            }
+            this._moveDrag(drag, x, y);
+            return Clutter.EVENT_STOP;
+        }
+        if (type === Clutter.EventType.BUTTON_RELEASE && ev.get_button() === 1) {
+            if (!drag.active) {
+                this._endDrag(false, true);
+                return Clutter.EVENT_PROPAGATE;
+            }
+            const [x, y] = ev.get_coords();
+            this._moveDrag(drag, x, y);
+            this._endDrag(drag.target === 'stage');
+            return Clutter.EVENT_STOP;
+        }
+        if (drag.active && type === Clutter.EventType.KEY_PRESS && ev.get_key_symbol() === Clutter.KEY_Escape) {
+            this._endDrag(false);
+            return Clutter.EVENT_STOP;
+        }
+        // While dragging, nothing else reaches the shell
+        if (drag.active && type !== Clutter.EventType.LEAVE && type !== Clutter.EventType.ENTER)
+            return Clutter.EVENT_STOP;
+        return Clutter.EVENT_PROPAGATE;
+    }
+
+    _beginDrag(drag) {
+        drag.active = true;
+        // The card lets go of the pointer (no click at the end)
+        this._cards.get(drag.entry.id)?.fake_release?.();
+        // A modal grab on a transparent overlay: every event of the drag reaches us, whatever is under
+        // the pointer (a client window would otherwise take the stream), and Esc is ours
+        const overlay = new Clutter.Actor({ reactive: true, x: 0, y: 0, width: global.stage.width, height: global.stage.height });
+        Main.uiGroup.add_child(overlay);
+        drag.overlay = overlay;
+        drag.grab = Main.pushModal(overlay, { actionMode: Shell.ActionMode.POPUP });
+        if (!drag.grab) {
+            // The Shell is busy with another grab: no drag
+            this._popGrab(drag);
+            this._endDrag(false, true);
+            return;
+        }
+        overlay.grab_key_focus();
+        overlay.connect('event', (_a, ev) => this._dragEvent(drag, ev));
+        const win = drag.entry.windows[0];
+        const thumb = this._thumbs.get(win);
+        const actor = win?.get_compositor_private?.();
+        const frame = win?.get_frame_rect?.();
+        drag.thumbs = drag.entry.windows.map(w => this._thumbs.get(w)).filter(Boolean);
+        if (!thumb || !actor || !(frame?.width > 0)) {
+            // No thumbnail to carry: the drag still shows the drop zone
+            drag.proxy = null;
+            return;
+        }
+        const buffer = win.get_buffer_rect();
+        const s = thumb.rect.width / frame.width;
+        const proxy = new Clutter.Clone({ source: actor, reactive: false });
+        proxy.set_size(buffer.width, buffer.height);
+        proxy.set_pivot_point(0, 0);
+        proxy.set_scale(s, s);
+        // The clone's origin sits at the buffer corner; the frame is inset by the shadow
+        drag.inset = { x: (frame.x - buffer.x) * s, y: (frame.y - buffer.y) * s };
+        drag.offset = { x: drag.start.x - thumb.rect.x, y: drag.start.y - thumb.rect.y };
+        drag.home = { x: thumb.rect.x - drag.inset.x, y: thumb.rect.y - drag.inset.y, scale: s };
+        proxy.set_position(drag.home.x, drag.home.y);
+        this.flightLayer.add_child(proxy);
+        drag.proxy = proxy;
+        attachThumbEffect(proxy, buffer, { x: frame.x - buffer.x, y: frame.y - buffer.y, width: frame.width, height: frame.height },
+            this._env.corners());
+        for (const t of drag.thumbs)
+            t.actor.opacity = DRAG_DIM * t.opacity / 255;
+        this._env.onReveal();
+    }
+
+    _popGrab(drag) {
+        if (drag.grab) {
+            try {
+                Main.popModal(drag.grab);
+            } catch (e) {
+                console.error('[Guava] stage manager: popModal failed:', e);
+            }
+            drag.grab = null;
+        }
+        drag.overlay?.destroy();
+        drag.overlay = null;
+    }
+
+    _moveDrag(drag, x, y) {
+        if (drag.proxy) {
+            drag.proxy.set_position(x - drag.offset.x - drag.inset.x, y - drag.offset.y - drag.inset.y);
+        }
+        const { workArea } = this._state;
+        const target = thumbDropTarget({ x, y }, { band: this.band, workArea });
+        if (target !== drag.target) {
+            drag.target = target;
+            this._lightStage(target === 'stage');
+        }
+        // Keep the strip revealed while the pointer works on it
+        this._env.onReveal();
+    }
+
+    // Stage highlight: the work area beside the strip
+    _lightStage(on) {
+        const { workArea, side } = this._state;
+        if (on && workArea) {
+            const w = METRICS.stripWidth;
+            this._dropStage.set_position(side === 'right' ? workArea.x + 8 : workArea.x + w, workArea.y + 8);
+            this._dropStage.set_size(workArea.width - w - 8, workArea.height - 16);
+        }
+        this._fadeDrop(this._dropStage, on);
+    }
+
+    _fadeDrop(actor, on) {
+        if (this._dead)
+            return;
+        if (on)
+            actor.visible = true;
+        else if (!actor.visible)
+            return;
+        this._env.motion.ease(actor, { opacity: on ? 255 : 0 }, {
+            duration: this._env.ms(DROP_MS), curve: 'standard',
+            onDone: finished => {
+                if (finished && !on && !this._dead)
+                    actor.visible = false;
+            },
+        }, this._cleanup);
+    }
+
+    /**
+     * End the drag. `commit`: the thumbnail was dropped on the stage (the set joins it). Otherwise
+     * (Esc, a drop on the strip) the copy flies back. `now`: no animation (teardown, redraw).
+     */
+    _endDrag(commit, now = false) {
+        const drag = this._drag;
+        if (!drag)
+            return;
+        this._drag = null;
+        if (drag.token)
+            this._cleanup.release(drag.token);
+        this._popGrab(drag);
+        if (!drag.active)
+            return;
+        const restore = () => {
+            for (const t of drag.thumbs ?? [])
+                t.actor.opacity = t.opacity;
+        };
+        this._lightStage(false);
+        const proxy = drag.proxy;
+        const finish = () => {
+            if (this._dead)
+                return;
+            restore();
+            proxy?.destroy();
+        };
+        if (this._dead || now || !proxy) {
+            finish();
+            if (commit && !this._dead)
+                this._env.onDropThumb(drag.entry.id);
+            return;
+        }
+        if (commit) {
+            // The set joins the stage; its windows fly in from the thumbnail, the copy melts away
+            restore();
+            this._env.onDropThumb(drag.entry.id);
+            this._env.motion.ease(proxy, { opacity: 0 }, {
+                duration: this._env.ms(DROP_MS), curve: 'standard', onDone: () => !this._dead && proxy.destroy(),
+            }, this._cleanup);
+            return;
+        }
+        this._env.motion.ease(proxy, { x: drag.home.x, y: drag.home.y }, {
+            duration: this._env.ms(DROP_MS * 1.5), curve: 'standard', onDone: finish,
+        }, this._cleanup);
     }
 
     // ---- internals --------------------------------------------------------------------------
@@ -228,6 +480,7 @@ export class StripView {
             const mods = Clutter.get_current_event()?.get_state() ?? 0;
             this._env.onActivate(entry.id, { add: (mods & Clutter.ModifierType.SHIFT_MASK) !== 0 });
         });
+        button.connect('button-press-event', (_b, event) => this._press(entry, event));
         const holder = new Clutter.Actor({ reactive: false });
         holder.set_size(rect.width, rect.height);
         button.set_child(holder);

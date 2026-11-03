@@ -150,7 +150,10 @@ function run(seed, steps) {
         } else if (op === 16) {
             send({ type: 'slot', n: 1 + Math.floor(r() * 8) });
         } else if (op === 17 && w) {
-            send({ type: pick(['unset', 'stash']), id: w.id });
+            if (r() < 0.3 && sets().length)
+                send({ type: 'move-to', id: w.id, set: pick(sets()).id });
+            else
+                send({ type: pick(['unset', 'stash']), id: w.id });
         } else if (op === 18) {
             send({ type: 'toggle-desktop' });
         } else if (op === 19) {

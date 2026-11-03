@@ -25,12 +25,12 @@ our adaptation or a guess about macOS Sonoma/Sequoia; the rest follows macOS.
   the stage alone and the old set goes to the strip (setting `stage-manager-new-windows`: `join`
   adds it to the stage set instead). Dialogs and other transient windows follow their parent.
 - **SM-4** Closing a window of the stage set removes it; the set stays while it has windows. When
-  the last window of the stage closes, the stage waits 400 ms for a new window (an Open dialog
-  closes before the document opens), then the most recent strip set takes the stage. (guess:
-  macOS leaves the stage empty.) Closing a window of a hidden set removes it from its thumbnail;
+  the last window of the stage closes, the most recent strip set takes the stage **at once**: no
+  grace period (D-017). A window that opens right after takes the stage in its turn, the old
+  set going back to the strip. (guess: macOS leaves the stage empty.) Closing a window of a hidden set removes it from its thumbnail;
   an empty set disappears.
 - **SM-5** Shift-click on a thumbnail adds that set to the stage as one set. Dropping a thumbnail
-  on the stage is the same (guess: v1 offers only the Shift-click and the keyboard).
+  on the stage is the same (SM-34).
 - **SM-6** The strip shows the most recent sets, at most 6. Older sets stay hidden and come back
   into the strip as it frees; they are reachable from the dock, switcher and Mission Control.
 - **SM-7** A window that is not managed is never hidden: sticky (on all workspaces), always-on-top,
@@ -41,8 +41,8 @@ our adaptation or a guess about macOS Sonoma/Sequoia; the rest follows macOS.
 - **SM-8** Minimize (panel button, window button, Super+H, the app's own request, the menu) is
   Mutter's normal minimize. The window goes to the Dock (Genie), **not** to the strip. It leaves
   its set. Stage Manager never prevents or reverses a minimize.
-- **SM-9** If the minimized window was the last of the stage set, SM-4 applies (a replacement
-  comes after the grace period). A minimized window of a hidden set leaves that thumbnail.
+- **SM-9** If the minimized window was the last of the stage set, SM-4 applies (the most recent
+  strip set takes the stage at once). A minimized window of a hidden set leaves that thumbnail.
 - **SM-10** Restoring a window from the Dock makes it the stage (SM-2): it becomes a set of its
   app (joining the app's other windows).
 - **SM-11** Windows the user minimized before Stage Manager started, and after it stops, stay
@@ -87,17 +87,32 @@ our adaptation or a guess about macOS Sonoma/Sequoia; the rest follows macOS.
 - **SM-23** With animations off or reduced motion the swap is instant (`core/motionModel.js`).
 - **SM-24** Super+Alt+PageDown / PageUp cycle to the next / previous set; Super+Alt+1..6 pick a
   strip slot. The remove shortcut takes the focused window out of its set into its own set.
-- **SM-25** Dragging a stage window by its title and dropping it on the strip sends it to the strip
-  as its own set (guess: macOS also lets it join the thumbnail under the pointer; v1 does not). The
-  window goes back to where it was picked up. A resize or a drop elsewhere does nothing here.
+- **SM-25** Dragging a stage window by its title and dropping it on the strip, between thumbnails,
+  sends it to the strip as its own set. Dropping it on a thumbnail moves it to that set (SM-34).
+  The window goes back to where it was picked up. A resize or a drop elsewhere does nothing here.
 - **SM-26** Wallpaper click (`stage-manager-wallpaper-click`) = Show Desktop (SM-31).
 
 ## Workspaces and monitors
 - **SM-27** Each workspace has its own stage and strip; the sets are per workspace. A window moved
   to another workspace joins that workspace's sets, in its strip when the workspace has a stage.
-  Switching workspace redraws the strip for that workspace without animation (guess: macOS slides).
+  Switching workspace redraws the strip for that workspace and the strip **slides** in from its
+  edge, 220 ms, like the workspace does (D-017); a hidden strip stays hidden. The windows of the
+  workspaces change without a Stage Manager animation: the workspace switch itself moves them.
 - **SM-28** Only the primary monitor has a strip. Windows on other monitors are never hidden (guess:
   macOS has a strip per display).
+
+## Drag and drop
+- **SM-34** Pointer drag, as macOS. Every drag is interruptible and shows its response at once.
+  - *Thumbnail onto the stage*: press a thumbnail and move 8 px; a copy of its lead window follows the
+    pointer (the thumbnail dims) and the stage area lights up while the pointer is over it. Release
+    there: the thumbnail's windows join the current stage set (same as Shift-click, SM-5) and fly in
+    from the thumbnail. Release over the strip, or Esc: the copy flies back, nothing changes. A press
+    that moves less than 8 px is a click (SM-21).
+  - *Window onto a thumbnail*: while a stage window is dragged by its title the thumbnail under the
+    pointer lights up (the strip slides in when the pointer is near its edge). Release on it: the window
+    moves to that set and is hidden with it; the window goes back to where it was picked up. If it was the
+    last window of the stage, the most recent strip set takes the stage (SM-4). Release between
+    thumbnails is SM-25. Esc during the drag puts the window back and drops nothing.
 
 ## Public API (kept)
 - **SM-29** `toggleDesktop()` / `isDesktopShown`, `openIntoStage(appId)` (the next window of that
@@ -133,7 +148,7 @@ fade-in. Keyboard focus never rests on a hidden window: the model moves it to th
 `stage-manager-shortcut` (empty), `-remove-`, `-next-`, `-previous-`, `-slot-1..6-shortcut`.
 
 ## Code
-`features/stageManager/`: `model.js` (pure `StageModel`: events in, effects out; it owns the sets, the
+`features/stageManager/`: `dragModel.js` (pure drop targets of SM-34), `model.js` (pure `StageModel`: events in, effects out; it owns the sets, the
 stage and strip per workspace and whether the strip is slid in), `geometry.js` (pure), `index.js`
 (adapter: Mutter signals to events, effects applied by an idempotent reconcile), `view.js` (strip,
 edge, pressure barrier), `windows.js` (hider), `flights.js` (clone flights through `ctx.motion`),
@@ -142,5 +157,5 @@ edge, pressure barrier), `windows.js` (hider), `flights.js` (clone flights throu
 ## Tests
 `tests/stageManagerModel.test.js` (one scenario per rule, named by SM-n),
 `tests/stageManagerFuzz.test.js` (300 seeds of random events; invariants after every event),
-`tests/stageManagerGeometry.test.js`. Real Shell: `tools/scenarios/stage-manager-*.sh` (bundle
+`tests/stageManagerGeometry.test.js`, `tests/stageManagerDrag.test.js`. Real Shell: `tools/scenarios/stage-manager-*.sh` (bundle
 `stage-manager-lib.sh` first; see its header), plus the `stage-manager-hide-reveal` probe.

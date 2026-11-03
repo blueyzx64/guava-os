@@ -34,6 +34,7 @@ import { Keybindings } from '../../lib/keybindings.js';
 import { GuavaSettings } from '../../lib/settings.js';
 import { isClick } from '../../lib/clickModel.js';
 import { isMaximized } from '../../lib/compat.js';
+import { nearStripEdge, sameFrame, windowDropTarget } from './dragModel.js';
 import { Flights } from './flights.js';
 import { METRICS, overlaps, scaleMs, stageRect, stripSide } from './geometry.js';
 import { StageModel } from './model.js';
@@ -55,6 +56,8 @@ const SHORTCUTS = [
 ];
 // WindowState flags of other features whose windows Stage Manager leaves alone
 const SET_ASIDE = ['hidden', 'splitView'];
+const DRAG_POLL_MS = 50;       // a dragged window: how often the thumbnail under it is looked up
+const DRAG_EDGE_PX = 24;       // a dragged window this close to the strip's edge reveals the strip
 
 const rectOf = r => ({ x: r.x, y: r.y, width: r.width, height: r.height });
 const nowMs = () => Math.round(GLib.get_monotonic_time() / 1000);
@@ -68,7 +71,8 @@ export class StageManager {
         this._pending = new Set();   // window ids not mapped yet (not told to the model)
         this._geometry = new Map();  // stage Meta.Window -> cleanup tokens (position/size)
         this._geometryIdle = 0;
-        this._focusIdle = 0;
+        this._drag = null;           // a stage window being moved: {win, frame, last}
+        this._dragWatch = 0;         // the poll token while a window is dragged
         this._overlapped = false;
         this._press = null;          // a primary press on the wallpaper
         this._drag = null;           // a stage window being moved: {win, frame}
@@ -101,6 +105,7 @@ export class StageManager {
             gettext: _,
             corners,
             onActivate: (set, { add }) => this._send({ type: 'activate', set, add }),
+            onDropThumb: set => this._send({ type: 'activate', set, add: true }),
             onEdge: on => this._send({ type: 'edge', on }),
             onHover: on => this._send({ type: 'strip-hover', on }),
             onPush: () => this._send({ type: 'push' }),
@@ -151,6 +156,12 @@ export class StageManager {
         ks.watch(['stage-manager-strip-background'], () => this._view.setBackground(ks.bool('stage-manager-strip-background')));
         for (const [key, fn] of SHORTCUTS)
             Keybindings.add(cleanup, key, ctx.settings, () => fn(this));
+
+        // Disposed first: a hover or a window signal during teardown (the pointer rests on the strip
+        // when it goes) must not hide the windows the later cleanups are giving back
+        cleanup.add(() => {
+            this._model = null;
+        });
 
         this._init();
     }
@@ -290,6 +301,8 @@ export class StageManager {
                 this._mapped(actor.meta_window);
         }
         this._send({ type: 'workspace', active });
+        // The strip slides in for the new workspace (D-017)
+        this._view.replay();
     }
 
     _removeFocused() {
@@ -547,22 +560,55 @@ export class StageManager {
             op === Meta.GrabOp.KEYBOARD_MOVING;
         const id = win?.get_stable_sequence?.();
         this._drag = moving && id !== undefined && this._model?.stageWindows().includes(id) && this._model.isManaged(id)
-            ? { win, frame: rectOf(win.get_frame_rect()) } : null;
+            ? { win, frame: rectOf(win.get_frame_rect()), last: 0 } : null;
+        this._stopDragWatch();
+        if (this._drag)
+            this._dragWatch = this._cleanup.timeout(DRAG_POLL_MS, () => this._dragTick(), { name: 'stage-manager-drag' });
+    }
+
+    _stopDragWatch() {
+        if (this._dragWatch) {
+            this._cleanup.release(this._dragWatch);
+            this._dragWatch = 0;
+        }
+        this._view?.highlightCard(null);
+    }
+
+    // Where a dragged stage window is now: light the thumbnail under it, keep the strip revealed
+    _dragTick() {
+        const drag = this._drag;
+        if (!drag || !this._view)
+            return GLib.SOURCE_REMOVE;
+        const [x, y] = global.get_pointer();
+        const p = { x, y };
+        const target = windowDropTarget(p, { band: this._view.band, cards: this._view.cards });
+        const wa = this._layout.workArea(this._layout.primaryIndex);
+        const near = nearStripEdge(p, { workArea: wa, side: this._side, reach: DRAG_EDGE_PX });
+        this._view.highlightCard(target?.kind === 'set' ? target.id : null);
+        if ((near || target) && ++drag.last % 6 === 1)
+            this._send({ type: 'push' });
+        return GLib.SOURCE_CONTINUE;
     }
 
     _dragEnd(win) {
         const drag = this._drag;
         this._drag = null;
+        this._stopDragWatch();
         const band = this._view.band;
         if (!drag || drag.win !== win || !band || !this._model)
             return;
+        // Esc: Mutter puts the window back and ends the grab; that is no drop
+        if (sameFrame(drag.frame, rectOf(win.get_frame_rect())))
+            return;
         const [x, y] = global.get_pointer();
-        if (!overlaps({ x, y, width: 1, height: 1 }, band))
+        const target = windowDropTarget({ x, y }, { band, cards: this._view.cards });
+        if (!target)
             return;
         // Once Mutter has ended the grab (focus changes are refused during it)
         this._cleanup.idle(() => {
             win.move_frame(true, drag.frame.x, drag.frame.y);
-            this._send({ type: 'stash', id: win.get_stable_sequence() });
+            const id = win.get_stable_sequence();
+            this._send(target.kind === 'set' ? { type: 'move-to', id, set: target.id } : { type: 'stash', id });
             return GLib.SOURCE_REMOVE;
         }, { name: 'stage-manager-drop' });
     }

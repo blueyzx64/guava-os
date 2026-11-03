@@ -4301,6 +4301,19 @@ StWidget.guava-glass.guava-glass-contrast {
     icon-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
 }
 
+/* Drag and drop (SM-34): the stage a dragged thumbnail would join, the thumbnail a dragged window would join */
+.guava-stage-drop {
+    border-radius: 18px;
+    border: 3px solid -st-accent-color;
+    background-color: rgba(120, 120, 128, 0.12);
+}
+
+.guava-stage-drop-card {
+    border-radius: 16px;
+    border: 3px solid -st-accent-color;
+    background-color: rgba(120, 120, 128, 0.18);
+}
+
 /* ==== features/switcher/style.css ==== */
 
 /* feature: app-switcher

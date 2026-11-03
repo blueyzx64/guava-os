@@ -2,7 +2,7 @@
 // Scenario tests of the Stage Manager state machine (features/stageManager/model.js), one per
 // rule of docs/features/stage-manager.md (the SM-n in the test names).
 import {
-    DWELL_MS, FLASH_MS, GRACE_MS, LEAVE_MS, MAX_SHOWN, QUIET_MS, StageModel, exemptReason,
+    DWELL_MS, FLASH_MS, LEAVE_MS, MAX_SHOWN, QUIET_MS, StageModel, exemptReason,
 } from '../features/stageManager/model.js';
 
 let failed = 0;
@@ -166,34 +166,29 @@ test('SM-4 closing a window of the stage set keeps the set and the focus on it',
     eq(t.focusFx(), 'c');
 });
 
-test('SM-4 closing the last stage window: the most recent set returns after the grace', () => {
+test('SM-4 closing the last stage window: the most recent set takes the stage at once (D-017)', () => {
     const t = three();
     t.close('c');
-    eq(t.stage(), []);
-    t.later(GRACE_MS - 1);
-    eq(t.stage(), []);
-    t.later(2);
     eq(t.stage(), ['b']);
     eq(t.strip(), ['a']);
     eq(t.focusFx(), 'b');
+    eq(t.fx.filter(f => f.type === 'timer').length, 0, 'no grace timer');
 });
 
-test('SM-4 a window that opens during the grace takes the stage and cancels it', () => {
+test('SM-4 a window that opens right after the close takes the stage', () => {
     const t = three();
     t.close('c');
     t.open('c2', { app: 'c' });
     eq(t.stage(), ['c2']);
     eq(t.strip(), ['b', 'a']);
-    t.later(GRACE_MS + 5);
-    eq(t.stage(), ['c2']);
 });
 
-test('SM-4 Mutter default focus during the grace is held, not obeyed', () => {
-    const t = three();
-    t.close('c');
-    t.focus('b');
+test('SM-4 closing the only set leaves the stage empty; the next window takes it', () => {
+    const t = desk();
+    t.open('a');
+    t.close('a');
     eq(t.stage(), []);
-    t.later(GRACE_MS + 1);
+    t.open('b');
     eq(t.stage(), ['b']);
 });
 
@@ -254,11 +249,9 @@ test('SM-8 a minimized window leaves its set and is never hidden by Stage Manage
     eq(t.fx.filter(f => f.type === 'unminimize').length, 0);
 });
 
-test('SM-9 minimizing the last stage window: the most recent set follows after the grace', () => {
+test('SM-9 minimizing the last stage window: the most recent set follows at once', () => {
     const t = three();
     t.change('c', { minimized: true });
-    eq(t.stage(), []);
-    t.later(GRACE_MS + 1);
     eq(t.stage(), ['b']);
     eq(t.strip(), ['a']);
 });
@@ -281,7 +274,6 @@ test('SM-9 a minimized hidden window leaves its thumbnail', () => {
 test('SM-10 restoring from the Dock makes the window the stage', () => {
     const t = three();
     t.change('c', { minimized: true });
-    t.later(GRACE_MS + 1);
     const fx = t.change('c', { minimized: false });
     eq(t.stage(), ['c']);
     eq(t.strip(), ['b', 'a']);
@@ -292,7 +284,6 @@ test('SM-10 minimize all then restore all: the last restored is the stage', () =
     const t = three();
     for (const n of ['c', 'b', 'a'])
         t.change(n, { minimized: true });
-    t.later(GRACE_MS + 1);
     eq(t.stage(), []);
     eq(t.hidden(), []);
     for (const n of ['c', 'b', 'a'])
@@ -482,9 +473,44 @@ test('SM-25 stash sends a stage window to the strip as its own set', () => {
     eq(t.stage(), ['c']);
     eq(t.strip()[0], 'c2');
     t.send({ type: 'stash', id: t.id('c') });
-    eq(t.stage(), []);
-    t.later(GRACE_MS + 1);
-    eq(t.stage().length, 1);
+    eq(t.stage(), ['c2'], 'the most recent other set; the stashed one does not come back');
+    eq(t.strip()[0], 'c');
+});
+
+test('SM-34 a window dropped on a thumbnail joins that set', () => {
+    const t = three();
+    t.open('c2', { app: 'c' });
+    const target = { id: t.setId('a') };
+    t.send({ type: 'move-to', id: t.id('c2'), set: target.id });
+    eq(t.stage(), ['c']);
+    eq(t.strip().includes('a+c2'), true);
+    eq(t.sm.hiddenIds().has(t.id('c2')), true, 'the window is hidden with its new set');
+    eq(t.sm.strip().find(x => x.id === target.id).windows.length, 2);
+});
+
+test('SM-34 dropping the only stage window on a thumbnail brings the most recent set up', () => {
+    const t = three();
+    const target = { id: t.setId('a') };
+    t.send({ type: 'move-to', id: t.id('c'), set: target.id });
+    eq(t.stage().length > 0, true, 'the stage is never left empty');
+    eq(t.sm.isManaged(t.id('c')), true);
+});
+
+test('SM-34 a drop on its own set or an unknown set changes nothing', () => {
+    const t = three();
+    const own = { id: t.setId('c') };
+    t.send({ type: 'move-to', id: t.id('c'), set: own.id });
+    t.send({ type: 'move-to', id: t.id('c'), set: 9999 });
+    eq(t.stage(), ['c']);
+    eq(t.strip(), ['b', 'a']);
+});
+
+test('SM-34 a thumbnail dropped on the stage joins the stage set', () => {
+    const t = three();
+    const a = { id: t.setId('a') };
+    t.send({ type: 'activate', set: a.id, add: true });
+    eq(t.stage().sort(), ['a', 'c']);
+    eq(t.strip(), ['b']);
 });
 
 // ---- workspaces, desktop, API ----------------------------------------------------------------
@@ -510,8 +536,6 @@ test('SM-27 a window moved to another workspace joins that workspace', () => {
     t.change('c', { workspace: 1 });
     eq(t.stage(1), ['x']);
     eq(t.strip(1), ['c']);
-    eq(t.stage(0), []);
-    t.later(GRACE_MS + 1);
     eq(t.stage(0), ['b']);
 });
 

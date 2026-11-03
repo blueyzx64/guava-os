@@ -39,6 +39,15 @@ _kjs 'await kpush(6); await sl(60); await kmove(800,400); await sl(1800); return
 track_stop
 assert "SM-18 strip ends hidden" "!stripShown()"
 
+echo "-- SM-27 D-017 the strip slides on a workspace switch"
+_kjs 'await kmove(800,400); global.workspace_manager.get_workspace_by_index(0).activate(global.get_current_time()); await sl(600); return 1' >/dev/null
+# the strip shows after the maximize test above only when the stage window does not cover it
+_kjs 'const w=global.display.focus_window; if(w?.is_maximized()) w.unmaximize(); await sl(1200); return 1' >/dev/null
+assert "pre: strip visible on workspace 1" "stripShown()"
+_kjs 'const wm=global.workspace_manager; let ws=wm.get_workspace_by_index(1); if(!ws) ws=wm.append_new_workspace(false, global.get_current_time()); for(const x of ["A","B"]) aw(sid(x)).meta_window.change_workspace(ws); await sl(1000); globalThis.__smSeen=[]; const s=strip().get_parent(); ws.activate(global.get_current_time()); for(let i=0;i<40;i++){ await sl(16); globalThis.__smSeen.push(Math.round(s.translation_x)); } await sl(600); wm.get_workspace_by_index(0).activate(global.get_current_time()); await sl(900); for(const x of ["A","B"]) aw(sid(x)).meta_window.change_workspace(wm.get_workspace_by_index(0)); await sl(1500); return 1' | grep -o "ERR.*" | head -1
+assert "SM-27 the strip moved over several frames (slid), not in one jump" "new Set(globalThis.__smSeen).size>=4"
+assert "SM-27 and it ended in place" "globalThis.__smSeen.at(-1)===0 || stripShown()"
+
 echo "-- SM-19 keyboard (strip only on reveal)"
 key super+Up
 sleep 1.5

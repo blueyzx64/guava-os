@@ -92,8 +92,15 @@ export class Flights {
         clone.opacity = reduced && toStage ? 0 : 255;
         this._layer.add_child(clone);
 
-        const flight = { clone, frame, buffer, actor, toStage, opacity, anim: null, painted: 0 };
+        const flight = { clone, frame, buffer, actor, toStage, opacity, anim: null, painted: 0, gone: false, destroyId: 0 };
         this._active.set(win, flight);
+        // The window closes in mid-air (its app quit): the flight ends there, the actor is not touched again
+        flight.destroyId = actor.connect('destroy', () => {
+            flight.gone = true;
+            flight.destroyId = 0;
+            if (this._active.get(win) === flight)
+                this._end(win, flight, true);
+        });
         if (toStage) {
             actor.remove_transition('opacity');
             actor.opacity = 0;
@@ -157,7 +164,11 @@ export class Flights {
         f.painted = 0;
         f.anim?.cancel();
         f.clone.destroy();
-        if (f.toStage && f.actor.get_stage?.() !== null)
+        if (f.destroyId) {
+            f.actor.disconnect(f.destroyId);
+            f.destroyId = 0;
+        }
+        if (f.toStage && !f.gone && f.actor.get_stage?.() !== null)
             f.actor.opacity = f.opacity;
         if (notify)
             this._onLanded(win, f.toStage);

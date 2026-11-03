@@ -40,12 +40,14 @@ sleep 1
 assert "SM-3 both windows of C are on the stage" "global.get_window_actors().filter(a=>a.meta_window.get_wm_class()===sid('C')&&a.opacity===255).length===2"
 assert "SM-3 other apps stay in the strip" "inStrip(sid('A')) && inStrip(sid('B'))"
 
-echo "-- SM-4 close the last window of the stage set"
+echo "-- SM-4 close the last window of the stage set (D-017: no grace, the next set takes the stage at once)"
 sm_cmd C close
-sm_cmd C close
-sleep 2
+# The second window closes by the Shell; the time from the close request to a strip set on the stage
+_kjs 'const t0=GLib.get_monotonic_time(); aw(sid("C")).meta_window.delete(global.get_current_time()); let ms=-1; for(let i=0;i<60;i++){ await sl(10); if(!aw(sid("C")) && (flight()||onStage(sid("A"))||onStage(sid("B")))) { ms=Math.round((GLib.get_monotonic_time()-t0)/1000); break; } } globalThis.__smCloseMs=ms; return ms' >/dev/null
+sleep 1
 sm_state
 assert "SM-4 C is gone" "!aw(sid('C'))"
 assert "SM-4 a strip set took the stage" "onStage(sid('A')) !== onStage(sid('B'))"
+assert "SM-4 D-017 no 400 ms grace: the next set's flight starts within 350 ms of the close" "globalThis.__smCloseMs>=0 && globalThis.__smCloseMs<350"
 sm_down
 assert_summary
