@@ -39,9 +39,13 @@ export async function resolveWallpaper(uri, cancellable) {
     return { uri: file.get_uri(), until: slide.until };
 }
 
+// The helper decodes at the lowest priority: at login it must not take a core from the Shell's
+// main loop and the compositor (a big picture is seconds of CPU)
+const NICE = GLib.find_program_in_path('nice');
+
 async function probe(argv, cancellable) {
     const proc = new Gio.Subprocess({
-        argv: ['gjs', '-m', PROBE, ...argv],
+        argv: [...(NICE ? [NICE, '-n', '19'] : []), 'gjs', '-m', PROBE, ...argv],
         flags: Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE,
     });
     proc.init(null);
