@@ -1,7 +1,7 @@
 // Run: gjs -m tests/stageManagerOpenInto.test.js
 // Option-click on an app opens it into the current Stage Manager stage (RV1-1, SM-29).
-import { opensIntoStage } from '../lib/clickModel.js';
-import { StageModel } from '../features/stageManager/model.js';
+import { opensIntoStage } from '../src/lib/clickModel.js';
+import { StageModel } from '../src/features/stageManager/model.js';
 
 let failed = 0;
 function test(name, fn) {

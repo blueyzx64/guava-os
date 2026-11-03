@@ -1,9 +1,9 @@
 // Run: gjs -m tests/featureRegistry.test.js
 import GLib from 'gi://GLib';
 
-import { FeatureRegistry } from '../lib/featureRegistry.js';
-import { CleanupRegistry } from '../lib/disposables.js';
-import { FEATURES } from '../features.js';
+import { FeatureRegistry } from '../src/lib/featureRegistry.js';
+import { CleanupRegistry } from '../src/lib/disposables.js';
+import { FEATURES } from '../src/features.js';
 
 let failed = 0;
 const tests = [];

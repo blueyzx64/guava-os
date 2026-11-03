@@ -1,7 +1,7 @@
 // Run: gjs -m tests/notchStateMachine.test.js
 import {
     initialState, step, view, nextDeadline, wantsBar, recentNotifications, URGENCY, SIZES, DEFAULT_CONFIG,
-} from '../features/notch/stateMachine.js';
+} from '../src/features/notch/stateMachine.js';
 
 let failed = 0;
 function test(name, fn) {

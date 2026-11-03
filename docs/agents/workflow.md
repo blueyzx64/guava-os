@@ -81,7 +81,7 @@ What survives the session: O copies `shared/` and the `LEARN` notes it accepts i
 3. Who holds what now: `tools/agents/claim.sh list`. History: `$SWARM/ownership-log.md`.
 
 Shared hot spots (`core/events.js`, `features.js`, `schemas/*.xml`, `stylesheet.css`,
-`styles/base.css`, `extension.js`) are claimed for minutes, not hours: claim, make the one change,
+`src/styles/base.css`, `extension.js`) are claimed for minutes, not hours: claim, make the one change,
 commit, release. `stylesheet.css` is generated: never hand-merge it, run `make css` after a merge.
 
 ## 4. Done for a lane

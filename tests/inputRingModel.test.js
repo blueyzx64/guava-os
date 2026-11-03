@@ -1,6 +1,6 @@
 // Run: gjs -m tests/inputRingModel.test.js
 // lib/inputRingModel.js: the boxes of an input ring around a hole.
-import { surround } from '../lib/inputRingModel.js';
+import { surround } from '../src/lib/inputRingModel.js';
 
 let failed = 0;
 function test(name, fn) {

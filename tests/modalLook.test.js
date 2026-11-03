@@ -1,5 +1,5 @@
 // Run: gjs -m tests/modalLook.test.js
-import { FROM_SCALE, HIDE_MS, SHOW_MS, frameClasses, motionFor } from '../lib/modalLook.js';
+import { FROM_SCALE, HIDE_MS, SHOW_MS, frameClasses, motionFor } from '../src/lib/modalLook.js';
 
 let failed = 0;
 function test(name, fn) {

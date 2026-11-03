@@ -1,5 +1,5 @@
 // Run: gjs -m tests/modalModel.test.js
-import { ModalArbiter, menuAtPoint } from '../lib/modalModel.js';
+import { ModalArbiter, menuAtPoint } from '../src/lib/modalModel.js';
 
 let failed = 0;
 function test(name, fn) {

@@ -12,7 +12,8 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import System from 'system';
 
-const ROOT = GLib.path_get_dirname(GLib.path_get_dirname(GLib.path_get_dirname(import.meta.url.replace('file://', ''))));
+// The extension's sources live under src/ (the zip's root)
+const ROOT = `${GLib.path_get_dirname(GLib.path_get_dirname(GLib.path_get_dirname(import.meta.url.replace('file://', ''))))}/src`;
 const SKIP = new Set(['node_modules', 'tests', 'tools', 'docs', 'schemas', '.git', '.claude', 'dist']);
 const RUNS = 7;
 

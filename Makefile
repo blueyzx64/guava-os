@@ -2,20 +2,22 @@
 UUID    := guava-os@blueyzx64
 DESTDIR := $(HOME)/.local/share/gnome-shell/extensions/$(UUID)
 DISTDIR := dist
-POT     := translating/guava.pot
-# Every source folder the zip needs. Keep in step with .github/workflows/pack-release.yml.
+POT     := i18n/guava.pot
+# Everything the extension zip holds lives in src/ (the zip's root)
+SRC     := src
+# Every source folder the zip needs (relative to src/). Keep in step with .github/workflows/pack-release.yml.
 EXTRA   := icons lib core features prefs features.js
 EXTRA_FLAGS := $(addprefix --extra-source=,$(EXTRA))
 # Shell styles: stylesheet.css is built from these (and committed)
-CSS_SRC := styles/base.css $(sort $(wildcard features/*/style.css))
+CSS_SRC := $(SRC)/styles/base.css $(sort $(wildcard $(SRC)/features/*/style.css))
 
 .PHONY: refs all css css-check pack pack-check pot install uninstall test lint schema-check check clean smoke helper-rpm helper-install
 
 all: check
 
-# stylesheet.css = styles/base.css + features/*/style.css
-css: stylesheet.css
-stylesheet.css: $(CSS_SRC) tools/build-css.sh
+# src/stylesheet.css = src/styles/base.css + src/features/*/style.css
+css: $(SRC)/stylesheet.css
+$(SRC)/stylesheet.css: $(CSS_SRC) tools/build-css.sh
 	tools/build-css.sh
 
 css-check:
@@ -24,23 +26,23 @@ css-check:
 # Zip lands in $(DISTDIR)/$(UUID).shell-extension.zip
 pack: css
 	@mkdir -p $(DISTDIR)
-	gnome-extensions pack --force $(EXTRA_FLAGS) --podir=po -o $(DISTDIR) .
+	cd $(SRC) && gnome-extensions pack --force $(EXTRA_FLAGS) --podir=../i18n/po -o ../$(DISTDIR) .
 
 # The zip holds what the extension loads, and nothing of the features v3 dropped
 pack-check: pack
 	tools/check-pack.sh $(DISTDIR)/$(UUID).shell-extension.zip
 
-# Regenerate the translation template (translating/guava.pot) and po/POTFILES from every
-# source file that has translatable strings. Sources are found recursively.
+# Regenerate the translation template (i18n/guava.pot) and i18n/po/POTFILES from every
+# source file that has translatable strings. Sources are found recursively under src/.
 pot:
-	@srcs=$$(ls extension.js prefs.js features.js 2>/dev/null; find lib core features prefs -name '*.js' | sort) && \
+	@cd $(SRC) && srcs=$$(ls extension.js prefs.js features.js 2>/dev/null; find lib core features prefs -name '*.js' | sort) && \
 	xgettext --from-code=UTF-8 --language=JavaScript \
 		-k_ -kN_ -kgettext -kgettextFunc -k_gettext --add-comments=TRANSLATORS \
 		--package-name="Guava OS" --package-version=1.0.0 \
 		--copyright-holder="blueyzx64" \
 		--msgid-bugs-address=https://github.com/blueyzx64/guava-os/issues \
-		-o $(POT) $$srcs && \
-	grep '^\#: ' $(POT) | sed 's/^\#: //' | tr ' ' '\n' | sed 's/:.*//' | sort -u > po/POTFILES
+		-o ../$(POT) $$srcs && \
+	grep '^\#: ' ../$(POT) | sed 's/^\#: //' | tr ' ' '\n' | sed 's/:.*//' | sort -u > ../i18n/po/POTFILES
 
 # Install the packed zip for the current user (enable it afterwards).
 install: pack
@@ -57,8 +59,8 @@ lint:
 
 # Strict compile into a throwaway dir; fails on schema errors and warnings.
 schema-check:
-	@d=$$(mktemp -d) && glib-compile-schemas --strict --dry-run schemas && \
-		glib-compile-schemas --strict --targetdir="$$d" schemas; r=$$?; rm -rf "$$d"; exit $$r
+	@d=$$(mktemp -d) && glib-compile-schemas --strict --dry-run $(SRC)/schemas && \
+		glib-compile-schemas --strict --targetdir="$$d" $(SRC)/schemas; r=$$?; rm -rf "$$d"; exit $$r
 
 # Imports resolve to real files and exports; every settings key read is in a schema
 refs:
@@ -68,7 +70,7 @@ check: lint schema-check css-check refs test
 
 # The shelf drag-out helper is its own package (not in the extension zip): make helper-rpm
 # builds dist/helper/RPMS/noarch/guava-shelf-helper-*.rpm (needs rpmbuild)
-HELPER_DIR  := helpers/guava-shelf-helper
+HELPER_DIR  := packaging/shelf-helper
 HELPER_NAME := guava-shelf-helper
 HELPER_VER  := $(shell sed -n 's/^Version:[[:space:]]*//p' $(HELPER_DIR)/$(HELPER_NAME).spec)
 HELPER_TOP  := $(CURDIR)/$(DISTDIR)/helper

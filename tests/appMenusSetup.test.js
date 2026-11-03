@@ -2,7 +2,7 @@
 import {
     FLAGS_MARK, X11_FLAG, hasX11Flag, withX11Flag, withoutX11Flag, detectFlagApps, execProgram,
     isFlatpakId, flatpakOverrideArgv, parseFlatpakList, overrideAllows,
-} from '../core/appMenus/setupModel.js';
+} from '../src/core/appMenus/setupModel.js';
 
 let failed = 0;
 function test(name, fn) {

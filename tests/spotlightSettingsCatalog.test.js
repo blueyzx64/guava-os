@@ -1,6 +1,6 @@
 // Run: gjs -m tests/spotlightSettingsCatalog.test.js
-import { settingsItems, PANELS, GUAVA_TOGGLES } from '../features/spotlight/providers/settingsCatalog.js';
-import { rank, usageBoost } from '../features/spotlight/model.js';
+import { settingsItems, PANELS, GUAVA_TOGGLES } from '../src/features/spotlight/providers/settingsCatalog.js';
+import { rank, usageBoost } from '../src/features/spotlight/model.js';
 
 let failed = 0;
 function test(name, fn) {

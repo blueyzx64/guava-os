@@ -1,5 +1,5 @@
 // Run: gjs -m tests/lowPowerModel.test.js
-import { batteryHealth, holdAction, lowPowerToggle, lowPowerWanted } from '../features/lowPower/model.js';
+import { batteryHealth, holdAction, lowPowerToggle, lowPowerWanted } from '../src/features/lowPower/model.js';
 
 let failed = 0;
 function test(name, fn) {

@@ -2,7 +2,7 @@
 // Stage Manager across workspace renumbering (RV1-4): Mutter removes an empty workspace in the middle,
 // every window behind it reports an index one lower (no event says so), and the adapter sends
 // 'renumber' with the live indexes. The stages and strips must come out as they were.
-import { StageModel } from '../features/stageManager/model.js';
+import { StageModel } from '../src/features/stageManager/model.js';
 
 let failed = 0;
 function test(name, fn) {

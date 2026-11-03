@@ -3,7 +3,7 @@
 // rule of docs/features/stage-manager.md (the SM-n in the test names).
 import {
     DWELL_MS, FLASH_MS, LEAVE_MS, MAX_SHOWN, QUIET_MS, StageModel, exemptReason,
-} from '../features/stageManager/model.js';
+} from '../src/features/stageManager/model.js';
 
 let failed = 0;
 function test(name, fn) {

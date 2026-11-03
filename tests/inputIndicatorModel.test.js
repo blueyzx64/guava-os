@@ -3,8 +3,8 @@
 import {
     CAPS_GLYPH, CARET_GAP, CapsWatch, POINTER_OFFSET, SCREEN_MARGIN, badgeFor, isSourceSwitch, placeBadge,
     readConfig, sourceLabel,
-} from '../features/inputIndicator/model.js';
-import { CaretTracker } from '../lib/caretModel.js';
+} from '../src/features/inputIndicator/model.js';
+import { CaretTracker } from '../src/lib/caretModel.js';
 
 let failed = 0;
 function test(name, fn) {

@@ -1,7 +1,7 @@
 // Run: gjs -m tests/showDesktopModel.test.js
 import {
     PEEK, SPEEDS, wallpaperClickToggles, chooseEdge, durationFor, edgeOffset, focusEnds, isMovable, planReveal,
-} from '../features/showDesktop/model.js';
+} from '../src/features/showDesktop/model.js';
 
 let failed = 0;
 function test(name, fn) {

@@ -4,7 +4,7 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
-import { DBusSearch } from '../features/spotlight/providers/dbusSearch.js';
+import { DBusSearch } from '../src/features/spotlight/providers/dbusSearch.js';
 
 const BUS = 'org.guava.test.SearchProvider';
 const PATH = '/org/guava/test/SearchProvider';

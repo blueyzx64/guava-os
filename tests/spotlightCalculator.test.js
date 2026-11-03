@@ -1,7 +1,7 @@
 // Run: gjs -m tests/spotlightCalculator.test.js
 import {
     calculate, convert, convertUnits, evaluateQuery, formatNumber, MAX_INPUT_LENGTH,
-} from '../features/spotlight/calculator.js';
+} from '../src/features/spotlight/calculator.js';
 
 let failed = 0;
 function test(name, fn) {

@@ -3,7 +3,7 @@
 import {
     chooseMode, edgeTarget, genieFrame, genieOpacity, genieRow, genieVertex, readConfig, retarget, scaleFrame,
     scaleTarget, textureBox,
-} from '../features/minimizeEffect/model.js';
+} from '../src/features/minimizeEffect/model.js';
 
 let failed = 0;
 function test(name, fn) {

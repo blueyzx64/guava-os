@@ -6,7 +6,7 @@
 import {
     CURVES, CURVE_FNS, DURATIONS, SPRINGS, REDUCED_MAX_MS, FrameBudget,
     easeState, mustShowFirst, resolve, springAt, springDuration, springPlan, springState,
-} from '../core/motionModel.js';
+} from '../src/core/motionModel.js';
 
 let failed = 0;
 function test(name, fn) {

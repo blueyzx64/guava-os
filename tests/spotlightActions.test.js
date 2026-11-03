@@ -1,8 +1,8 @@
 // Run: gjs -m tests/spotlightActions.test.js
 import {
     GUAVA_ACTIONS, actionItems, actionChoices, parseDuration, formatDuration, parameterItems,
-} from '../features/spotlight/actionsModel.js';
-import { rank } from '../features/spotlight/model.js';
+} from '../src/features/spotlight/actionsModel.js';
+import { rank } from '../src/features/spotlight/model.js';
 
 let failed = 0;
 function test(name, fn) {

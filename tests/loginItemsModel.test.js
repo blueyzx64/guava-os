@@ -1,5 +1,5 @@
 // Run: gjs -m tests/loginItemsModel.test.js
-import { backgroundItems, loginItem, loginItems } from '../lib/loginItemsModel.js';
+import { backgroundItems, loginItem, loginItems } from '../src/lib/loginItemsModel.js';
 
 let failed = 0;
 function test(name, fn) {

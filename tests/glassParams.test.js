@@ -7,7 +7,7 @@ import {
     hostStyle, readSnapshot, liveCaptureDue, LIVE_CAPTURE_MS, LIVE_CAPTURE_DEGRADED_MS, resolve, roleFor, sliderAlpha,
     clipCovers, clipToDevice, captureRects, intersectRect, textureSide, TEXTURE_STEP,
     stripFragments, wantsSurface, worstCaseContrast, wrapFragment,
-} from '../lib/glassParams.js';
+} from '../src/lib/glassParams.js';
 
 let failed = 0;
 function test(name, fn) {

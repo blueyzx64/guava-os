@@ -1,5 +1,5 @@
 // Run: gjs -m tests/desktopLayersModel.test.js
-import { ReserveStore, stackOrder } from '../core/desktopLayersModel.js';
+import { ReserveStore, stackOrder } from '../src/core/desktopLayersModel.js';
 
 let failed = 0;
 function test(name, fn) {

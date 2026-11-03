@@ -1,6 +1,6 @@
 // Run: gjs -m tests/shelfHelperModel.test.js
 // features/notch/shelfHelperModel.js: talking to the shelf drag-out helper.
-import { HELPER, CLEAR_LINE, isHelperWindow, layoutOf, parseEvent, pointerOnNotch, dragIconName } from '../features/notch/shelfHelperModel.js';
+import { HELPER, CLEAR_LINE, isHelperWindow, layoutOf, parseEvent, pointerOnNotch, dragIconName } from '../src/features/notch/shelfHelperModel.js';
 
 let failed = 0;
 function test(name, fn) {

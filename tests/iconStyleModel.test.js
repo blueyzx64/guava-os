@@ -1,8 +1,8 @@
 // Run: gjs -m tests/iconStyleModel.test.js
 // lib/iconStyleModel.js (icon styles), lib/pasteModel.js and lib/modalModel.js placeNear.
-import { DEFAULT_STYLE, ICON_STYLES, effectPlan, normalizeStyle, normalizeTint } from '../lib/iconStyleModel.js';
-import { canKeep, chordKeys, mimeToKeep, pasteChordFor } from '../lib/pasteModel.js';
-import { placeNear } from '../lib/modalModel.js';
+import { DEFAULT_STYLE, ICON_STYLES, effectPlan, normalizeStyle, normalizeTint } from '../src/lib/iconStyleModel.js';
+import { canKeep, chordKeys, mimeToKeep, pasteChordFor } from '../src/lib/pasteModel.js';
+import { placeNear } from '../src/lib/modalModel.js';
 
 let failed = 0;
 function test(name, fn) {

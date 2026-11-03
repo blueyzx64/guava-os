@@ -1,10 +1,10 @@
 // Run: gjs -m tests/launchpadModel.test.js
-import { normalizeAccel } from '../lib/keybindingsModel.js';
+import { normalizeAccel } from '../src/lib/keybindingsModel.js';
 import {
     COLUMNS, ROWS, addToFolder, buildItems, cleanFolderName, createFolder, dropAction, flatpakAppId,
     folderMembers, folderNameFor, freeAccels, gridMetrics, jiggleParams, layoutIndex, moveId, navigate, pageCount, pageOf,
     paginate, removeFromFolder, searchApps, serializeLayout, uninstallRule, SwipePager,
-} from '../features/launchpad/model.js';
+} from '../src/features/launchpad/model.js';
 
 let failed = 0;
 function test(name, fn) {

@@ -206,7 +206,7 @@ on and off many times without touching your session ([tools/smoke/README.md](too
 The code layout is in [docs/architecture/code-map.md](docs/architecture/code-map.md), and the rules
 for writing a feature are in [docs/architecture/conventions.md](docs/architecture/conventions.md).
 
-To help translate Guava OS, see the [translation guide](translating/README.md).
+To help translate Guava OS, see the [translation guide](i18n/README.md).
 
 ## Contributors
 

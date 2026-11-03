@@ -1,7 +1,7 @@
 // Run: gjs -m tests/launcherEntryModel.test.js
 // lib/launcherEntryModel.js and lib/backgroundAppsModel.js: badges and background apps.
-import { LauncherEntries, appIdFromUri, isBlank } from '../lib/launcherEntryModel.js';
-import { backgroundAppIds, gApplicationPath } from '../lib/backgroundAppsModel.js';
+import { LauncherEntries, appIdFromUri, isBlank } from '../src/lib/launcherEntryModel.js';
+import { backgroundAppIds, gApplicationPath } from '../src/lib/backgroundAppsModel.js';
 
 let failed = 0;
 function test(name, fn) {

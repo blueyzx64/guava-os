@@ -64,7 +64,7 @@ degrades", not an error log loop.
 ## 4. Wayland constraints that shape features
 
 - The Shell cannot start a Wayland drag-and-drop to clients: the notch shelf's drag-out uses a
-  GTK4 helper process (`helpers/guava-shelf-helper/guava-shelf-helper.js`) whose window
+  GTK4 helper process (`packaging/shelf-helper/guava-shelf-helper.js`) whose window
   Guava places over the shelf.
 - Clients cannot know global positions; only the compositor moves windows (`move_frame`).
 - Global hotkeys: only through the Shell (`lib/keybindings.js`, `Main.wm.addKeybinding`).
@@ -76,7 +76,7 @@ degrades", not an error log loop.
 - Extension zip: `make pack` (`gnome-extensions pack` + `EXTRA` dirs), `make pack-check`.
   Zip must not contain binaries (EGO rule).
 - Shelf helper RPM: `make helper-rpm` → `dist/helper/RPMS/noarch/guava-shelf-helper-*.rpm`
-  (`helpers/guava-shelf-helper/guava-shelf-helper.spec`: noarch, `Requires: gjs gtk4 gnome-shell`,
+  (`packaging/shelf-helper/guava-shelf-helper.spec`: noarch, `Requires: gjs gtk4 gnome-shell`,
   installs `/usr/bin/guava-shelf-helper` and a `.desktop`). `Recommends:
   gnome-shell-extension-guava` names no existing package (⚠ harmless but misleading).
   Shebang `#!/usr/bin/gjs -m` is fine for Fedora; `desktop-file-validate` runs in `%check`.

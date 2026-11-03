@@ -1,5 +1,5 @@
 // Run: gjs -m tests/colorFiltersModel.test.js
-import { FILTER_KINDS, filterMatrix, hueColor, isIdentity } from '../features/colorFilters/model.js';
+import { FILTER_KINDS, filterMatrix, hueColor, isIdentity } from '../src/features/colorFilters/model.js';
 
 let failed = 0;
 function test(name, fn) {

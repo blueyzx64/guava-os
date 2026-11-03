@@ -3,7 +3,7 @@ import {
     COLUMNS, MORE_HEADER_ID, DISPLAY_HEADER_ID, SOUND_HEADER_ID, SPACER_PREFIX,
     planLayout, place, restoreOrder, batteryTime, BATTERY_STATE,
     GUAVA_COLUMNS, GUAVA_TOGGLES, guavaTiles,
-} from '../features/controlCenter/model.js';
+} from '../src/features/controlCenter/model.js';
 
 let failed = 0;
 function test(name, fn) {

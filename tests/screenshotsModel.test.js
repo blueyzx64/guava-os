@@ -4,7 +4,7 @@ import {
     extensionOf, isCapturableArea, modeFrom, modeSpec, nameCandidates, normalizeDestination,
     normalizeTimer, selectionFromList, selectionToList, spaceToggle, stampedName, startSelection,
     swipeOffset, swipeOutcome, thumbnailEntryOffset, thumbnailRest, thumbnailSize, MODES,
-} from '../features/screenshots/model.js';
+} from '../src/features/screenshots/model.js';
 
 let failed = 0;
 function test(name, fn) {

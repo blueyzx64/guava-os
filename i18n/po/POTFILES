@@ -52,6 +52,8 @@ features/launchpad/prefs.js
 features/launchpad/store.js
 features/launchpad/view.js
 features/liquidGlass/prefs.js
+features/lockScreen/dialog.js
+features/lockScreen/prefs.js
 features/lowPower/prefs.js
 features/menuBar/aboutDialog.js
 features/menuBar/appMenuBar.js

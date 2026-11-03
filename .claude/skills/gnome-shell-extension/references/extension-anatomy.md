@@ -123,12 +123,12 @@ export default class GuavaPreferences extends ExtensionPreferences {
   See `input-keybindings-and-modals.md`.
 
 ## 6. Translations
-- `po/<lang>.po` files and the `gettext-domain` metadata key. `gnome-extensions pack --podir=po`
+- `i18n/po/<lang>.po` files and the `gettext-domain` metadata key. `gnome-extensions pack --podir=po`
   compiles them into `locale/<lang>/LC_MESSAGES/<domain>.mo` (msgfmt in command-pack.c).
 - `initTranslations()` binds `<dir>/locale` if it exists, otherwise the system
   `LOCALEDIR`. With 45+ ESM, translation functions come from the module imports.
   Guava passes `this.gettext.bind(this)` into feature modules.
-- Extract strings with xgettext. See `translating/` in the repo for Guava's flow.
+- Extract strings with xgettext. See `i18n/` in the repo for Guava's flow.
 
 ## 7. Stylesheets
 The shell loads the first one that exists from
@@ -149,7 +149,7 @@ gnome-extensions upload guava-os@blueyzx64.shell-extension.zip   # 49+ (NEWS 49.
 `--gettext-domain`, `--force`, `--out-dir`. `pack` automatically adds
 `extension.js`, `metadata.json`, `stylesheet-dark.css`, `stylesheet-light.css`,
 `stylesheet.css` and `prefs.js`, plus `schemas/*.gschema.xml` and the compiled
-`po/` (command-pack.c lines 376-381). Every other file or folder, such as
+`i18n/po/` (command-pack.c lines 376-381). Every other file or folder, such as
 `apps/`, `css/` or `icons/`, needs `--extra-source`. Session-mode stylesheets
 such as `unlock-dialog.css` also need `--extra-source`.
 

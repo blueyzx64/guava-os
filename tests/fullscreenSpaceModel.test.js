@@ -4,7 +4,7 @@
 import {
     isolateDecision, planTarget, trailingToAppend, canRemove, sweepList, indexAfterRemoval,
     restoreIndex, shouldRedirectNewWindow, reviveSnapshot, lastOccupied,
-} from '../features/fullscreenSpace/model.js';
+} from '../src/features/fullscreenSpace/model.js';
 
 let failed = 0;
 function test(name, fn) {

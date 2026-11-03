@@ -1,5 +1,5 @@
 // Run: gjs -m tests/tileMotionModel.test.js
-import { planTile, lerpRect, frameTransform, isSettled } from '../features/windows/tileMotionModel.js';
+import { planTile, lerpRect, frameTransform, isSettled } from '../src/features/windows/tileMotionModel.js';
 
 let failed = 0;
 function test(name, fn) {

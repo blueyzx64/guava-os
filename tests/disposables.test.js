@@ -1,7 +1,7 @@
 // Run: gjs -m tests/disposables.test.js
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
-import { CleanupRegistry } from '../lib/disposables.js';
+import { CleanupRegistry } from '../src/lib/disposables.js';
 
 let failed = 0;
 function test(name, fn) {

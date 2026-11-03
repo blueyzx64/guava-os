@@ -1,5 +1,5 @@
 // Run: gjs -m tests/panelLayoutModel.test.js
-import { targetIndex } from '../core/panelLayoutModel.js';
+import { targetIndex } from '../src/core/panelLayoutModel.js';
 
 let failed = 0;
 function test(name, fn) {

@@ -1,5 +1,5 @@
 // Run: gjs -m tests/dialogsModel.test.js
-import { dialogIcon, dialogKind } from '../features/dialogs/model.js';
+import { dialogIcon, dialogKind } from '../src/features/dialogs/model.js';
 
 let failed = 0;
 function test(name, fn) {

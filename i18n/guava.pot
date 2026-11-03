@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Guava OS 1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/blueyzx64/guava-os/issues\n"
-"POT-Creation-Date: 2026-11-03 09:46+0000\n"
+"POT-Creation-Date: 2026-11-03 15:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: prefs.js:44
+#: prefs.js:47
 msgid "Guava OS"
 msgstr ""
 
@@ -147,7 +147,7 @@ msgstr ""
 msgid "Center"
 msgstr ""
 
-#: core/appMenus/model.js:329 features/menuBar/fullscreenReveal.js:140
+#: core/appMenus/model.js:329 features/menuBar/fullscreenReveal.js:142
 msgid "Exit Full Screen"
 msgstr ""
 
@@ -169,7 +169,7 @@ msgstr ""
 
 #: core/appMenus/model.js:348 features/clipboard/popover.js:64
 #: features/clipboard/popover.js:189 features/emoji/view.js:49
-#: features/launchpad/view.js:337 features/menuBar/appMenuBar.js:581
+#: features/launchpad/view.js:338 features/menuBar/appMenuBar.js:581
 #: features/spotlight/providers/settingsCatalog.js:23
 #: features/spotlight/view.js:116 features/spotlight/view.js:117
 #: prefs/window.js:128
@@ -197,8 +197,8 @@ msgstr ""
 msgid "View"
 msgstr ""
 
-#: core/appMenus/model.js:358 features/splitView/index.js:134
-#: features/stageManager/view.js:221
+#: core/appMenus/model.js:358 features/splitView/index.js:145
+#: features/stageManager/view.js:519
 msgid "Window"
 msgstr ""
 
@@ -315,11 +315,11 @@ msgstr ""
 msgid "Today"
 msgstr ""
 
-#: core/widgets/data.js:171
+#: core/widgets/data.js:177
 msgid "This Computer"
 msgstr ""
 
-#: core/widgets/data.js:171
+#: core/widgets/data.js:177
 msgid "Device"
 msgstr ""
 
@@ -331,24 +331,24 @@ msgstr ""
 msgid "No batteries"
 msgstr ""
 
-#: core/widgets/kinds/calendar.js:17
+#: core/widgets/kinds/calendar.js:18
 msgid "Untitled"
 msgstr ""
 
-#: core/widgets/kinds/calendar.js:18 features/notch/tabs.js:401
+#: core/widgets/kinds/calendar.js:19 features/notch/tabs.js:401
 msgid "All day"
 msgstr ""
 
-#: core/widgets/kinds/calendar.js:27 core/widgets/kinds/calendar.js:28
+#: core/widgets/kinds/calendar.js:28 core/widgets/kinds/calendar.js:29
 #: features/notch/tabs.js:407
 msgid "Calendar"
 msgstr ""
 
-#: core/widgets/kinds/calendar.js:103
+#: core/widgets/kinds/calendar.js:106
 msgid "No calendars"
 msgstr ""
 
-#: core/widgets/kinds/calendar.js:103 features/notch/tabs.js:395
+#: core/widgets/kinds/calendar.js:106 features/notch/tabs.js:395
 msgid "No more events today"
 msgstr ""
 
@@ -380,8 +380,8 @@ msgid "Previous"
 msgstr ""
 
 #: core/widgets/kinds/nowPlaying.js:64 core/widgets/kinds/nowPlaying.js:105
-#: features/controlCenter/nowPlaying.js:46
-#: features/controlCenter/nowPlaying.js:106 features/notch/tabs.js:139
+#: features/controlCenter/nowPlaying.js:48
+#: features/controlCenter/nowPlaying.js:108 features/notch/tabs.js:139
 msgid "Play"
 msgstr ""
 
@@ -400,7 +400,7 @@ msgid "Not Playing"
 msgstr ""
 
 #: core/widgets/kinds/nowPlaying.js:105
-#: features/controlCenter/nowPlaying.js:106 features/notch/pills.js:39
+#: features/controlCenter/nowPlaying.js:108 features/notch/pills.js:39
 #: features/notch/tabs.js:139
 msgid "Pause"
 msgstr ""
@@ -510,7 +510,7 @@ msgid "Size of the macOS traffic lights"
 msgstr ""
 
 #: features/appButtons/prefs.js:52 features/dock/prefs.js:99
-#: features/widgets/gallery.js:241 prefs/setupAssistant.js:115
+#: features/widgets/gallery.js:242 prefs/setupAssistant.js:115
 msgid "Small"
 msgstr ""
 
@@ -683,8 +683,8 @@ msgstr ""
 msgid "Do Not Disturb Indicator"
 msgstr ""
 
-#: features/calendar/notificationList.js:56 features/notch/prefs.js:34
-#: features/notificationCenter/index.js:263
+#: features/calendar/notificationList.js:56 features/lockScreen/prefs.js:42
+#: features/notch/prefs.js:34 features/notificationCenter/index.js:323
 #: features/notificationCenter/view.js:179
 #: features/spotlight/providers/settingsCatalog.js:22
 msgid "Notifications"
@@ -694,7 +694,7 @@ msgstr ""
 msgid "Clear all notifications"
 msgstr ""
 
-#: features/clipboard/index.js:565 features/clipboard/prefs.js:55
+#: features/clipboard/index.js:566 features/clipboard/prefs.js:55
 #: features/clipboard/quickPaste.js:32 features/onboarding/model.js:115
 msgid "Clipboard History"
 msgstr ""
@@ -958,8 +958,8 @@ msgstr ""
 #: features/controlCenter/controls.js:187
 #: features/controlCenter/customModel.js:87 features/notch/index.js:122
 #: features/notch/pills.js:34 features/notch/pills.js:45
-#: features/notch/sources/timers.js:38 features/notch/sources/timers.js:49
-#: features/screenshots/prefs.js:44 features/screenshots/toolbar.js:255
+#: features/notch/sources/timers.js:38 features/screenshots/prefs.js:44
+#: features/screenshots/toolbar.js:255
 #: features/spotlight/providers/actions.js:130
 msgid "Timer"
 msgstr ""
@@ -1177,7 +1177,7 @@ msgid "Reset"
 msgstr ""
 
 #: features/controlCenter/editor.js:83 features/notch/pills.js:45
-#: features/widgets/gallery.js:97
+#: features/widgets/gallery.js:98
 msgid "Done"
 msgstr ""
 
@@ -1186,7 +1186,7 @@ msgid "Search Controls"
 msgstr ""
 
 #: features/controlCenter/editor.js:197 features/controlCenter/editor.js:267
-#: features/missionControl/spaces.js:157
+#: features/missionControl/spaces.js:175
 #, javascript-format
 msgid "Remove %s"
 msgstr ""
@@ -1232,16 +1232,16 @@ msgstr ""
 msgid "Edit Controls…"
 msgstr ""
 
-#: features/controlCenter/model.js:77 features/notch/view.js:129
-#: features/notch/view.js:135 features/osd/prefs.js:21 prefs/pages/index.js:53
+#: features/controlCenter/model.js:77 features/notch/view.js:133
+#: features/notch/view.js:140 features/osd/prefs.js:21 prefs/pages/index.js:53
 msgid "Notch"
 msgstr ""
 
 #: features/controlCenter/model.js:78 features/onboarding/model.js:104
 #: features/onboarding/model.js:107
 #: features/spotlight/providers/settingsCatalog.js:43
-#: features/stageManager/prefs.js:48 features/stageManager/view.js:76
-#: features/stageManager/view.js:78 prefs/pages/index.js:48
+#: features/stageManager/prefs.js:48 features/stageManager/view.js:87
+#: features/stageManager/view.js:89 prefs/pages/index.js:48
 msgid "Stage Manager"
 msgstr ""
 
@@ -1269,12 +1269,12 @@ msgid "Rounded Corners"
 msgstr ""
 
 #: features/controlCenter/model.js:83 features/gestures/prefs.js:25
-#: features/showDesktop/index.js:345 features/showDesktop/prefs.js:26
+#: features/showDesktop/index.js:349 features/showDesktop/prefs.js:26
 #: features/spotlight/actionsModel.js:20
 msgid "Show Desktop"
 msgstr ""
 
-#: features/controlCenter/nowPlaying.js:48
+#: features/controlCenter/nowPlaying.js:50
 msgid "Next track"
 msgstr ""
 
@@ -1367,87 +1367,87 @@ msgstr ""
 msgid "untitled folder"
 msgstr ""
 
-#: features/desktopIcons/index.js:387 features/desktopIcons/index.js:504
+#: features/desktopIcons/index.js:389 features/desktopIcons/index.js:505
 #: features/desktopIcons/prefs.js:49
 msgid "Name"
 msgstr ""
 
-#: features/desktopIcons/index.js:402
+#: features/desktopIcons/index.js:403
 msgid "The name cannot be empty."
 msgstr ""
 
-#: features/desktopIcons/index.js:403
+#: features/desktopIcons/index.js:404
 msgid "The name cannot contain “/”."
 msgstr ""
 
-#: features/desktopIcons/index.js:404
+#: features/desktopIcons/index.js:405
 msgid "That name is not allowed."
 msgstr ""
 
-#: features/desktopIcons/index.js:405
+#: features/desktopIcons/index.js:406
 msgid "That name is too long."
 msgstr ""
 
-#: features/desktopIcons/index.js:406
+#: features/desktopIcons/index.js:407
 msgid "A file with that name already exists."
 msgstr ""
 
-#: features/desktopIcons/index.js:462 features/dock/appMenu.js:84
-#: features/dock/index.js:789 features/dock/index.js:829
+#: features/desktopIcons/index.js:463 features/dock/appMenu.js:84
+#: features/dock/index.js:804 features/dock/index.js:844
 #: features/notch/tabs.js:303 features/spotlight/results.js:126
 msgid "Open"
 msgstr ""
 
-#: features/desktopIcons/index.js:462 features/dock/appMenu.js:93
-#: features/dock/index.js:833 features/notch/tabs.js:304
+#: features/desktopIcons/index.js:463 features/dock/appMenu.js:93
+#: features/dock/index.js:848 features/notch/tabs.js:304
 #: features/screenshots/thumbnail.js:249
 msgid "Show in Files"
 msgstr ""
 
-#: features/desktopIcons/index.js:462
+#: features/desktopIcons/index.js:463
 msgid "Rename"
 msgstr ""
 
-#: features/desktopIcons/index.js:463 features/dock/index.js:844
+#: features/desktopIcons/index.js:464 features/dock/index.js:859
 msgid "Move to Trash"
 msgstr ""
 
-#: features/desktopIcons/index.js:463
+#: features/desktopIcons/index.js:464
 msgid "Eject"
 msgstr ""
 
-#: features/desktopIcons/index.js:463 features/desktopIcons/index.js:492
+#: features/desktopIcons/index.js:464 features/desktopIcons/index.js:493
 msgid "New Folder"
 msgstr ""
 
-#: features/desktopIcons/index.js:504 features/desktopIcons/prefs.js:49
+#: features/desktopIcons/index.js:505 features/desktopIcons/prefs.js:49
 #: features/menuBar/prefs.js:25 features/onboarding/model.js:87
 #: features/screenshots/prefs.js:46 features/screenshots/toolbar.js:257
 msgid "None"
 msgstr ""
 
-#: features/desktopIcons/index.js:504 features/desktopIcons/prefs.js:49
+#: features/desktopIcons/index.js:505 features/desktopIcons/prefs.js:49
 msgid "Kind"
 msgstr ""
 
-#: features/desktopIcons/index.js:504 features/desktopIcons/prefs.js:49
+#: features/desktopIcons/index.js:505 features/desktopIcons/prefs.js:49
 msgid "Date Modified"
 msgstr ""
 
-#: features/desktopIcons/index.js:505 features/desktopIcons/prefs.js:50
+#: features/desktopIcons/index.js:506 features/desktopIcons/prefs.js:50
 msgid "Date Created"
 msgstr ""
 
-#: features/desktopIcons/index.js:505 features/desktopIcons/prefs.js:50
+#: features/desktopIcons/index.js:506 features/desktopIcons/prefs.js:50
 #: features/dock/prefs.js:93 features/onboarding/model.js:77
 msgid "Size"
 msgstr ""
 
-#: features/desktopIcons/index.js:507
+#: features/desktopIcons/index.js:508
 msgid "Sort By"
 msgstr ""
 
-#: features/desktopIcons/layer.js:49
+#: features/desktopIcons/layer.js:53
 msgid "Desktop icons"
 msgstr ""
 
@@ -1541,7 +1541,7 @@ msgstr ""
 msgid "Keep in Dock"
 msgstr ""
 
-#: features/dock/appMenu.js:92 prefs/pages/loginItems.js:96
+#: features/dock/appMenu.js:92 prefs/pages/loginItems.js:97
 msgid "Open at Login"
 msgstr ""
 
@@ -1562,48 +1562,48 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
-#: features/dock/index.js:791
+#: features/dock/index.js:806
 msgid "Empty Trash…"
 msgstr ""
 
-#: features/dock/index.js:800 features/dock/stack.js:422
+#: features/dock/index.js:815 features/dock/stack.js:422
 #: features/dock/stack.js:495
 msgid "Open in Files"
 msgstr ""
 
-#: features/dock/index.js:802 features/dock/prefs.js:52
+#: features/dock/index.js:817 features/dock/prefs.js:52
 #: features/dock/prefs.js:54
 msgid "Remove from Dock"
 msgstr ""
 
-#: features/dock/index.js:809 features/dock/prefs.js:138
+#: features/dock/index.js:824 features/dock/prefs.js:138
 msgid "View content as"
 msgstr ""
 
-#: features/dock/index.js:810 features/dock/prefs.js:139
+#: features/dock/index.js:825 features/dock/prefs.js:139
 #: features/widgets/prefs.js:25
 msgid "Automatic"
 msgstr ""
 
-#: features/dock/index.js:810 features/dock/prefs.js:139
+#: features/dock/index.js:825 features/dock/prefs.js:139
 msgid "Fan"
 msgstr ""
 
-#: features/dock/index.js:810 features/dock/prefs.js:139
+#: features/dock/index.js:825 features/dock/prefs.js:139
 msgid "Grid"
 msgstr ""
 
-#: features/dock/index.js:810 features/dock/prefs.js:139
+#: features/dock/index.js:825 features/dock/prefs.js:139
 msgid "List"
 msgstr ""
 
-#: features/dock/index.js:838
+#: features/dock/index.js:853
 msgid "Add to Dock"
 msgstr ""
 
 #: features/dock/launchpad.js:17 features/gestures/prefs.js:23
 #: features/hotCorners/prefs.js:18 features/launchpad/prefs.js:15
-#: features/launchpad/prefs.js:18 features/launchpad/view.js:323
+#: features/launchpad/prefs.js:18 features/launchpad/view.js:324
 msgid "Launchpad"
 msgstr ""
 
@@ -1669,7 +1669,7 @@ msgid "Magnified size"
 msgstr ""
 
 #: features/dock/prefs.js:99 features/pointer/prefs.js:59
-#: features/widgets/gallery.js:241 prefs/setupAssistant.js:117
+#: features/widgets/gallery.js:242 prefs/setupAssistant.js:117
 msgid "Large"
 msgstr ""
 
@@ -1821,9 +1821,9 @@ msgstr ""
 msgid "You can’t undo this action."
 msgstr ""
 
-#: features/dock/trash.js:117 features/launchpad/view.js:869
+#: features/dock/trash.js:117 features/launchpad/view.js:882
 #: features/menuBar/forceQuit.js:132 features/notch/pills.js:40
-#: prefs/pages/general.js:46
+#: prefs/pages/general.js:50
 msgid "Cancel"
 msgstr ""
 
@@ -1831,23 +1831,23 @@ msgstr ""
 msgid "Empty Trash"
 msgstr ""
 
-#: features/emoji/index.js:62 features/emoji/prefs.js:15
-#: features/emoji/prefs.js:18
+#: features/emoji/index.js:62 features/emoji/prefs.js:17
+#: features/emoji/prefs.js:20
 msgid "Emoji & Symbols"
 msgstr ""
 
-#: features/emoji/prefs.js:16
+#: features/emoji/prefs.js:18
 msgid ""
 "A searchable emoji popover at the text cursor. The emoji is typed into the "
 "app you were in. Uses the emoji names IBus provides."
 msgstr ""
 
-#: features/emoji/prefs.js:20 features/launchpad/prefs.js:20
+#: features/emoji/prefs.js:22 features/launchpad/prefs.js:20
 #: features/showDesktop/prefs.js:35
 msgid "Shortcut"
 msgstr ""
 
-#: features/emoji/prefs.js:21
+#: features/emoji/prefs.js:23
 msgid "Use Ctrl+Super+Space"
 msgstr ""
 
@@ -1939,8 +1939,8 @@ msgid "Modes"
 msgstr ""
 
 #: features/focus/prefs.js:68 features/focus/prefs.js:116
-#: features/spotlight/prefs.js:95 features/widgets/gallery.js:194
-#: features/widgets/gallery.js:228
+#: features/spotlight/prefs.js:95 features/widgets/gallery.js:195
+#: features/widgets/gallery.js:229
 msgid "Add"
 msgstr ""
 
@@ -1969,7 +1969,7 @@ msgstr ""
 msgid "Urgent notifications break through"
 msgstr ""
 
-#: features/focus/prefs.js:102 prefs/pages/loginItems.js:166
+#: features/focus/prefs.js:102 prefs/pages/loginItems.js:167
 msgid "Allowed"
 msgstr ""
 
@@ -2001,7 +2001,7 @@ msgstr ""
 msgid "Delete This Focus"
 msgstr ""
 
-#: features/focus/prefs.js:140 features/launchpad/view.js:871
+#: features/focus/prefs.js:140 features/launchpad/view.js:884
 #: features/screenshots/thumbnail.js:250
 msgid "Delete"
 msgstr ""
@@ -2062,14 +2062,14 @@ msgstr ""
 msgid "Application Windows"
 msgstr ""
 
-#: features/hotCorners/prefs.js:17 features/notificationCenter/index.js:66
+#: features/hotCorners/prefs.js:17 features/notificationCenter/index.js:69
 #: features/notificationCenter/prefs.js:11
 #: features/notificationCenter/prefs.js:14
 msgid "Notification Center"
 msgstr ""
 
-#: features/hotCorners/prefs.js:19 features/menuBar/logoMenu.js:99
-#: features/spotlight/actionsModel.js:22
+#: features/hotCorners/prefs.js:19 features/lockScreen/prefs.js:16
+#: features/menuBar/logoMenu.js:99 features/spotlight/actionsModel.js:22
 msgid "Lock Screen"
 msgstr ""
 
@@ -2123,11 +2123,11 @@ msgstr ""
 msgid "A key that must be down, so the corner never fires by accident"
 msgstr ""
 
-#: features/inputIndicator/index.js:117
+#: features/inputIndicator/index.js:120
 msgid "Caps Lock on"
 msgstr ""
 
-#: features/inputIndicator/index.js:117
+#: features/inputIndicator/index.js:120
 msgid "Caps Lock off"
 msgstr ""
 
@@ -2195,26 +2195,26 @@ msgstr ""
 msgid "Folder name"
 msgstr ""
 
-#: features/launchpad/view.js:337
+#: features/launchpad/view.js:338
 msgid "Search Apps"
 msgstr ""
 
-#: features/launchpad/view.js:583
+#: features/launchpad/view.js:587
 #, javascript-format
 msgid "Page %d"
 msgstr ""
 
-#: features/launchpad/view.js:831
+#: features/launchpad/view.js:844
 #, javascript-format
 msgid "Delete “%s”"
 msgstr ""
 
-#: features/launchpad/view.js:854 features/launchpad/view.js:858
+#: features/launchpad/view.js:867 features/launchpad/view.js:871
 #, javascript-format
 msgid "Delete “%s”?"
 msgstr ""
 
-#: features/launchpad/view.js:863
+#: features/launchpad/view.js:876
 msgid ""
 "GNOME Software will remove this app. You can install it again from GNOME "
 "Software."
@@ -2311,6 +2311,124 @@ msgstr ""
 msgid "Glass Surfaces"
 msgstr ""
 
+#: features/lockScreen/dialog.js:331 features/lockScreen/dialog.js:334
+msgid "Enter Password"
+msgstr ""
+
+#: features/lockScreen/dialog.js:369
+msgid "Password"
+msgstr ""
+
+#: features/lockScreen/dialog.js:384
+msgid "Hint"
+msgstr ""
+
+#: features/lockScreen/dialog.js:439 features/menuBar/logoMenu.js:92
+msgid "Sleep"
+msgstr ""
+
+#: features/lockScreen/dialog.js:439
+msgid "Restart"
+msgstr ""
+
+#: features/lockScreen/dialog.js:439
+msgid "Shut Down"
+msgstr ""
+
+#: features/lockScreen/dialog.js:462 features/lockScreen/dialog.js:463
+msgid "Click Again"
+msgstr ""
+
+#: features/lockScreen/prefs.js:17
+msgid "How GNOME’s lock screen looks. Signing in is still GNOME’s own."
+msgstr ""
+
+#: features/lockScreen/prefs.js:19
+msgid "Style the Lock Screen Like macOS"
+msgstr ""
+
+#: features/lockScreen/prefs.js:20
+msgid ""
+"Large clock, your wallpaper, and your photo and password field at the bottom"
+msgstr ""
+
+#: features/lockScreen/prefs.js:29
+msgid "Show Large Clock"
+msgstr ""
+
+#: features/lockScreen/prefs.js:30
+msgid "On Lock Screen"
+msgstr ""
+
+#: features/lockScreen/prefs.js:30 features/lockScreen/prefs.js:44
+#: features/menuBarItems/prefs.js:32 features/showDesktop/prefs.js:58
+msgid "Never"
+msgstr ""
+
+#: features/lockScreen/prefs.js:33
+msgid "Wallpaper"
+msgstr ""
+
+#: features/lockScreen/prefs.js:33
+msgid "Sharp like macOS, or blurred and dimmed like GNOME"
+msgstr ""
+
+#: features/lockScreen/prefs.js:34
+msgid "Sharp"
+msgstr ""
+
+#: features/lockScreen/prefs.js:34
+msgid "Blurred"
+msgstr ""
+
+#: features/lockScreen/prefs.js:36
+msgid "Show User Name and Photo"
+msgstr ""
+
+#: features/lockScreen/prefs.js:37
+msgid "Show Password Hint"
+msgstr ""
+
+#: features/lockScreen/prefs.js:38
+msgid "After three wrong passwords, if your account has a hint"
+msgstr ""
+
+#: features/lockScreen/prefs.js:39
+msgid "Show Now Playing Controls"
+msgstr ""
+
+#: features/lockScreen/prefs.js:40
+msgid "Play, pause and skip only. No other app data"
+msgstr ""
+
+#: features/lockScreen/prefs.js:42
+msgid "Never the text of a notification"
+msgstr ""
+
+#: features/lockScreen/prefs.js:44
+msgid "Apps and Counts"
+msgstr ""
+
+#: features/lockScreen/prefs.js:46
+msgid "Show Sleep, Restart and Shut Down Buttons"
+msgstr ""
+
+#: features/lockScreen/prefs.js:47
+msgid "Restart and Shut Down ask for a second click"
+msgstr ""
+
+#: features/lockScreen/prefs.js:49
+msgid "Show a Message When the Screen Is Locked"
+msgstr ""
+
+#: features/lockScreen/prefs.js:50
+msgid "Anyone can read it without unlocking"
+msgstr ""
+
+#: features/lockScreen/prefs.js:52
+msgid "Message"
+msgstr ""
+
 #: features/lowPower/prefs.js:15
 msgid ""
 "Uses GNOME's Power Saver mode (power-profiles-daemon). Choosing a power mode "
@@ -2394,7 +2512,7 @@ msgstr ""
 msgid "Do you want to force “%s” to quit? You will lose any unsaved changes."
 msgstr ""
 
-#: features/menuBar/fullscreenReveal.js:123
+#: features/menuBar/fullscreenReveal.js:125
 msgid "Top Bar"
 msgstr ""
 
@@ -2424,10 +2542,6 @@ msgstr ""
 
 #: features/menuBar/logoMenu.js:89
 msgid "Force Quit…"
-msgstr ""
-
-#: features/menuBar/logoMenu.js:92
-msgid "Sleep"
 msgstr ""
 
 #: features/menuBar/logoMenu.js:93
@@ -2746,10 +2860,6 @@ msgid ""
 msgstr ""
 
 #: features/menuBarItems/prefs.js:32 features/showDesktop/prefs.js:58
-msgid "Never"
-msgstr ""
-
-#: features/menuBarItems/prefs.js:32 features/showDesktop/prefs.js:58
 msgid "Always"
 msgstr ""
 
@@ -2856,16 +2966,16 @@ msgid ""
 "along the bottom. The dock's \"Show All Windows\" opens it too."
 msgstr ""
 
-#: features/missionControl/spaces.js:151
+#: features/missionControl/spaces.js:169
 #, javascript-format
 msgid "Desktop %d"
 msgstr ""
 
-#: features/missionControl/spaces.js:201
+#: features/missionControl/spaces.js:219
 msgid "Add Desktop"
 msgstr ""
 
-#: features/missionControl/spaces.js:261
+#: features/missionControl/spaces.js:279
 msgid "Remove Desktop"
 msgstr ""
 
@@ -2902,7 +3012,7 @@ msgstr ""
 msgid "%d downloads"
 msgstr ""
 
-#: features/notch/pills.js:75 features/notch/view.js:735
+#: features/notch/pills.js:75 features/notch/view.js:802
 msgid "Now"
 msgstr ""
 
@@ -3060,7 +3170,7 @@ msgstr ""
 msgid "Turn off to keep copied text off the screen while sharing it"
 msgstr ""
 
-#: features/notch/sources/timers.js:40
+#: features/notch/sources/timers.js:45
 msgid "Timer done"
 msgstr ""
 
@@ -3115,17 +3225,17 @@ msgstr ""
 msgid "Start a %d minute timer"
 msgstr ""
 
-#: features/notch/view.js:735
+#: features/notch/view.js:802
 msgid "Tray"
 msgstr ""
 
-#: features/notch/view.js:735 features/notificationCenter/prefs.js:16
-#: features/widgets/gallery.js:64 features/widgets/gallery.js:80
+#: features/notch/view.js:802 features/notificationCenter/prefs.js:16
+#: features/widgets/gallery.js:64 features/widgets/gallery.js:81
 #: prefs/pages/index.js:50
 msgid "Widgets"
 msgstr ""
 
-#: features/notch/view.js:1029
+#: features/notch/view.js:1096
 msgid "Dismiss"
 msgstr ""
 
@@ -3612,7 +3722,7 @@ msgid ""
 "With Stage Manager on, Stage Manager handles Show Desktop."
 msgstr ""
 
-#: features/splitView/index.js:123
+#: features/splitView/index.js:134
 msgid "Choose a Window"
 msgstr ""
 
@@ -4310,27 +4420,27 @@ msgstr ""
 msgid "Needs SF Pro or Inter: install one to use it"
 msgstr ""
 
-#: features/widgets/gallery.js:83 features/widgets/gallery.js:84
+#: features/widgets/gallery.js:84 features/widgets/gallery.js:85
 msgid "Search Widgets"
 msgstr ""
 
-#: features/widgets/gallery.js:92
+#: features/widgets/gallery.js:93
 msgid "Add Default Widgets"
 msgstr ""
 
-#: features/widgets/gallery.js:108
+#: features/widgets/gallery.js:109
 msgid "All Widgets"
 msgstr ""
 
-#: features/widgets/gallery.js:175
+#: features/widgets/gallery.js:176
 msgid "No Widgets"
 msgstr ""
 
-#: features/widgets/gallery.js:241
+#: features/widgets/gallery.js:242
 msgid "Medium"
 msgstr ""
 
-#: features/widgets/gallery.js:241
+#: features/widgets/gallery.js:242
 msgid "Extra Large"
 msgstr ""
 
@@ -4679,45 +4789,45 @@ msgid ""
 "GTK app fixes"
 msgstr ""
 
-#: prefs/pages/general.js:23 prefs/pages/index.js:45
+#: prefs/pages/general.js:25 prefs/pages/index.js:45
 msgid "General"
 msgstr ""
 
-#: prefs/pages/general.js:25
+#: prefs/pages/general.js:27
 msgid "Overview and gestures"
 msgstr ""
 
-#: prefs/pages/general.js:27
+#: prefs/pages/general.js:29
 msgid "Swipe Up to Workspaces Only"
 msgstr ""
 
-#: prefs/pages/general.js:27
+#: prefs/pages/general.js:29
 msgid ""
 "Swiping up opens the workspace overview and never the app grid. The apps "
 "button and Super+A still show it"
 msgstr ""
 
-#: prefs/pages/general.js:28
+#: prefs/pages/general.js:30
 msgid "Disable Hot Corner"
 msgstr ""
 
-#: prefs/pages/general.js:28
+#: prefs/pages/general.js:30
 msgid "Pointing at the top-left corner does not open the overview"
 msgstr ""
 
-#: prefs/pages/general.js:34 prefs/pages/general.js:47
+#: prefs/pages/general.js:38 prefs/pages/general.js:51
 msgid "Reset Everything"
 msgstr ""
 
-#: prefs/pages/general.js:38
+#: prefs/pages/general.js:42
 msgid "Reset every Guava setting to its default value"
 msgstr ""
 
-#: prefs/pages/general.js:43
+#: prefs/pages/general.js:47
 msgid "Reset Every Guava Setting?"
 msgstr ""
 
-#: prefs/pages/general.js:44
+#: prefs/pages/general.js:48
 msgid ""
 "Every Guava setting goes back to its default, the macOS one. This cannot be "
 "undone."
@@ -4727,65 +4837,65 @@ msgstr ""
 msgid "Features"
 msgstr ""
 
-#: prefs/pages/loginItems.js:93
+#: prefs/pages/loginItems.js:94
 msgid "Login Items"
 msgstr ""
 
-#: prefs/pages/loginItems.js:97
+#: prefs/pages/loginItems.js:98
 msgid ""
 "These items open when you log in. Add an app from its Dock menu: Options › "
 "Open at Login. Items Guava added can be removed here; the others belong to "
 "their apps."
 msgstr ""
 
-#: prefs/pages/loginItems.js:101
+#: prefs/pages/loginItems.js:102
 msgid "Allow in the Background"
 msgstr ""
 
-#: prefs/pages/loginItems.js:102
+#: prefs/pages/loginItems.js:103
 msgid ""
 "Apps that asked to keep running after their windows close. Change this in "
 "GNOME Settings."
 msgstr ""
 
-#: prefs/pages/loginItems.js:104
+#: prefs/pages/loginItems.js:105
 msgid "Open Settings…"
 msgstr ""
 
-#: prefs/pages/loginItems.js:132
+#: prefs/pages/loginItems.js:133
 msgid "No items open at login"
 msgstr ""
 
-#: prefs/pages/loginItems.js:135
+#: prefs/pages/loginItems.js:136
 msgid "Turned off"
 msgstr ""
 
-#: prefs/pages/loginItems.js:136
+#: prefs/pages/loginItems.js:137
 msgid "Added by Guava"
 msgstr ""
 
-#: prefs/pages/loginItems.js:136
+#: prefs/pages/loginItems.js:137
 msgid "Installed for everyone"
 msgstr ""
 
-#: prefs/pages/loginItems.js:143
+#: prefs/pages/loginItems.js:144
 msgid "Remove from Login Items"
 msgstr ""
 
-#: prefs/pages/loginItems.js:145
+#: prefs/pages/loginItems.js:146
 #, javascript-format
 msgid "Remove %s from Login Items"
 msgstr ""
 
-#: prefs/pages/loginItems.js:156
+#: prefs/pages/loginItems.js:157
 msgid "No app has asked to run in the background"
 msgstr ""
 
-#: prefs/pages/loginItems.js:166
+#: prefs/pages/loginItems.js:167
 msgid "Not allowed"
 msgstr ""
 
-#: prefs/pages/loginItems.js:166
+#: prefs/pages/loginItems.js:167
 msgid "Asks each time"
 msgstr ""
 
@@ -4924,17 +5034,17 @@ msgstr ""
 msgid "Get Started"
 msgstr ""
 
-#: prefs/widgets.js:104
+#: prefs/widgets.js:150
 #, javascript-format
 msgid "Not a valid shortcut. Example: %s"
 msgstr ""
 
-#: prefs/widgets.js:108
+#: prefs/widgets.js:154
 #, javascript-format
 msgid "Also used by GNOME: %s"
 msgstr ""
 
-#: prefs/widgets.js:159
+#: prefs/widgets.js:205
 msgid "This section failed to load"
 msgstr ""
 

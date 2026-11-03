@@ -2,7 +2,7 @@
 // The green button: which maximize requests mean "full screen".
 import {
     BUTTON_PX, EDGE_PAD_PX, SETTLE_MS, TITLEBAR_PX, buttonBand, greenButtonAction,
-} from '../features/appButtons/greenButtonModel.js';
+} from '../src/features/appButtons/greenButtonModel.js';
 
 let failed = 0;
 function test(name, fn) {

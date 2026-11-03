@@ -3,7 +3,7 @@
 // features/appearance/model.js: Auto Light/Dark schedule, sun maths, zone fallback, accents.
 import {
     SCHEME, events, gnomeAccent, highlightClass, plan, sunTimes, validCoords, zoneCoords,
-} from '../features/appearance/model.js';
+} from '../src/features/appearance/model.js';
 
 let failed = 0;
 function test(name, fn) {

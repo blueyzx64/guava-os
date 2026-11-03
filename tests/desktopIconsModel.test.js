@@ -3,7 +3,7 @@ import {
     Selection, bandRect, desktopInFront, blockedCells, cellAt, cellRect, dingEnabled, flowCell, flowOrder, gridFor, inGrid, isDoubleClick, isDrag,
     layoutCells, menuActions, metricsFor, moveCells, neighbour, parseArrangement, pruneArrangement,
     renameBase, renameTarget, rubberBandHits, serializeArrangement, showsAsDrive, sortEntries, stemLength, typeAhead, uniqueName, validateName,
-} from '../features/desktopIcons/model.js';
+} from '../src/features/desktopIcons/model.js';
 
 let failed = 0;
 function test(name, fn) {

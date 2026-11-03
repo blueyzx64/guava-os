@@ -2,8 +2,8 @@
 import {
     DEFAULT_CONFIG, DRAG_THRESHOLD, GestureTracker, SWIPE_DISTANCE, blocksStock, classify,
     ownsPinch, routeGesture,
-} from '../features/gestures/model.js';
-import { DESKTOP_ACTIONS } from '../core/desktopActionsModel.js';
+} from '../src/features/gestures/model.js';
+import { DESKTOP_ACTIONS } from '../src/core/desktopActionsModel.js';
 
 let failed = 0;
 function test(name, fn) {

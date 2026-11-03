@@ -2,7 +2,7 @@
 // Drop targets of Stage Manager drag and drop (features/stageManager/dragModel.js), SM-34.
 import {
     CARD_SLACK, DRAG_PX, dragStarted, nearStripEdge, sameFrame, thumbDropTarget, windowDropTarget,
-} from '../features/stageManager/dragModel.js';
+} from '../src/features/stageManager/dragModel.js';
 
 let failed = 0;
 function test(name, fn) {

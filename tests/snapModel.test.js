@@ -1,9 +1,9 @@
 // Run: gjs -m tests/snapModel.test.js
-import { SNAP_LAYOUTS, ZONES } from '../core/tileActions.js';
+import { SNAP_LAYOUTS, ZONES } from '../src/core/tileActions.js';
 import {
     SNAP_STATES as S, BAR_RADIUS, HANDLE_RADIUS, HANDLE_W, ZONE_GAP, THUMB_MAX_W, THUMB_MIN_W,
     nextSnapState, radiusAt, snapGeometry, snapZoneAt,
-} from '../features/windows/snapModel.js';
+} from '../src/features/windows/snapModel.js';
 
 let failed = 0;
 function test(name, fn) {

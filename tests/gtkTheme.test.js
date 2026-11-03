@@ -1,7 +1,7 @@
 // Run: gjs -m tests/gtkTheme.test.js
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import { processUserGtkFile, withManagedBlock } from '../features/appButtons/gtkTheme.js';
+import { processUserGtkFile, withManagedBlock } from '../src/features/appButtons/gtkTheme.js';
 
 let failed = 0;
 const tests = [];

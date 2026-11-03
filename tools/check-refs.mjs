@@ -10,7 +10,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
-const SKIP = new Set(['node_modules', '.git', 'dist', 'docs', 'tools', '.claude', 'helpers', 'po', 'translating']);
+const SKIP = new Set(['node_modules', '.git', 'dist', 'docs', 'tools', '.claude', 'packaging', 'i18n', 'assets']);
 const files = [];
 (function walk(dir) {
     for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -127,7 +127,7 @@ for (const [file, text] of src) {
 }
 
 // Settings keys: string literals passed to the Guava settings accessors
-const schemaFile = path.join(ROOT, 'schemas', 'org.gnome.shell.extensions.guava-os.gschema.xml');
+const schemaFile = path.join(ROOT, 'src', 'schemas', 'org.gnome.shell.extensions.guava-os.gschema.xml');
 const schema = fs.readFileSync(schemaFile, 'utf8');
 const keys = new Set([...schema.matchAll(/<key\s+name="([^"]+)"/g)].map(m => m[1]));
 // Keys of GNOME 50's own schemas (Fedora 44, /usr/share/glib-2.0/schemas), for code that reads

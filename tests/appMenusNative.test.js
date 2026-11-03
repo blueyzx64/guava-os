@@ -3,9 +3,9 @@ import {
     GMenuStore, gmenuToMenus, dbusmenuToMenus, dbusmenuShortcut, dbusmenuSubmenuIds, stripMnemonic,
     nativeMenuId, applyMenubar, atspiToMenus, atspiPopoverItems, findPrimaryMenuButton, findRole,
     hasState, ROLE, STATE, MAX_ITEMS, atspiAccel, labelTarget, gmenuActionNames,
-} from '../core/appMenus/nativeModel.js';
-import { buildMenus, searchMenus, wellKnownNames, MAX_DESCRIBE_ALL } from '../core/appMenus/model.js';
-import { xidFromDescription } from '../lib/compatModel.js';
+} from '../src/core/appMenus/nativeModel.js';
+import { buildMenus, searchMenus, wellKnownNames, MAX_DESCRIBE_ALL } from '../src/core/appMenus/model.js';
+import { xidFromDescription } from '../src/lib/compatModel.js';
 
 let failed = 0;
 function test(name, fn) {

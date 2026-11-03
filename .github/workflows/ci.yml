@@ -44,6 +44,9 @@ jobs:
       - name: Generated stylesheet is up to date
         run: make css-check
 
+      - name: Imports and settings keys resolve
+        run: make refs
+
       - name: Unit tests
         run: make test
 

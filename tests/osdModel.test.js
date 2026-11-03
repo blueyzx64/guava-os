@@ -1,6 +1,6 @@
 // Run: gjs -m tests/osdModel.test.js
-import { classifyOsd, route } from '../core/osdModel.js';
-import { PILL, TRACK_WIDTH, deviceLabel, pillContent, pillPosition, volumeIconName } from '../features/osd/model.js';
+import { classifyOsd, route } from '../src/core/osdModel.js';
+import { PILL, TRACK_WIDTH, deviceLabel, pillContent, pillPosition, volumeIconName } from '../src/features/osd/model.js';
 
 let failed = 0;
 function test(name, fn) {

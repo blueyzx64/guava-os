@@ -4,8 +4,8 @@
 import {
     SHAKE, ShakeDetector, TypingHider, anyOn, indexTheme, isBlocked, parseHex, pickXcursorImage, readConfig, recolorPixel, recolorXcursor,
     themeName,
-} from '../features/pointer/model.js';
-import { CaretTracker } from '../lib/caretModel.js';
+} from '../src/features/pointer/model.js';
+import { CaretTracker } from '../src/lib/caretModel.js';
 
 let failed = 0;
 function test(name, fn) {

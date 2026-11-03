@@ -1,6 +1,6 @@
 // Run: gjs -m tests/desktopModel.test.js
-import { DesktopModel, WINDOW_FIELDS, isUserFacing, appIdCandidates } from '../core/desktopModel.js';
-import { EventHub } from '../core/events.js';
+import { DesktopModel, WINDOW_FIELDS, isUserFacing, appIdCandidates } from '../src/core/desktopModel.js';
+import { EventHub } from '../src/core/events.js';
 
 let failed = 0;
 function test(name, fn) {

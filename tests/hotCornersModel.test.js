@@ -1,8 +1,8 @@
 // Run: gjs -m tests/hotCornersModel.test.js
 import {
     CORNERS, CORNER_SIZE, atCorner, cornerBarriers, cornerPoint, hasCorner, shouldFire, wantedCorners,
-} from '../features/hotCorners/model.js';
-import { actionAllowed, normalizeAction } from '../core/desktopActionsModel.js';
+} from '../src/features/hotCorners/model.js';
+import { actionAllowed, normalizeAction } from '../src/core/desktopActionsModel.js';
 
 let failed = 0;
 function test(name, fn) {

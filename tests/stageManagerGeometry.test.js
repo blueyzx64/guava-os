@@ -2,7 +2,7 @@
 import {
     METRICS, balancedFit, clonePose, edgeBarrier, layerRect, overlaps, stackLayers,
     stageRect, stripLayout, stripSide, scaleMs, tiltAngle,
-} from '../features/stageManager/geometry.js';
+} from '../src/features/stageManager/geometry.js';
 
 let failed = 0;
 function test(name, fn) {

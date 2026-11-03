@@ -1,5 +1,5 @@
 // Run: gjs -m tests/calendarModel.test.js
-import { indicatorStyle, isDndActor, menuWidth, MIN_MENU_WIDTH } from '../features/calendar/model.js';
+import { indicatorStyle, isDndActor, menuWidth, MIN_MENU_WIDTH } from '../src/features/calendar/model.js';
 
 let failed = 0;
 function test(name, fn) {

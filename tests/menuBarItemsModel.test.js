@@ -2,8 +2,8 @@
 import {
     argbToRgba, barOrder, hostMode, itemAddress, moveItem, parseItemAddress,
     parseMenu, parseRegistry, pickPixmap, planBar, sniId, sniVisible, updateRegistry, validPixmap,
-} from '../features/menuBarItems/model.js';
-import { PINNABLE, batteryText, parsePins, pinMode, pinShown, setPin } from '../lib/menuBarPins.js';
+} from '../src/features/menuBarItems/model.js';
+import { PINNABLE, batteryText, parsePins, pinMode, pinShown, setPin } from '../src/lib/menuBarPins.js';
 
 let failed = 0;
 function test(name, fn) {

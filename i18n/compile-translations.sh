@@ -3,8 +3,9 @@
 
 set -euo pipefail
 
-EXTENSION_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PO_DIR="$EXTENSION_DIR/po"
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+EXTENSION_DIR="$REPO_DIR/src"   # the extension (zip root) reads locale/ next to metadata.json
+PO_DIR="$REPO_DIR/i18n/po"
 LOCALE_DIR="$EXTENSION_DIR/locale"
 DOMAIN="guava-os@blueyzx64"
 

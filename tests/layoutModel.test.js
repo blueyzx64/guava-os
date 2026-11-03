@@ -1,5 +1,5 @@
 // Run: gjs -m tests/layoutModel.test.js
-import { LayoutModel } from '../core/layoutModel.js';
+import { LayoutModel } from '../src/core/layoutModel.js';
 
 let failed = 0;
 function test(name, fn) {

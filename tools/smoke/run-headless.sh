@@ -16,7 +16,8 @@ done
 mkdir -p "$W/home/.config" "$W/home/.cache" "$W/run"; chmod 700 "$W/run"
 E=$W/home/.local/share/gnome-shell/extensions/$UUID
 rm -rf "$E"; mkdir -p "$E"
-(cd "$SRC" && tar --exclude=.git --exclude=docs --exclude=tests --exclude=po --exclude=tools -cf - .) | tar -xf - -C "$E"
+EXT=$SRC; [ -f "$SRC/src/metadata.json" ] && EXT=$SRC/src   # the extension is src/
+(cd "$EXT" && tar --exclude=.git --exclude=docs --exclude=tests --exclude=po --exclude=tools -cf - .) | tar -xf - -C "$E"
 if [ -n "${GUAVA_SMOKE_SHELL_VERSION:-}" ]; then
   sed -i "s/\"shell-version\": \[/\"shell-version\": [\"$GUAVA_SMOKE_SHELL_VERSION\",/" "$E/metadata.json"
 fi

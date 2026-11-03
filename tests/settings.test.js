@@ -1,6 +1,6 @@
 // Run: gjs -m tests/settings.test.js
-import { GuavaSettings } from '../lib/settings.js';
-import { CleanupRegistry } from '../lib/disposables.js';
+import { GuavaSettings } from '../src/lib/settings.js';
+import { CleanupRegistry } from '../src/lib/disposables.js';
 
 let failed = 0;
 function test(name, fn) {

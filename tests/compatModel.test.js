@@ -1,5 +1,5 @@
 // Run: gjs -m tests/compatModel.test.js
-import { pickReducedMotionSource, readReducedMotion, reducedMotionSignal } from '../lib/compatModel.js';
+import { pickReducedMotionSource, readReducedMotion, reducedMotionSignal } from '../src/lib/compatModel.js';
 
 let failed = 0;
 function test(name, fn) {

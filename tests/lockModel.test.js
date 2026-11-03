@@ -1,7 +1,7 @@
 // Run: gjs -m tests/lockModel.test.js
-import { SurfaceLedger, isGuavaActor, isSuspended, lockPlan, sweepTargets } from '../lib/lockModel.js';
-import { CleanupRegistry } from '../lib/disposables.js';
-import { FeatureRegistry } from '../lib/featureRegistry.js';
+import { SurfaceLedger, isGuavaActor, isSuspended, lockPlan, sweepTargets } from '../src/lib/lockModel.js';
+import { CleanupRegistry } from '../src/lib/disposables.js';
+import { FeatureRegistry } from '../src/lib/featureRegistry.js';
 
 let failed = 0;
 function test(name, fn) {

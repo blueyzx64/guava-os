@@ -6,7 +6,7 @@
 // must always agree with the model: every window is in exactly one place, a minimized window is
 // never touched, nothing is hidden by mistake, the strip never lists more than MAX_SHOWN sets,
 // and when Stage Manager lets go (every window made visible) nothing stays hidden.
-import { MAX_SHOWN, StageModel } from '../features/stageManager/model.js';
+import { MAX_SHOWN, StageModel } from '../src/features/stageManager/model.js';
 
 // Small deterministic PRNG (mulberry32) so a failure can be replayed from its seed
 function rng(seed) {

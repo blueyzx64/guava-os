@@ -3,9 +3,9 @@ import {
     CONTROLS, SIZES, addControl, control, fitSize, formatCountdown, gallery, isOwnControl,
     layoutFromPlan, moveControl, moveControlTo, nextSize, packRows, parseLayout, pinOf, planCustom,
     removeControl, serializeLayout, setSize, settingIsOn, settingValue,
-} from '../features/controlCenter/customModel.js';
-import { MORE_HEADER_ID, planLayout } from '../features/controlCenter/model.js';
-import { PINNABLE } from '../lib/menuBarPins.js';
+} from '../src/features/controlCenter/customModel.js';
+import { MORE_HEADER_ID, planLayout } from '../src/features/controlCenter/model.js';
+import { PINNABLE } from '../src/lib/menuBarPins.js';
 
 let failed = 0;
 function test(name, fn) {

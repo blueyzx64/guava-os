@@ -1,7 +1,7 @@
 // Run: gjs -m tests/stageManagerThumbs.test.js
 // Thumbnails on fractional and HiDPI monitors (RV1-9): positions on the physical pixel grid, and the
 // box filter that follows the monitor's scale.
-import { layerRect, slotBox, snapPx, stackLayers, stripLayout, thumbFilter } from '../features/stageManager/geometry.js';
+import { layerRect, slotBox, snapPx, stackLayers, stripLayout, thumbFilter } from '../src/features/stageManager/geometry.js';
 
 let failed = 0;
 function test(name, fn) {

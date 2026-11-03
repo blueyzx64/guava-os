@@ -2,6 +2,11 @@
 
 A GNOME Shell extension that brings the macOS desktop to GNOME. Target: Fedora 44, GNOME Shell 50, Wayland.
 
+Layout: `src/` is the extension (exactly what ships; the zip's root). Code paths in docs and
+skills (`features/…`, `lib/…`, `core/…`) are relative to `src/`. Also: `tests/` (unit tests),
+`tools/` (build, checks, real-Shell harness, scenarios, agent tools), `i18n/` (translations),
+`packaging/` (the optional shelf-helper RPM), `docs/`, `assets/`.
+
 Read, in this order (stop when you have what you need):
 1. `docs/architecture/principles.md`: the definition of good code and the interaction bar.
 2. `docs/agents/learnings.md`: lessons earlier agents paid for.

@@ -4,7 +4,7 @@ import {
     imageFileName, isBlankText, isPasswordManagerApp, isSecret, isStoreFileName, makeEntry,
     mergeLoaded, orphanFiles, parseHistory, pasteChordFor, pickMime, previewOf, serializeHistory, shouldRecord,
     TYPE_ICON, tileIconProps,
-} from '../features/clipboard/model.js';
+} from '../src/features/clipboard/model.js';
 
 let failed = 0;
 function test(name, fn) {

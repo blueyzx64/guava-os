@@ -1,5 +1,5 @@
 // Run: gjs -m tests/keybindingsModel.test.js
-import { BindingTable, KNOWN_DEFAULTS, findConflicts, normalizeAccel } from '../lib/keybindingsModel.js';
+import { BindingTable, KNOWN_DEFAULTS, findConflicts, normalizeAccel } from '../src/lib/keybindingsModel.js';
 
 let failed = 0;
 function test(name, fn) {

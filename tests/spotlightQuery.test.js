@@ -4,8 +4,8 @@ import {
     fileQuery, fileScore, displayFolder, validAlias, parseQuickKeys, serializeQuickKeys, addQuickKey,
     removeQuickKey, quickKeyHit, pushHistory, historyStep, encodeRecent, decodeRecent, pushRecent,
     appsBrowse, moveIn, HISTORY_MAX,
-} from '../features/spotlight/queryModel.js';
-import { buildEmptySections, buildSections, groupOf } from '../features/spotlight/model.js';
+} from '../src/features/spotlight/queryModel.js';
+import { buildEmptySections, buildSections, groupOf } from '../src/features/spotlight/model.js';
 
 let failed = 0;
 function test(name, fn) {

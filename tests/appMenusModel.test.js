@@ -1,7 +1,7 @@
 // Run: gjs -m tests/appMenusModel.test.js
 import {
     buildMenus, searchMenus, formatAccel, parseAccel, parseDescribeAll, mergeNativeMenus, cacheKeys, accelChord,
-} from '../core/appMenus/model.js';
+} from '../src/core/appMenus/model.js';
 
 let failed = 0;
 function test(name, fn) {

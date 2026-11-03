@@ -2,7 +2,7 @@
 import {
     hasTrack, pickPlayer, showsActivity, NO_TRACK_ID, WEBKIT_TRACK_ID, trackKey, normalizeArtists,
     normalizeTitle, normalizeCover, normalizeLength, clampSeekTarget, seekMethod, canNavigate,
-} from '../lib/mprisModel.js';
+} from '../src/lib/mprisModel.js';
 
 let failed = 0;
 function test(name, fn) {

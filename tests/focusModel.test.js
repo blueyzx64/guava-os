@@ -3,7 +3,7 @@ import {
     BUILT_IN, HOUR_MS, URGENCY_CRITICAL, allows, automatic, choose, customId, evaluate, nextEdge,
     normalizeAppId, parseProfiles, parseState, scheduleActive, serializeProfiles, serializeState,
     textToMinutes, minutesToText, toggleApp, untilTomorrow,
-} from '../features/focus/model.js';
+} from '../src/features/focus/model.js';
 
 let failed = 0;
 function test(name, fn) {

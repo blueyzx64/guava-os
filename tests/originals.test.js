@@ -1,6 +1,6 @@
 // Run: gjs -m tests/originals.test.js
 // core/originals.js: the user's own value of every GNOME key Guava takes over, crash-safe.
-import { ListMembersOwner, OriginalsStore, SettingOwner, STORE_BACKUP_KEY, STORE_KEY, originalId, parseOriginalId, restoreStale, withMembers } from '../core/originals.js';
+import { ListMembersOwner, OriginalsStore, SettingOwner, STORE_BACKUP_KEY, STORE_KEY, originalId, parseOriginalId, restoreStale, withMembers } from '../src/core/originals.js';
 
 let failed = 0;
 function test(name, fn) {

@@ -1,6 +1,6 @@
 // Run: gjs -m tests/coreEvents.test.js
-import { EventHub, EVENTS } from '../core/events.js';
-import { CleanupRegistry } from '../lib/disposables.js';
+import { EventHub, EVENTS } from '../src/core/events.js';
+import { CleanupRegistry } from '../src/lib/disposables.js';
 
 let failed = 0;
 function test(name, fn) {

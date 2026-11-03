@@ -14,7 +14,8 @@ function test(name, fn) {
     try { fn(); print(`ok   ${name}`); } catch (e) { failed++; print(`FAIL ${name}: ${e.message}`); }
 }
 
-const root = GLib.build_filenamev([GLib.path_get_dirname(GLib.filename_from_uri(import.meta.url)[0]), '..']);
+// The extension's own files live under src/ (the root of the zip)
+const root = GLib.build_filenamev([GLib.path_get_dirname(GLib.filename_from_uri(import.meta.url)[0]), '..', 'src']);
 const read = rel => new TextDecoder().decode(Gio.File.new_for_path(`${root}/${rel}`).load_contents(null)[1]);
 const exists = rel => GLib.file_test(`${root}/${rel}`, GLib.FileTest.EXISTS);
 

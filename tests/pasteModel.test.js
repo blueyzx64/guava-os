@@ -1,6 +1,6 @@
 // Run: gjs -m tests/pasteModel.test.js
 // lib/pasteModel.js: what to keep around a borrowed clipboard, and the borrow window.
-import { ClipboardBorrow, canKeep, mimeToKeep, pasteChordFor } from '../lib/pasteModel.js';
+import { ClipboardBorrow, canKeep, mimeToKeep, pasteChordFor } from '../src/lib/pasteModel.js';
 
 let failed = 0;
 function test(name, fn) {

@@ -2,7 +2,7 @@
 import {
     FREETYPE_SMOOTHING, MACOS_RENDERING, SMOOTHING_MARKER, fontSize, parseFcList, pickFamily, plan,
     renderingValues, smoothingAction, smoothingText, withFamily,
-} from '../features/typography/model.js';
+} from '../src/features/typography/model.js';
 
 let failed = 0;
 function test(name, fn) {

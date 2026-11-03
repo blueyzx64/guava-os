@@ -2,7 +2,7 @@
 import {
     COLLAPSED_GROUPS, age, groupByApp, monthGrid, orderWidgets, pruneExpanded, shiftMonth,
     stackView, visibleGroups,
-} from '../features/notificationCenter/model.js';
+} from '../src/features/notificationCenter/model.js';
 
 let failed = 0;
 function test(name, fn) {

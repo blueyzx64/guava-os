@@ -5,7 +5,7 @@ import {
     UPOWER, connectedHeadphones, newlyConnected, downloadSummary, formatBytes, nextEvent, minutesUntil,
     formatCountdown, formatElapsed, tabDirection, nowRows, pillWidth, SHELF_LIMIT, DROP_FILE_TYPES, inDropZone,
     dropZone, hoverSwell, swellWanted, HOVER_SWELL,
-} from '../features/notch/model.js';
+} from '../src/features/notch/model.js';
 
 let failed = 0;
 function test(name, fn) {

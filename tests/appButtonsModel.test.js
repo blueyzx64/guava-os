@@ -2,10 +2,10 @@
 // The apps' own titlebar buttons: layout, GTK sheets, and the owner of the WM button-layout.
 import {
     parseButtonLayout, gtkSheets, appButtonsLayout,
-} from '../features/appButtons/model.js';
-import { ButtonLayoutOwner, WM_SCHEMA } from '../features/appButtons/buttonLayout.js';
-import { OriginalsStore, STORE_KEY, restoreStale, originalId } from '../core/originals.js';
-import { createJobQueue } from '../lib/jobQueue.js';
+} from '../src/features/appButtons/model.js';
+import { ButtonLayoutOwner, WM_SCHEMA } from '../src/features/appButtons/buttonLayout.js';
+import { OriginalsStore, STORE_KEY, restoreStale, originalId } from '../src/core/originals.js';
+import { createJobQueue } from '../src/lib/jobQueue.js';
 
 let failed = 0;
 function test(name, fn) {

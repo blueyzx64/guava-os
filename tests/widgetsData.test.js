@@ -2,7 +2,7 @@
 import {
     handAngles, msToNextMinute, offsetLabel, cityFromTimezone, worldLabel, highLow, upcomingEvents, monthGrid, batteryList, batteryLevel,
     parseCpu, cpuUsage, parseMemory, formatBytes, mediaState, weekdayOrder,
-} from '../core/widgets/data.js';
+} from '../src/core/widgets/data.js';
 
 let failed = 0;
 function test(name, fn) {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 blueyzx64
 // Run: gjs -m tests/aboutModel.test.js
-import { versionLabel, releaseUrl, CREDITS, RECOMMENDED, REPO_URL } from '../prefs/aboutModel.js';
+import { versionLabel, releaseUrl, CREDITS, RECOMMENDED, REPO_URL } from '../src/prefs/aboutModel.js';
 
 let failed = 0;
 function test(name, fn) {

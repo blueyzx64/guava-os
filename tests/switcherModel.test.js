@@ -2,7 +2,7 @@
 import {
     ICON_SIZES, SHOW_DELAY_MS, iconSizeFor, indexAfterRemoval, initialIndex, keyAction, pickAfterHide, planActivation, step,
     switcherApps,
-} from '../features/switcher/model.js';
+} from '../src/features/switcher/model.js';
 
 let failed = 0;
 function test(name, fn) {

@@ -129,7 +129,7 @@ From gjs.guide/extensions/review-guidelines:
 - Everything created in `enable()` destroyed/disconnected/removed in `disable()`, including
   main-loop sources that would return `SOURCE_REMOVE` anyway. (CleanupRegistry does this.)
 - No binaries or libraries in the zip; scripts must be GJS. The shelf helper ships as a
-  separate RPM (`helpers/guava-shelf-helper/*.spec`), not in the zip: keep it that way.
+  separate RPM (`packaging/shelf-helper/*.spec`), not in the zip: keep it that way.
 - No sync IO is a Guava rule, not a review rule, but excessive logging is a review rule:
   `console.error('[Guava] …')` only for real failures.
 - Clipboard access must be declared in the description (Guava does) and **no default

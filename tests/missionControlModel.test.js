@@ -2,7 +2,7 @@
 import {
     MODE, canRemoveSpace, centringShift, exposeView, fullscreenAppOf, groupedOrder, mruOrder, reorderIndex,
     skipStartupOverview, spaceLabels, spacePreviewsLive, stripCardSize, touchRecent, windowPlace,
-} from '../features/missionControl/model.js';
+} from '../src/features/missionControl/model.js';
 
 let failed = 0;
 function test(name, fn) {

@@ -32,7 +32,7 @@ const LEGACY = {group: ['resource:///org/gnome/gjs/modules/*'], message: 'Legacy
 const restrict = (...patterns) => ['error', {patterns: [LEGACY, ...patterns]}];
 
 export default [
-    {ignores: ['po/**', 'icons/**', 'docs/**', 'node_modules/**', 'dist/**', 'tools/harness/**', '.claude/**']},
+    {ignores: ['i18n/**', 'src/icons/**', 'docs/**', 'node_modules/**', 'dist/**', 'tools/harness/**', '.claude/**']},
     {
         files: ['**/*.js'],
         languageOptions: {
@@ -83,22 +83,21 @@ export default [
     {
         // prefs runs in its own process: no Shell globals. gettext must be imported
         // (`gettext as _`) or taken from the extension; N_ is not provided there.
-        files: ['prefs.js', 'features/**/prefs.js', 'prefs/**/*.js'],
+        files: ['src/prefs.js', 'src/features/**/prefs.js', 'src/prefs/**/*.js'],
         languageOptions: {
             globals: {global: 'off', _: 'off', C_: 'off', N_: 'off', ngettext: 'off'},
         },
     },
     {
         // Pure models and core logic run under plain `gjs -m` in tests: no Shell, no GTK
-        files: ['core/*Model.js', 'core/**/model.js', 'core/appMenus/*Model.js', 'core/events.js', 'core/originals.js', 'features/**/model.js', 'features/**/*Model.js',
-            'lib/*Model.js', 'lib/featureRegistry.js', 'lib/settings.js', 'lib/jobQueue.js'],
+        files: ['src/core/*Model.js', 'src/core/**/model.js', 'src/core/appMenus/*Model.js', 'src/core/events.js', 'src/core/originals.js', 'src/features/**/model.js', 'src/features/**/*Model.js', 'src/lib/*Model.js', 'src/lib/featureRegistry.js', 'src/lib/settings.js', 'src/lib/jobQueue.js'],
         rules: {
             'no-restricted-imports': restrict({group: ['gi://*', 'resource://*'], message: 'Pure module: no gi:// or resource:// imports (move it to the adapter).'}),
         },
     },
     {
         // Prefs never load Shell modules, and Shell code never loads GTK (EGO)
-        files: ['prefs.js', 'prefs/**/*.js', 'features/**/prefs.js'],
+        files: ['src/prefs.js', 'src/prefs/**/*.js', 'src/features/**/prefs.js'],
         rules: {
             'no-restricted-imports': restrict({group: ['gi://Clutter', 'gi://Meta', 'gi://St', 'gi://Shell', 'resource:///org/gnome/shell/*'], caseSensitive: true, message: 'Shell module in the prefs process.'}),
         },

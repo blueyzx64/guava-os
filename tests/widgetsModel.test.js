@@ -3,7 +3,7 @@ import {
     SIZES, SIZE_ORDER, SIZE_PX, CELL, GAP, DEFAULT_WIDGETS, ProviderPool, WidgetRegistry, Emitter, gridFor, rectOf, snap, fits,
     collides, nearestFree, findSlot, addItem, removeItem, moveItem, resizeItem, setConfig, fitItems,
     parseLayout, serializeLayout, monitorKey, stepSize, sizeUnits, newId,
-} from '../core/widgets/model.js';
+} from '../src/core/widgets/model.js';
 
 let failed = 0;
 function test(name, fn) {

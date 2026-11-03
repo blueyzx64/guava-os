@@ -6,7 +6,7 @@ import {
     dockItems, dockMetrics, downloadEntry, downloadFinished, dropIndex, fanLayout, folderDropAccepted,
     magnify, magnifyScale, menuEntries, nextWindow, packageKind, pinPosition, pushRecent, readConfig,
     iconTextureSize, isPartialWrite, magnificationActive, rebaseRestoreIndex, rebaseShield, rectContains, removeFolder, sortDownloads, stableOrder, stackView,
-} from '../features/dock/model.js';
+} from '../src/features/dock/model.js';
 
 let failed = 0;
 function test(name, fn) {

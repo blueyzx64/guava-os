@@ -4,7 +4,7 @@ import Gio from 'gi://Gio';
 
 import {
     ACCENTS, ONBOARDING_KEY, STATES, STEPS, appearanceChoice, appearanceWrites, offerDecision, shouldPresent,
-} from '../features/onboarding/model.js';
+} from '../src/features/onboarding/model.js';
 
 let failed = 0;
 function test(name, fn) {
@@ -15,7 +15,8 @@ function eq(a, b, msg = '') {
         throw new Error(`${msg} expected ${JSON.stringify(b)}, got ${JSON.stringify(a)}`);
 }
 
-const root = GLib.build_filenamev([GLib.path_get_dirname(GLib.filename_from_uri(import.meta.url)[0]), '..']);
+// The extension's own files live under src/ (the root of the zip)
+const root = GLib.build_filenamev([GLib.path_get_dirname(GLib.filename_from_uri(import.meta.url)[0]), '..', 'src']);
 const dir = GLib.dir_make_tmp('guava-onboarding-XXXXXX');
 const [, , , status] = GLib.spawn_sync(null, ['glib-compile-schemas', '--targetdir', dir, `${root}/schemas`], null,
     GLib.SpawnFlags.SEARCH_PATH, null);

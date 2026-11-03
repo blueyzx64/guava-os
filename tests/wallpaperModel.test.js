@@ -2,7 +2,7 @@
 // gjs -m tests/wallpaperModel.test.js
 // lib/wallpaperModel.js: what to sample for the glass wallpaper tint, and the average.
 import { ColorCache, MAX_PROBE_PIXELS, averageRgb, slideDelayMs, withinProbeCap, isXmlBackground, parseHexColor, wallpaperSource, xmlFirstImage, xmlSlideAt }
-    from '../lib/wallpaperModel.js';
+    from '../src/lib/wallpaperModel.js';
 
 let failed = 0;
 function test(name, fn) {

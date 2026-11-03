@@ -1,6 +1,6 @@
 // Run: gjs -m tests/notchDownloadsModel.test.js
 // features/notch/downloadsModel.js: which downloads the notch shows, and when they go (B8).
-import { DownloadTracker, STALE_MS } from '../features/notch/downloadsModel.js';
+import { DownloadTracker, STALE_MS } from '../src/features/notch/downloadsModel.js';
 
 let failed = 0;
 function test(name, fn) {

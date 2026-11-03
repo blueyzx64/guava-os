@@ -1,7 +1,7 @@
 # Liquid Glass
 
 ## What it does
-One glass for Guava's surfaces: what lies behind is blurred and its colour boosted, a tint with a soft sheen lies over it, with a thin rim and a shadow. Registry id `liquid-glass` (key `liquid-glass`, on). Code: `lib/glass.js` (the service), `lib/glassBlur.js` (the blur effect), `lib/glassParams.js` (the numbers), `features/liquidGlass/`, CSS in `styles/base.css`.
+One glass for Guava's surfaces: what lies behind is blurred and its colour boosted, a tint with a soft sheen lies over it, with a thin rim and a shadow. Registry id `liquid-glass` (key `liquid-glass`, on). Code: `lib/glass.js` (the service), `lib/glassBlur.js` (the blur effect), `lib/glassParams.js` (the numbers), `features/liquidGlass/`, CSS in `src/styles/base.css`.
 
 ## How it draws
 - One effect on the surface actor copies the backdrop from the screen at device pixels (sharp at any scale, fractional included), blurs it at a reduced size, boosts saturation, darkens it (dark glass) or lifts it (light glass), lays the tint over it and cuts the rounded corners. Text keeps 4.5:1 over a white or black backdrop.

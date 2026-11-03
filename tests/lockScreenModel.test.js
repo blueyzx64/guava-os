@@ -5,7 +5,7 @@ import GLib from 'gi://GLib';
 import {
     TOKENS, bigTime, contrast, hintLine, layout, normalizeOptions, notificationRule, powerActions,
     pressPower, worstCaseContrast, CONFIRM_MS, MESSAGE_MAX,
-} from '../features/lockScreen/model.js';
+} from '../src/features/lockScreen/model.js';
 
 let failed = 0;
 function test(name, fn) {
@@ -150,7 +150,7 @@ test('contrast: sanity (black on white is 21)', () => {
 
 test('style.css repeats the tokens', () => {
     const dir = GLib.path_get_dirname(import.meta.url.replace('file://', ''));
-    const [, bytes] = Gio.File.new_for_path(`${dir}/../features/lockScreen/style.css`).load_contents(null);
+    const [, bytes] = Gio.File.new_for_path(`${dir}/../src/features/lockScreen/style.css`).load_contents(null);
     const css = new TextDecoder().decode(bytes);
     const rgba = t => `rgba(${t.rgb.join(', ')}, ${t.alpha})`;
     for (const t of [TOKENS.scrim, TOKENS.capsule, TOKENS.scrimBlurred])

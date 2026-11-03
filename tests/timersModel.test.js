@@ -1,7 +1,7 @@
 // Run: gjs -m tests/timersModel.test.js
 import {
     startTimer, pauseTimer, resumeTimer, removeTimer, expire, nextDue, remaining, serialize, parse, MAX_TIMERS,
-} from '../core/timersModel.js';
+} from '../src/core/timersModel.js';
 
 let failed = 0;
 function test(name, fn) {

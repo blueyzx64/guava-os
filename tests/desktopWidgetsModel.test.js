@@ -1,5 +1,5 @@
 // Run: gjs -m tests/desktopWidgetsModel.test.js
-import { DIM_OPACITY, galleryRect, isDrag, widgetLook, widgetsLive, windowInFront } from '../features/widgets/model.js';
+import { DIM_OPACITY, galleryRect, isDrag, widgetLook, widgetsLive, windowInFront } from '../src/features/widgets/model.js';
 
 let failed = 0;
 function test(name, fn) {

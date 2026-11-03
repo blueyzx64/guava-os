@@ -3,8 +3,8 @@ import {
     chooseText, touchesBar, barLook, leadingAlignment, parseOsRelease, systemLogoNames, parseCpuInfo, parseMemTotal,
     formatBytes, deviceModel, chassisIcon, gpuNames, parseRecentXbel, forceQuitRows,
     privacyDots, micApps, confirmationHolds, fillPlaceholders, fitMenus, fullscreenExitTarget,
-} from '../features/menuBar/model.js';
-import { relativeLuminance, wallpaperBand, bandLuminance, decodesByRatio } from '../lib/wallpaperModel.js';
+} from '../src/features/menuBar/model.js';
+import { relativeLuminance, wallpaperBand, bandLuminance, decodesByRatio } from '../src/lib/wallpaperModel.js';
 
 let failed = 0;
 function test(name, fn) {

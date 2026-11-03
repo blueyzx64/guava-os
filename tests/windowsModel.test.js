@@ -2,9 +2,9 @@
 import {
     ZONES, ARRANGEMENTS, parseAction, zoneRect, centerRect, placeIn, hitZone, dropZone, planArrangement, needsDwell, nearRect,
     untileRect, rectChanged, TileBook, SHORTCUTS, pickBindable, TILE_MARGIN, EDGE_PX,
-} from '../features/windows/model.js';
-import { planHide, HiddenApps, HIDE_MODES } from '../features/windows/hideModel.js';
-import { EVENTS } from '../core/events.js';
+} from '../src/features/windows/model.js';
+import { planHide, HiddenApps, HIDE_MODES } from '../src/features/windows/hideModel.js';
+import { EVENTS } from '../src/core/events.js';
 
 let failed = 0;
 function test(name, fn) {

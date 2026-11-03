@@ -10,6 +10,8 @@ Layout reference: `code-map.md`.
 
 ## 1. Folder
 
+The extension lives in `src/` (the root of the zip); paths below are relative to it.
+
 ```
 features/<name>/
   index.js     export class <Name> { constructor(ctx, cleanup); enable(); disable(); }
@@ -123,7 +125,7 @@ Rules:
   group and Esc to close. A popup that is not a modal handles Esc itself, on its root.
 - A control that is hidden until hover (an auto-hiding dock, the Stage Manager strip) also
   reveals on keyboard focus inside it, and a disabled control is neither reactive nor focusable.
-- Focus rings: any new focusable class gets a `:focus` rule (`styles/base.css` has the shared one).
+- Focus rings: any new focusable class gets a `:focus` rule (`src/styles/base.css` has the shared one).
 - Animations go through `ctx.motion`, which applies the rules of `core/motionModel.js`:
   animations off -> no animation; reduced motion (`org.gnome.desktop.a11y.interface
   reduced-motion` on GNOME 50) -> no movement, scaling or springs, only a short crossfade.
@@ -136,7 +138,7 @@ Rules:
 - No GType selectors (they depend on file paths). Avoid `!important` except against inline
   styles of other extensions.
 - After editing, run `make css` and commit the regenerated `stylesheet.css` (CI runs
-  `make css-check`). Rules for `lib/` services live in `styles/base.css`.
+  `make css-check`). Rules for `lib/` services live in `src/styles/base.css`.
 
 ## 8. Preferences (prefs.js)
 

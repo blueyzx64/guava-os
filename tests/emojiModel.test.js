@@ -4,7 +4,7 @@ import GLib from 'gi://GLib';
 import {
     CATEGORIES, COLUMNS, RECENTS_MAX, buildCatalog, categoryCells, dictLanguages, firstCategory,
     moveInGrid, nextCategory, pushRecent, recentCells, search, withTone,
-} from '../features/emoji/model.js';
+} from '../src/features/emoji/model.js';
 
 let failed = 0;
 function test(name, fn) {

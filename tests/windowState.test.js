@@ -1,5 +1,5 @@
 // Run: gjs -m tests/windowState.test.js
-import { WindowStateRegistry, FLAGS } from '../core/windowState.js';
+import { WindowStateRegistry, FLAGS } from '../src/core/windowState.js';
 
 let failed = 0;
 function test(name, fn) {

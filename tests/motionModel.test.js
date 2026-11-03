@@ -1,5 +1,5 @@
 // Run: gjs -m tests/motionModel.test.js
-import { DURATIONS, CURVES, SPRINGS, REDUCED_MAX_MS, TRANSFORM_PROPS, resolve, splitProps, springAt, springDuration, springKeyframes } from '../core/motionModel.js';
+import { DURATIONS, CURVES, SPRINGS, REDUCED_MAX_MS, TRANSFORM_PROPS, resolve, splitProps, springAt, springDuration, springKeyframes } from '../src/core/motionModel.js';
 
 let failed = 0;
 function test(name, fn) {

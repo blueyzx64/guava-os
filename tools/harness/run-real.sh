@@ -19,7 +19,9 @@ fi
 OUT=$X2/runs/$(date +%Y%m%d-%H%M%S)-$(basename "$(cd "$SRC" && pwd)")-$(basename $R)
 mkdir -p $OUT
 rm -rf $R/opt/guava-src $R/opt/probe $R/opt/shell.log; mkdir -p $R/opt/guava-src $R/opt/probe
-(cd $SRC && tar --exclude=.git --exclude=docs --exclude=tests --exclude=po --exclude=tools -cf - .) | tar -xf - -C $R/opt/guava-src
+# The extension itself is src/ (the zip's root); a checkout from before that layout is copied whole
+EXT=$SRC; [ -f "$SRC/src/metadata.json" ] && EXT=$SRC/src
+(cd $EXT && tar --exclude=.git --exclude=docs --exclude=tests --exclude=po --exclude=tools -cf - .) | tar -xf - -C $R/opt/guava-src
 cp "$REPO/tools/smoke/fake-logind.js" $R/opt/fake-logind.js
 cp -r "$HARNESS_DIR/probe/probe@x2" $R/opt/probe/
 cp "$HARNESS_DIR/inner-real.sh" $R/opt/inner-real.sh

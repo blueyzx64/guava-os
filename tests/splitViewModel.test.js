@@ -1,5 +1,5 @@
 // Run: gjs -m tests/splitViewModel.test.js
-import { isCandidate, splitRects, survivorAfter, thumbnailRects, preSplitRect } from '../features/splitView/model.js';
+import { isCandidate, splitRects, survivorAfter, thumbnailRects, preSplitRect } from '../src/features/splitView/model.js';
 
 let failed = 0;
 function test(name, fn) {
