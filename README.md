@@ -209,6 +209,10 @@ for writing a feature are in [docs/architecture/conventions.md](docs/architectur
 
 To help translate Guava OS, see the [translation guide](translating/README.md).
 
+## Contributors
+
+- **[blueyzx64](https://github.com/blueyzx64)**: maintainer of Guava OS.
+
 ## Credits
 
 Guava OS is based on **[Kiwi (is not Apple)](https://github.com/blueyzx64/kiwi-is-not-apple)**,
