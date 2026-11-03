@@ -26,7 +26,6 @@ import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import { DesktopAppInfo, isMaximized, maximizeWindow, unmaximizeWindow } from '../../lib/compat.js';
-import { WindowState } from '../windowState.js';
 import { isUserFacing } from '../desktopModel.js';
 import { ZONES } from '../tileActions.js';
 import { FOCUS_SETTLE_MS } from '../../lib/paste.js';
@@ -111,8 +110,7 @@ export class GenericCommands {
             win.delete(now());
             return true;
         case 'minimize':
-            if (!WindowState.interceptMinimize(win))
-                win.minimize();
+            win.minimize();
             return true;
         case 'zoom':
             if (isMaximized(win))

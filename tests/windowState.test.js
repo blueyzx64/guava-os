@@ -202,44 +202,5 @@ test('reset clears flags and stage mode', () => {
     eq(r.stageActive, false);
 });
 
-test('interceptMinimize is false without an interceptor or without stage mode', () => {
-    const r = new WindowStateRegistry();
-    eq(r.interceptMinimize({}), false);
-    r.setMinimizeInterceptor(() => true);
-    eq(r.interceptMinimize({}), false);
-    r.setStageActive(true);
-    eq(r.interceptMinimize({}), true);
-});
-test('interceptMinimize passes the window and honours false', () => {
-    const r = new WindowStateRegistry();
-    r.setStageActive(true);
-    const w = {};
-    let got = null;
-    r.setMinimizeInterceptor(win => {
-        got = win;
-        return false;
-    });
-    eq(r.interceptMinimize(w), false);
-    eq(got === w, true);
-    r.setMinimizeInterceptor(null);
-    eq(r.interceptMinimize(w), false);
-});
-test('a throwing interceptor means "not handled"', () => {
-    const r = new WindowStateRegistry();
-    r.setStageActive(true);
-    r.setMinimizeInterceptor(() => {
-        throw new Error('boom');
-    });
-    eq(r.interceptMinimize({}), false);
-});
-test('reset removes the interceptor', () => {
-    const r = new WindowStateRegistry();
-    r.setStageActive(true);
-    r.setMinimizeInterceptor(() => true);
-    r.reset();
-    r.setStageActive(true);
-    eq(r.interceptMinimize({}), false);
-});
-
 if (failed)
     throw new Error(`${failed} failed`);
