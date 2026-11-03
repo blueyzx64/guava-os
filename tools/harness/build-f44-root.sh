@@ -13,7 +13,8 @@ IMAGE_URL=${IMAGE_URL:-https://download.fedoraproject.org/pub/fedora/linux/relea
 # The packages the probes and scenarios use (GNOME Shell 50, real apps, D-Bus mocks, Xwayland)
 PACKAGES="gnome-shell mutter gjs gtk4 gsettings-desktop-schemas dbus-daemon libnotify
   gnome-text-editor gnome-calculator nautilus rhythmbox sushi qt6-designer glycin-thumbnailer
-  pipewire-pulseaudio python3-dbusmock xorg-x11-server-Xwayland procps-ng util-linux-core sudo"
+  pipewire-pulseaudio python3-dbusmock xorg-x11-server-Xwayland procps-ng util-linux-core sudo
+  gnome-backgrounds"
 
 R=$X2/$NAME
 mkdir -p "$X2"
