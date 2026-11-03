@@ -19,7 +19,7 @@ for t in motionSmoothness motionModel startupModel; do
 done
 
 echo "== real Shell (stock and Guava logins, in parallel)"
-"$K/bundle.sh" "$OUT/extra.sh" "$K/lib.sh" "$K/perf-lib.sh" "$K/classify.js" "$HERE/perf-suite.sh" >/dev/null
+"$K/bundle.sh" "$OUT/extra.sh" "$K/lib.sh" "$K/perf-lib.sh" "$K/classify.js" "$HERE/perf-latency.sh" "$HERE/perf-suite.sh" >/dev/null
 GUAVA_STOCK=1 GUAVA_SKIP_PROBES=1 GUAVA_EXTRA=$OUT/extra.sh GUAVA_SRC=$REPO "$REPO/tools/harness/run-f44.sh" 0 >"$OUT/stock.txt" 2>&1 &
 sp=$!
 sleep 5   # take different roots

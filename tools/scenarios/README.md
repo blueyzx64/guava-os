@@ -13,6 +13,7 @@ X2=/tmp/claude-0/x2 tools/scenarios/run-perf.sh
 | File | Role |
 |---|---|
 | `run-perf.sh` | Runs the unit level, then two harness runs in parallel (stock GNOME login, Guava login), then the comparison. |
+| `perf-latency.sh` | D-021 response latency: `lat_all` drives real virtual input (Super tap, Ctrl+Up, Super+A, Super+Tab, panel clicks, menu-bar click, dock click, notch hover, titlebar press + move) and times input to the first stage `after-paint` where the response is visible. Prints `LAT label n= miss= min= median= p95= max=`. |
 | `perf-suite.sh` | The real-Shell scenario, run in both logins: idle, core interactions, burst, CPU overload. |
 | `perf-compare.py` | Reads both runs' `STARTUP`/`IDLE`/`PERF`/`JITTER` lines and applies the thresholds below. |
 | `tests/motionSmoothness.test.js` | Unit level: the motion contract of `core/motionModel.js`. |
@@ -29,6 +30,7 @@ is relative to the stock GNOME baseline from the same suite run:
 
 | Metric | Section | PASS when (G = Guava, S = stock) |
 |---|---|---|
+| `latency.<action>.p95_ms` | Response latency (D-021), 5 reps per action at rest, real input to first painted response frame | p95 ≤ 250 ms absolute and no miss (llvmpipe: pessimistic; stock's value is printed where stock has the action) |
 | `login.ready_ms` | Login: Shell start until startup-complete, every feature started and the chrome settled | G ≤ S.startupComplete + 600 |
 | `login.stall_total_ms`, `login.max_stall_ms` | Main-loop stalls (10 ms heartbeat late by > 50 ms) during login | G ≤ 1.5·S + 300; G ≤ S + 250 |
 | `login.chrome_jumps` | Panel, dock, notch, Stage Manager, desktop icons, widgets: moves/hides after first shown | 0 |

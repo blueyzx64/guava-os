@@ -41,6 +41,9 @@ _win
 wait_for "global.get_window_actors().some(a=>a.meta_window.get_wm_class()==='org.x2.Perf')" 40 >/dev/null
 sleep 1
 
+# ---- response latency (D-021): real input -> first painted frame of the response, absolute (perf-latency.sh)
+lat_all
+
 # ---- core interactions (run under a label suffix: '' at rest, '-load' under CPU overload) ----------
 _core() { # suffix
   local sfx=$1

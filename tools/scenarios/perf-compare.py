@@ -12,11 +12,11 @@ import sys
 
 def parse(path):
     text = open(path, errors='replace').read()
-    out = {'startup': None, 'idle': {}, 'perf': {}, 'jitter': {}, 'info': {}}
+    out = {'startup': None, 'idle': {}, 'perf': {}, 'jitter': {}, 'lat': {}, 'info': {}}
     m = re.search(r'^STARTUP (\{.*\})\s*$', text, re.M)
     if m:
         out['startup'] = json.loads(m.group(1))
-    for kind, key in (('IDLE', 'idle'), ('PERF', 'perf'), ('JITTER', 'jitter')):
+    for kind, key in (('IDLE', 'idle'), ('PERF', 'perf'), ('JITTER', 'jitter'), ('LAT', 'lat')):
         for m in re.finditer(rf'^{kind} (\S+) (.*)$', text, re.M):
             out[key][m.group(1)] = {k: float(v) for k, v in re.findall(r'(\w+)=([\d.]+)', m.group(2))}
     for m in re.finditer(r'^INFO (.*)$', text, re.M):
@@ -71,6 +71,13 @@ def main():
         if a and b:
             bad = lambda j: j['jumps'] + j['reversals'] + j['flickers']
             check(f'{name}.jumps+reversals+flickers', bad(b), bad(a))
+    # D-021: every action answers within 250 ms of the input, absolute (llvmpipe: pessimistic); stock shown for reference
+    for name, b in sorted(g['lat'].items()):
+        a = s['lat'].get(name)
+        ref = f' (stock {a["p95"]:g})' if a else ''
+        check(f'latency.{name}.p95_ms{ref}', b['p95'], 250, ok=b['p95'] <= 250 and b['miss'] == 0)
+    if not g['lat']:
+        rows.append(('FAIL', 'latency', 'missing data'))
     a, b = s['perf'].get('burst'), g['perf'].get('burst')
     if a and b:
         check('burst.max_stall_ms', b['maxStall'], a['maxStall'] * 1.5 + 100)
