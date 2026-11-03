@@ -17,8 +17,7 @@ Real Shell: GUAVA_SRC=$PWD X2=/tmp/claude-0/x2 tools/harness/run-f44.sh 3
 Baseline 2026-11-03: 79 unit test files pass, lint clean, harness 0 errors 8/8 probes.
 
 Reference code (read-only): /home/user/LordOS (macOS-like desktop, web+runtime),
-/home/user/macos-font-rendering (setup.sh font rendering), /home/user/blueyzx64/app-installer
-(Tauri .rpm/AppImage installer, app id io.github.blueyzx64.Installer).
+/home/user/macos-font-rendering (setup.sh font rendering).
 Upstream extensions: clone into /home/user/.swarm/guava-os/refs/<name> (shallow), read-only.
 
 Rules: claim before edit (tools/agents/claim.sh), own memory file only, ASK O for anything

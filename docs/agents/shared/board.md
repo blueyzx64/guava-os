@@ -9,7 +9,6 @@
 | B6 | Move window to New Workspace does not work | L6 | merged | 616ff55 |
 | B7 | Always on Top (pin on top) does not work | L6 | merged | 616ff55 |
 | B8 | Notch shows downloads weeks after they were cancelled | L3 | merged | 238c62b |
-| B9 | Integrate the Guava App Installer | wave 2 | todo | |
 | B10 | Testable environment (Fedora 44 / GNOME 50) | O | done: harness fixed, runs in container | |
 | B11 | Perf suite: curves, smoothness, login lag, idle, burst, CPU overload | L5 | suite merged: 23 PASS 6 FAIL vs stock | c6d00f3 |
 | B12 | Maximize button = full screen; clicking it in full screen leaves full screen | L2 | merged | 36ce34e |
