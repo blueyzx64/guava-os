@@ -1,7 +1,7 @@
 // Run: gjs -m tests/menuBarItemsModel.test.js
 import {
     argbToRgba, barOrder, hostMode, itemAddress, moveItem, parseItemAddress,
-    parseMenu, parseRegistry, pickPixmap, planBar, sniId, sniVisible, updateRegistry,
+    parseMenu, parseRegistry, pickPixmap, planBar, sniId, sniVisible, updateRegistry, validPixmap,
 } from '../features/menuBarItems/model.js';
 import { PINNABLE, batteryText, parsePins, pinMode, pinShown, setPin } from '../lib/menuBarPins.js';
 
@@ -61,11 +61,23 @@ test('sni ids are stable and safe', () => {
 });
 
 test('pickPixmap prefers the smallest that is big enough', () => {
-    const p = [{ width: 16, height: 16 }, { width: 64, height: 64 }, { width: 32, height: 32 }, { width: 0, height: 0 }];
+    const px = n => ({ width: n, height: n, bytes: new Uint8Array(n * n * 4) });
+    const p = [px(16), px(64), px(32), { width: 0, height: 0, bytes: new Uint8Array(0) }];
     eq(pickPixmap(p, 24), 2);
     eq(pickPixmap(p, 16), 0);
     eq(pickPixmap(p, 128), 1);
     eq(pickPixmap([], 16), -1);
+});
+
+test('pickPixmap drops pixmaps whose byte length is wrong or that are huge', () => {
+    const ok = { width: 16, height: 16, bytes: new Uint8Array(1024) };
+    eq(validPixmap(ok), true);
+    eq(validPixmap({ width: 16, height: 16, bytes: new Uint8Array(1000) }), false);
+    eq(validPixmap({ width: 16, height: 16, bytes: new Uint8Array(1028) }), false);
+    eq(validPixmap({ width: 16, height: 16 }), false);
+    eq(validPixmap({ width: 4096, height: 4096, bytes: new Uint8Array(4096 * 4096 * 4) }), false);
+    eq(pickPixmap([{ width: 64, height: 64, bytes: new Uint8Array(10) }, ok], 64), 1);
+    eq(pickPixmap([{ width: 64, height: 64, bytes: new Uint8Array(10) }], 64), -1);
 });
 
 test('argbToRgba swaps the channels', () => {

@@ -21,8 +21,8 @@
 //
 // Apps must expose accessibility: GTK 3/4 do whenever the accessibility bus runs (GNOME starts
 // it). Firefox, Chromium and Qt expose their tree only when accessibility is turned on
-// (org.gnome.desktop.interface toolkit-accessibility, or a screen reader); Guava does not
-// change that setting.
+// (org.gnome.desktop.interface toolkit-accessibility, or a screen reader); Guava turns that
+// setting on while its `appmenus-accessibility` option is on (the default; see appMenuBar.js).
 
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';

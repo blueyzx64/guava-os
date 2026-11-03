@@ -76,7 +76,14 @@ export function keepOtherDocksOff(originals, cleanup, selfUuid) {
         if (pending && !dockInOrder() && !rebasing())
             stepBack();
     });
-    cleanup.add(stepBack);
+    cleanup.add(() => {
+        // The user disabled Guava inside the shield window: the Shell found Guava absent from its
+        // order (index -1) and will `splice(-1, 1)` the LAST entry when this disable returns. Put
+        // Guava last, so that entry is Guava's own and no other extension is dropped.
+        if (pending && !rebasing() && Main.extensionManager.lookup(selfUuid)?.state === ExtensionState.DEACTIVATING)
+            pending.after = [];
+        stepBack();
+    });
 
     // The user enabling Dash to Dock (the Extensions app) writes the list while the Shell is
     // still enabling it, asynchronously. Taking it out of the list meanwhile makes the Shell

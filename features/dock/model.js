@@ -753,3 +753,45 @@ export function folderDropAccepted(coord, separatorEnd) {
 export function rectContains(rect, x, y) {
     return !!rect && x >= rect.x && x < rect.x + rect.width && y >= rect.y && y < rect.y + rect.height;
 }
+
+/**
+ * The stretches of the primary monitor's dock edge that have no other monitor behind them: a
+ * pressure barrier there reveals the dock, while one across a shared edge would stop the pointer
+ * from reaching the neighbouring monitor.
+ *
+ * @param {'bottom'|'left'|'right'} position
+ * @param {{x: number, y: number, width: number, height: number}} monitor the primary monitor
+ * @param {{x: number, y: number, width: number, height: number}[]} others every monitor (the primary is skipped)
+ * @returns {{x1: number, y1: number, x2: number, y2: number}[]} barrier segments, each non-empty
+ */
+export function barrierSegments(position, monitor, others) {
+    const horizontal = position === 'bottom';
+    const edge = position === 'left' ? monitor.x : position === 'right' ? monitor.x + monitor.width : monitor.y + monitor.height;
+    const lo = horizontal ? monitor.x : monitor.y;
+    const hi = lo + (horizontal ? monitor.width : monitor.height);
+    const blocked = [];
+    for (const o of others) {
+        if (o === monitor)
+            continue;
+        const behind = position === 'bottom' ? o.y <= edge && o.y + o.height > edge :
+            position === 'left' ? o.x < edge && o.x + o.width >= edge :
+                o.x <= edge && o.x + o.width > edge;
+        if (!behind)
+            continue;
+        const a = horizontal ? o.x : o.y;
+        blocked.push([a, a + (horizontal ? o.width : o.height)]);
+    }
+    blocked.sort((p, q) => p[0] - q[0]);
+    const spans = [];
+    let at = lo;
+    for (const [a, b] of blocked) {
+        if (a > at)
+            spans.push([at, Math.min(a, hi)]);
+        at = Math.max(at, b);
+    }
+    if (at < hi)
+        spans.push([at, hi]);
+    return spans.filter(([a, b]) => b > a).map(([a, b]) => horizontal
+        ? { x1: a, x2: b, y1: edge, y2: edge }
+        : { x1: edge, x2: edge, y1: a, y2: b });
+}

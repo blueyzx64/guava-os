@@ -80,6 +80,21 @@ export function sniVisible(status) {
     return status !== 'Passive';
 }
 
+/** Largest side of a tray pixmap Guava will upload as a texture. */
+export const MAX_PIXMAP_SIDE = 512;
+
+/**
+ * A pixmap the Shell may upload: a sane size and exactly width*height*4 bytes (the texture reads
+ * that many; a shorter buffer from a buggy or hostile app would be read past its end).
+ *
+ * @param {{width: number, height: number, bytes?: ArrayLike<number>}} p
+ */
+export function validPixmap(p) {
+    return Number.isInteger(p.width) && Number.isInteger(p.height) &&
+        p.width > 0 && p.height > 0 && p.width <= MAX_PIXMAP_SIDE && p.height <= MAX_PIXMAP_SIDE &&
+        p.bytes?.length === p.width * p.height * 4;
+}
+
 /**
  * Which pixmap of an SNI IconPixmap list to draw: the smallest one at least `size` pixels,
  * else the largest.
@@ -90,7 +105,7 @@ export function sniVisible(status) {
 export function pickPixmap(pixmaps, size) {
     let best = -1;
     pixmaps.forEach((p, i) => {
-        if (!(p.width > 0 && p.height > 0))
+        if (!validPixmap(p))
             return;
         if (best < 0) {
             best = i;

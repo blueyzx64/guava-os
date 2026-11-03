@@ -1,7 +1,7 @@
 // Run: gjs -m tests/dockModel.test.js
 // features/dock/model.js: the dock's pure decisions.
 import {
-    RECENT_MAX, AUTOSTART_MARK, LAUNCH_BOUNCES_MAX, ATTENTION_BOUNCES, Reveal, addFolder,
+    RECENT_MAX, AUTOSTART_MARK, barrierSegments, LAUNCH_BOUNCES_MAX, ATTENTION_BOUNCES, Reveal, addFolder,
     autostartState, autostartText, badgeProgress, badgeText, bounceAgain, bounceSteps, clickAction,
     dockItems, dockMetrics, downloadEntry, downloadFinished, dropIndex, fanLayout, folderDropAccepted,
     magnify, magnifyScale, menuEntries, nextWindow, packageKind, pinPosition, pushRecent, readConfig,
@@ -395,6 +395,24 @@ test('rebaseRestoreIndex: Guava returns in front of what was behind it, else las
     eq(rebaseRestoreIndex(['probe', 'y'], ['x', 'y']), 1);
     eq(rebaseRestoreIndex(['probe'], []), 1);
     eq(rebaseRestoreIndex(['probe', 'x'], ['x']), 1);
+});
+
+test('barrierSegments leaves out the part of the edge another monitor touches', () => {
+    const a = { x: 0, y: 0, width: 1280, height: 800 };
+    const right = { x: 1280, y: 0, width: 1280, height: 800 };
+    const half = { x: 1280, y: 0, width: 1280, height: 400 };
+    eq(barrierSegments('right', a, [a]), [{ x1: 1280, x2: 1280, y1: 0, y2: 800 }]);
+    eq(barrierSegments('right', a, [a, right]), []);
+    eq(barrierSegments('left', a, [a, right]), [{ x1: 0, x2: 0, y1: 0, y2: 800 }]);
+    eq(barrierSegments('right', a, [a, half]), [{ x1: 1280, x2: 1280, y1: 400, y2: 800 }]);
+    eq(barrierSegments('bottom', a, [a, right]), [{ x1: 0, x2: 1280, y1: 800, y2: 800 }]);
+    eq(barrierSegments('bottom', a, [a, { x: 0, y: 800, width: 640, height: 600 }]), [{ x1: 640, x2: 1280, y1: 800, y2: 800 }]);
+    eq(barrierSegments('left', right, [a, right]), []);
+});
+
+test('rebaseRestoreIndex with nothing behind puts Guava last (disable inside the shield)', () => {
+    eq(rebaseRestoreIndex(['a', 'b'], []), 2);
+    eq(rebaseRestoreIndex(['a', 'c', 'b'], ['b', 'c']), 1);
 });
 
 if (failed) {

@@ -44,7 +44,7 @@ import { WindowState } from '../../core/windowState.js';
 import { LauncherEntryWatcher } from '../../lib/launcherEntry.js';
 import { BackgroundApps } from '../../lib/backgroundApps.js';
 import {
-    Reveal, STACK_VIEWS, addFolder, bounceAgain, bounceSteps, clickAction, dockItems, dockMetrics,
+    Reveal, STACK_VIEWS, addFolder, barrierSegments, bounceAgain, bounceSteps, clickAction, dockItems, dockMetrics,
     folderDropAccepted, iconTextureSize, isHorizontal, menuEntries, pinPosition, pushRecent, readConfig, removeFolder,
     stableOrder,
 } from './model.js';
@@ -129,7 +129,10 @@ export class Dock {
         events.on('app-focused', ({ appId }) => this._noteRecent(appId), cleanup);
         events.on('work-area-changed', () => this._place(), cleanup);
         // Magnification is decorative: off while the Shell misses its frame budget (B28)
-        events.on('motion-changed', () => this._magnifier?.setHovered(this._view.frame.hover), cleanup);
+        events.on('motion-changed', () => {
+            if (this._view.alive)
+                this._magnifier?.setHovered(this._view.frame.hover);
+        }, cleanup);
         events.on('monitors-changed', () => {
             this._place();
             this._syncBarrier();
@@ -154,7 +157,8 @@ export class Dock {
             // The icons are drawn at the magnified size (B18): the option or its size changed
             for (const item of this._view.items())
                 item.retexture?.();
-            this._magnifier?.setHovered(this._view.frame.hover);
+            if (this._view.alive)
+                this._magnifier?.setHovered(this._view.frame.hover);
         });
         this._ks.watch('dock-downloads-view', () => {
             this.config = readConfig(this._ks);
@@ -648,22 +652,25 @@ export class Dock {
         if (!this.config.autohide || !monitor)
             return;
         const reg = this._barrierCleanup = new CleanupRegistry();
-        const { x, y, width, height } = monitor;
-        const edge = {
-            bottom: { x1: x, x2: x + width, y1: y + height, y2: y + height, directions: Meta.BarrierDirection.NEGATIVE_Y },
-            left: { x1: x, x2: x, y1: y, y2: y + height, directions: Meta.BarrierDirection.POSITIVE_X },
-            right: { x1: x + width, x2: x + width, y1: y, y2: y + height, directions: Meta.BarrierDirection.NEGATIVE_X },
+        const directions = {
+            bottom: Meta.BarrierDirection.NEGATIVE_Y,
+            left: Meta.BarrierDirection.POSITIVE_X,
+            right: Meta.BarrierDirection.NEGATIVE_X,
         }[this.config.position];
+        // Not across an edge another monitor touches: that would stop the pointer crossing over
+        const segments = barrierSegments(this.config.position, monitor, Main.layoutManager.monitors);
+        if (!segments.length)
+            return;
         const pressure = new Layout.PressureBarrier(PRESSURE_THRESHOLD, PRESSURE_TIMEOUT, Shell.ActionMode.NORMAL);
-        const barrier = new Meta.Barrier({ backend: global.backend, ...edge });
-        pressure.addBarrier(barrier);
+        const barriers = segments.map(seg => new Meta.Barrier({ backend: global.backend, directions, ...seg }));
+        barriers.forEach(b => pressure.addBarrier(b));
         reg.connect(pressure, 'trigger', () => {
             this._reveal.reveal();
             this._settle();
         });
         reg.add(() => {
             pressure.destroy();
-            barrier.destroy();
+            barriers.forEach(b => b.destroy());
         });
     }
 
