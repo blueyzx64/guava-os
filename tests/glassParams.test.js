@@ -5,6 +5,7 @@ import {
     ALPHA_RANGE, BLUR_ALPHA_RANGE, LoadGovernor, SETTING_FIELDS, captureMargin, captureMode, downscaleFor,
     effectColors, TINT, WALLPAPER_MIX, fillStyle, glassClasses, hostClasses,
     hostStyle, readSnapshot, liveCaptureDue, LIVE_CAPTURE_MS, LIVE_CAPTURE_DEGRADED_MS, resolve, roleFor, sliderAlpha,
+    clipCovers, clipToDevice, captureRects, intersectRect, textureSide, TEXTURE_STEP,
     stripFragments, wantsSurface, worstCaseContrast, wrapFragment,
 } from '../lib/glassParams.js';
 
@@ -225,6 +226,74 @@ test('governor: sustained slow frames freeze live blur, fast frames bring it bac
     for (let i = 0; i < 70; i++)
         g.frame(t += 16, 16.7);
     ok(!g.frozen, 'recovers after 1 s of fast frames');
+});
+
+test('governor: idle() reads the governor clock, so a frozen governor stays frozen under load', () => {
+    let now = 5e6;          // monotonic ms, as the frames are timed
+    const g = new LoadGovernor({ window: 8, recoverMs: 3000, clock: () => now });
+    for (let i = 0; i < 20; i++)
+        g.frame(now += 16, 16.7);
+    for (let i = 0; i < 14; i++)
+        g.frame(now += 60, 16.7);
+    ok(g.frozen, 'frozen');
+    now += 1000;
+    g.idle();
+    ok(g.frozen, 'one second later (< recoverMs) it stays frozen');
+    now += 3000;
+    g.idle();
+    ok(!g.frozen, 'no live frame for recoverMs: reset');
+    // the wall clock (1.7e12) against the monotonic one is the bug this guards: it always resets
+    const h = new LoadGovernor({ window: 8, recoverMs: 3000 });
+    let t = 5e6;
+    for (let i = 0; i < 20; i++)
+        h.frame(t += 16, 16.7);
+    for (let i = 0; i < 14; i++)
+        h.frame(t += 60, 16.7);
+    h.idle(Date.now());
+    ok(!h.frozen, 'documents why the clocks must match');
+});
+
+test('clipToDevice: shrinks inwards, one logical px more at fractional scale', () => {
+    eq(clipToDevice([{ x: 10, y: 20, width: 100, height: 50 }], { x: 0, y: 0 }, 2),
+        [{ x1: 20, y1: 40, x2: 220, y2: 140 }]);
+    eq(clipToDevice([{ x: 10, y: 20, width: 100, height: 50 }], { x: 0, y: 0 }, 1.25),
+        [{ x1: 14, y1: 27, x2: 136, y2: 86 }]);
+    eq(clipToDevice([{ x: 1280, y: 0, width: 10, height: 10 }], { x: 1280, y: 0 }, 1),
+        [{ x1: 0, y1: 0, x2: 10, y2: 10 }], 'relative to the view');
+    eq(clipToDevice([{ x: 0, y: 0, width: 1, height: 1 }], { x: 0, y: 0 }, 1.25), [], 'too thin to trust');
+    eq(clipToDevice([{ x: 10, y: 20, width: 100, height: 50 }], { x: 0, y: 0 }, 1.25, 0),
+        [{ x1: 13, y1: 25, x2: 137, y2: 87 }], 'exact: for the coverage test');
+});
+
+test('clipCovers: the redraw clip must cover the whole surface box to trust a full capture', () => {
+    const box = { x1: 100, y1: 100, x2: 300, y2: 160 };
+    ok(clipCovers(box, null), 'null clip: everything redrawn');
+    ok(clipCovers(box, [{ x1: 0, y1: 0, x2: 1280, y2: 800 }]), 'full');
+    ok(clipCovers(box, [{ x1: 90, y1: 90, x2: 200, y2: 200 }, { x1: 200, y1: 90, x2: 400, y2: 200 }]), 'two rects');
+    ok(!clipCovers(box, [{ x1: 120, y1: 110, x2: 150, y2: 130 }]), 'a hover highlight does not');
+    ok(!clipCovers(box, []), 'empty clip');
+});
+
+test('captureRects: inside the box only the redraw clip is read, the margin always', () => {
+    const cap = { x1: 90, y1: 90, x2: 310, y2: 170 };
+    const box = { x1: 100, y1: 100, x2: 300, y2: 160 };
+    eq(captureRects(cap, box, null), [cap], 'no clip: everything');
+    const hover = { x1: 120, y1: 110, x2: 150, y2: 130 };
+    const rects = captureRects(cap, box, [hover]);
+    eq(rects.length, 5, '4 margin strips and the hover rect');
+    eq(rects[4], hover);
+    // nothing read inside the box outside the clip
+    for (const r of rects.slice(0, 4))
+        eq(intersectRect(r, box), null, 'strip is outside the box');
+    eq(captureRects(cap, box, []).length, 4, 'empty clip: margin only');
+    eq(captureRects(cap, box, [{ x1: 0, y1: 0, x2: 2000, y2: 2000 }]).slice(4), [box], 'clip clamps to the box');
+});
+
+test('textureSide: rounds up only when asked, so a growing dock reuses its textures', () => {
+    eq(textureSide(1000, 1), 1000);
+    eq(textureSide(1000, TEXTURE_STEP), 1024);
+    eq(textureSide(1024, TEXTURE_STEP), 1024);
+    eq(textureSide(1025, TEXTURE_STEP), 1088);
 });
 
 test('liveCaptureDue: first capture at once, then throttled; slower while degraded', () => {
