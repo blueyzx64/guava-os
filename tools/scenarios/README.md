@@ -44,7 +44,7 @@ is relative to the stock GNOME baseline from the same suite run:
 | `guava_errors` | The Guava run's log | 0 |
 
 `INFO degraded-under-load` shows whether Guava's `FrameBudget` reported `env.degraded` during the
-overload. Graceful degradation: `core/motion.js` watches painted frame intervals. When 40 % of the last 30 frames
+overload. Graceful degradation: `core/motion.js` watches painted frame intervals. When 20 % of the last 30 frames
 take more than 50 ms, `ctx.motion.env.degraded` turns true and `motion-changed` fires. Requests marked
 `decorative: true` then become a crossfade, and features with costly ornaments drop them until it clears
 (it clears when fewer than 10 % of the frames are slow). Core interactions never degrade.

@@ -24,7 +24,7 @@ _idle() { # label seconds
 # Same state in both logins: stock GNOME lands in the overview, Guava on the desktop; the harness's
 # Text Editor would blink its cursor (paints) while focused. No overview, no windows.
 P "Main.overview.hide(); global.get_window_actors().forEach(a=>a.meta_window.delete(global.get_current_time())); return 1" >/dev/null
-sleep 4
+sleep 8   # past the login settling (the notch and the desktop icons still move for ~3 s after startup)
 _idle idle 10
 
 # ---- a window to work with ------------------------------------------------------------------------
@@ -75,11 +75,13 @@ perf_stop burst
 echo "INFO burst windows-left=$(_wins)"
 
 # ---- CPU overload: one busy loop per core at nice 0 ------------------------------------------------
+# B28: count how often Guava's FrameBudget reports env.degraded while the cores are busy
+P "globalThis.__kdeg={n:0,on:false}; const m=Main.extensionManager.lookup('guava-os@blueyzx64')?.stateObj; m?._events?.on('motion-changed',e=>{ if(e.degraded&&!globalThis.__kdeg.on) globalThis.__kdeg.n++; globalThis.__kdeg.on=e.degraded; }); return 1" >/dev/null
 LOADPIDS=""
 for _ in $(seq 1 "$(nproc)"); do ( while :; do :; done ) & LOADPIDS="$LOADPIDS $!"; done
 sleep 1
 _core "-load"
-echo "INFO degraded-under-load=$(P "return Main.extensionManager.lookup('guava-os@blueyzx64')?.stateObj?._motion?.env?.degraded ?? 'n/a'" | grep -o 'true\|false\|n/a' | head -1)"
+echo "INFO degraded-under-load=$(P "return globalThis.__kdeg?.n ?? 'n/a'" | grep -o '[0-9]\+\|n/a' | head -1)"
 kill $LOADPIDS 2>/dev/null; wait $LOADPIDS 2>/dev/null
-sleep 3
+sleep 6
 _idle idle-after 5

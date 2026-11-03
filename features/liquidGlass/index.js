@@ -16,6 +16,7 @@ import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import { Glass } from '../../lib/glass.js';
+import { setDegraded } from '../../lib/glassBlur.js';
 
 export class LiquidGlass {
     constructor(ctx, cleanup) {
@@ -31,6 +32,11 @@ export class LiquidGlass {
         // The theme's text colour decides dark or light glass: re-read it on a theme change
         cleanup.connect(St.ThemeContext.get_for_stage(global.stage), 'changed', () => this._refreshAll());
         cleanup.add(() => this._detachAll());
+
+        // B28: while the frame budget is blown live blur refreshes slowly (glassParams.liveCaptureDue)
+        setDegraded(this._ctx.motion.env.degraded);
+        this._ctx.events.on('motion-changed', env => setDegraded(env.degraded), cleanup);
+        cleanup.add(() => setDegraded(false));
 
         // Calls back now, so the first sync happens here
         Glass.watch(cleanup, () => this._sync());

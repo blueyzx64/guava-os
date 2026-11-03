@@ -4,7 +4,7 @@
 import {
     ALPHA_RANGE, BLUR_ALPHA_RANGE, LoadGovernor, SETTING_FIELDS, captureMargin, captureMode, downscaleFor,
     effectColors, TINT, WALLPAPER_MIX, fillStyle, glassClasses, hostClasses,
-    hostStyle, readSnapshot, resolve, roleFor, sliderAlpha,
+    hostStyle, readSnapshot, liveCaptureDue, LIVE_CAPTURE_MS, LIVE_CAPTURE_DEGRADED_MS, resolve, roleFor, sliderAlpha,
     stripFragments, wantsSurface, worstCaseContrast, wrapFragment,
 } from '../lib/glassParams.js';
 
@@ -225,6 +225,14 @@ test('governor: sustained slow frames freeze live blur, fast frames bring it bac
     for (let i = 0; i < 70; i++)
         g.frame(t += 16, 16.7);
     ok(!g.frozen, 'recovers after 1 s of fast frames');
+});
+
+test('liveCaptureDue: first capture at once, then throttled; slower while degraded', () => {
+    ok(liveCaptureDue(-1, 1000), 'no capture yet');
+    ok(!liveCaptureDue(1000, 1000 + LIVE_CAPTURE_MS - 1), 'too soon');
+    ok(liveCaptureDue(1000, 1000 + LIVE_CAPTURE_MS), 'due');
+    ok(!liveCaptureDue(1000, 1000 + LIVE_CAPTURE_MS, true), 'degraded waits longer');
+    ok(liveCaptureDue(1000, 1000 + LIVE_CAPTURE_DEGRADED_MS, true), 'degraded due');
 });
 
 if (failed) {

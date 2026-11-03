@@ -152,6 +152,12 @@ export function planActivation(windows, { active, switchToSpace, restoreMinimize
 }
 
 /** Icon sizes the panel picks from, largest first (macOS shows 128 px icons on wide screens). */
+/**
+ * How long the panel waits before it shows, so a quick Super+Tab flip does not flash it. The Shell's
+ * own wait is 150 ms; with a painted frame on top that eats most of the 250 ms response budget (D-021).
+ */
+export const SHOW_DELAY_MS = 60;
+
 export const ICON_SIZES = Object.freeze([128, 112, 96, 80, 64, 48, 32]);
 
 /**

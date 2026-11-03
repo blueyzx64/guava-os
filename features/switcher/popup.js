@@ -6,6 +6,7 @@
 // callback into features/switcher/index.js; the selection rules are in model.js.
 
 import Clutter from 'gi://Clutter';
+import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Meta from 'gi://Meta';
 import Pango from 'gi://Pango';
@@ -15,7 +16,7 @@ import * as SwitcherPopup from 'resource:///org/gnome/shell/ui/switcherPopup.js'
 
 import * as A11y from '../../lib/a11y.js';
 import { Glass } from '../../lib/glass.js';
-import { indexAfterRemoval, initialIndex, keyAction, pickAfterHide, step } from './model.js';
+import { SHOW_DELAY_MS, indexAfterRemoval, initialIndex, keyAction, pickAfterHide, step } from './model.js';
 
 const KEY_NAMES = new Map([
     [Clutter.KEY_Tab, 'Tab'], [Clutter.KEY_ISO_Left_Tab, 'ISO_Left_Tab'],
@@ -97,6 +98,16 @@ class GuavaAppSwitcherPopup extends SwitcherPopup.SwitcherPopup {
                     this._removeApp(app);
             }, this);
         }
+    }
+
+    // The Shell waits 150 ms before it shows the panel; shorten that wait (still no flash on a quick tap)
+    show(backward, binding, mask) {
+        const shown = super.show(backward, binding, mask);
+        if (shown && this._initialDelayTimeoutId) {
+            GLib.source_remove(this._initialDelayTimeoutId);
+            this._initialDelayTimeoutId = GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, SHOW_DELAY_MS, () => this._showImmediately());
+        }
+        return shown;
     }
 
     _removeApp(app) {

@@ -232,7 +232,7 @@ export class FrameBudget {
      * @param {{budgetMs?: number, window?: number, enter?: number, exit?: number, idleMs?: number}} [o]
      *   budgetMs: a frame slower than this is over budget (default 50: three frames at 60 Hz)
      */
-    constructor({ budgetMs = 50, window = 30, enter = 0.4, exit = 0.1, idleMs = 250 } = {}) {
+    constructor({ budgetMs = 50, window = 30, enter = 0.2, exit = 0.1, idleMs = 250 } = {}) {
         Object.assign(this, { budgetMs, window, enter, exit, idleMs });
         this._slow = [];
         this.degraded = false;

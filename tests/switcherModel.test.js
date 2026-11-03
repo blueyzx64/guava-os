@@ -1,6 +1,6 @@
 // Run: gjs -m tests/switcherModel.test.js
 import {
-    ICON_SIZES, iconSizeFor, indexAfterRemoval, initialIndex, keyAction, pickAfterHide, planActivation, step,
+    ICON_SIZES, SHOW_DELAY_MS, iconSizeFor, indexAfterRemoval, initialIndex, keyAction, pickAfterHide, planActivation, step,
     switcherApps,
 } from '../features/switcher/model.js';
 
@@ -98,6 +98,10 @@ test('iconSizeFor: largest size that fits', () => {
     eq(iconSizeFor(10, 1152, 32), 80);
     eq(iconSizeFor(100, 1152, 32), ICON_SIZES[ICON_SIZES.length - 1]);
     eq(iconSizeFor(0, 1152, 32), 128);
+});
+
+test('SHOW_DELAY_MS: short enough to leave room for a frame inside the 250 ms response budget', () => {
+    eq(SHOW_DELAY_MS > 0 && SHOW_DELAY_MS <= 100, true);
 });
 
 if (failed) {

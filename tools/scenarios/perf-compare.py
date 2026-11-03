@@ -71,6 +71,10 @@ def main():
         if a and b:
             bad = lambda j: j['jumps'] + j['reversals'] + j['flickers']
             check(f'{name}.jumps+reversals+flickers', bad(b), bad(a))
+    # B28: the FrameBudget must trip under the overload (env.degraded true at least once)
+    trips = g['info'].get('degraded-under-load', '')
+    check('b28.degraded_under_load (trips)', float(trips) if trips.isdigit() else None, 0,
+          ok=trips.isdigit() and int(trips) >= 1)
     # D-021: every action answers within 250 ms of the input, absolute (llvmpipe: pessimistic); stock shown for reference
     for name, b in sorted(g['lat'].items()):
         a = s['lat'].get(name)

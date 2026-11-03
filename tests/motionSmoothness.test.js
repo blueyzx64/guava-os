@@ -258,6 +258,22 @@ test('FrameBudget: needs a few frames before deciding; reset clears', () => {
     ok(!b.degraded, 'reset');
 });
 
+test('FrameBudget: a recorded overload (one busy loop per core, overview + Quick Settings) trips it and it clears', () => {
+    // Frame intervals (ms) painted while every core was busy (the perf suite's overload): mostly 12-25 ms
+    // with bursts of slow frames. The old 40 percent rule never fired on it (B28).
+    const trace = [112,95,36,24,20,15,12,12,14,15,35,3,29,5,129,26,4,62,230,20,14,15,20,14,20,14,14,22,16,12,20,17,12,23,16,16,12,47,6,21,14,20,8,23,14,14,20,15,18,27,19,84,10,32,28,16,65,15,123,17,20,40,17,15,17,20,22,12,12,21,14,20,16,16,16,18,32,22,14,31,23,20,24,20,21,12,20,7,19,13,20,21,9,23,11,20,16,16,21,84,37,8,56,218,17,20,20,13,19,10,22,12,24,9,18,21,15,26,19,17,14,22,26,24,20,20,21,60,12,30,22,20,12,16,24,13,151,20,16,13,19,20,10,18,20,11,21,13,21,16,19,22,12,21,16,24,15,24,14,12,20,16,10,17,44,7,29,10,31,15,11,49,8,111,78,248,10,18,19,21,7,17,19,50,12,21,18,12,16,61,9,40,34,42,21,59,32,28,28,36,32,146,26,17,23,12,14,25,11,18,12,24,12,19,12,25,13,19,9];
+    const b = new FrameBudget();
+    let tripped = 0;
+    for (const dt of trace) {
+        if (b.push(dt) && b.degraded)
+            tripped++;
+    }
+    ok(tripped >= 1, 'degraded at least once under the overload');
+    for (let i = 0; i < 40; i++)
+        b.push(16.7);
+    ok(!b.degraded, 'clears when frames are fast again');
+});
+
 if (failed) {
     print(`${failed} failed`);
     imports.system.exit(1);
