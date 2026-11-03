@@ -98,12 +98,18 @@ export class NotificationCenter {
                 () => content.get_preferred_height(WIDTH),
             ];
             let gone = false;
+            // The Shell can destroy it first (Main.uiGroup goes at shutdown): never touch it after
+            content.connect('destroy', () => {
+                gone = true;
+            });
             const drop = () => {
                 if (!gone)
                     content.destroy();
                 gone = true;
             };
             const next = () => {
+                if (gone)
+                    return;
                 if (this.isOpen) {
                     drop();
                     return;
