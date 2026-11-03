@@ -65,6 +65,16 @@
 - **Never `set_scale` a small icon up** (B18): draw St icons at the largest size they will be
   shown (`icon_size` above `set_size`) and scale down; set the texture once, not per frame.
 
+## Lock screen and login
+
+- **The Shell disables every extension without the `unlock-dialog` session mode on lock** (the
+  harness probe extension too). Guava stays loaded and suspends its surfaces instead (B21): lock
+  costs ~40 ms, unlock ~45-70 ms, against ~250 ms of blocking for a full disable.
+- **Sub-registries are not reached by the registry's per-feature suspend:** a feature's own child
+  cleanup registries (67 of them) need the extension-level sweep that hides `guava-` actors.
+- **Login readiness is bound by module parsing (~500 ms), not `enable()` (~270 ms):** deferring
+  features with `later` barely helps; fewer and smaller modules on the login path do.
+
 ## Test environment
 
 - **Fedora's `/etc/ssl/certs` is an absolute symlink** to `/etc/pki/tls/certs`. Writing through
