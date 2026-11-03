@@ -45,7 +45,8 @@ export function fullscreenAppOf(windows) {
 export const canRemoveSpace = count => count > 1;
 
 /**
- * Where a window goes in the overview.
+ * Where a window goes in the overview. As on macOS, a window minimized into the Dock is not
+ * in Mission Control's spread; only App Exposé shows it, in its strip.
  *
  * @param {{appId: ?string, minimized: boolean, staged?: boolean}} w staged: Stage Manager
  *   keeps it in its strip (WindowState 'staged'), off the stage: no overview shows it
@@ -57,7 +58,7 @@ export function windowPlace(w, view) {
     if (w.staged)
         return 'hidden';
     if (view.mode !== MODE.APP)
-        return 'spread';
+        return w.minimized ? 'hidden' : 'spread';
     if (!view.appId || w.appId !== view.appId)
         return 'hidden';
     return w.minimized ? 'strip' : 'spread';

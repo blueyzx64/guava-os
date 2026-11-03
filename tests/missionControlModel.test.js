@@ -42,10 +42,11 @@ test('canRemoveSpace: the last Space stays', () => {
     eq(canRemoveSpace(2), true);
 });
 
-test('windowPlace: all windows in Mission Control', () => {
+test('windowPlace: Mission Control spreads the open windows; minimized ones stay in the Dock', () => {
     const view = { mode: MODE.ALL, appId: null };
     eq(windowPlace({ appId: 'a', minimized: false }, view), 'spread');
-    eq(windowPlace({ appId: 'b', minimized: true }, view), 'spread');
+    eq(windowPlace({ appId: 'b', minimized: true }, view), 'hidden');
+    eq(windowPlace({ appId: null, minimized: true }, view), 'hidden');
 });
 
 test('windowPlace: a window in the Stage Manager strip is in no overview', () => {

@@ -272,24 +272,51 @@ export class MissionControl {
     }
 
     /**
-     * Windows in Stage Manager's strip (WindowState 'staged') are in no overview. App Exposé
-     * shows the chosen app's windows only (minimized ones go to the strip).
+     * Which windows the window picker spreads (model.windowPlace): not those in Stage Manager's
+     * strip (WindowState 'staged'), not minimized ones (they are in the Dock, as on macOS), and
+     * in App Exposé only the chosen app's (its minimized ones go to the strip). A window
+     * minimized or restored while the picker is open leaves or joins the spread.
      */
     _filterWindows() {
         const self = this;
         const proto = Workspace.Workspace?.prototype;
         if (typeof proto?._isOverviewWindow !== 'function') {
-            console.warn(`${LOG} Workspace._isOverviewWindow not found; App Exposé shows every window`);
+            console.warn(`${LOG} Workspace._isOverviewWindow not found; minimized windows stay in the spread`);
             return;
         }
+        let live = true;
+        this._cleanup.add(() => {
+            live = false;
+        });
         this._cleanup.inject(proto, '_isOverviewWindow', function (orig, win) {
-            const ok = orig.call(this, win);
-            if (!ok)
-                return ok;
-            const staged = WindowState.has(win, 'staged');
-            if (!staged && self._view.mode === MODE.ALL)
-                return ok;
-            return windowPlace({ appId: appOf(win)?.get_id() ?? null, minimized: win.minimized, staged }, self._view) === 'spread';
+            if (!orig.call(this, win))
+                return false;
+            return windowPlace({
+                appId: self._view.mode === MODE.APP ? appOf(win)?.get_id() ?? null : null,
+                minimized: win.minimized,
+                staged: WindowState.has(win, 'staged'),
+            }, self._view) === 'spread';
+        });
+        if (typeof proto._doAddWindow !== 'function' || typeof proto._doRemoveWindow !== 'function')
+            return;
+        // Each Workspace follows the minimized state of its windows; connectObject drops the
+        // handler with the Workspace (rebuilt every time the overview opens)
+        this._cleanup.inject(proto, '_doAddWindow', function (orig, win) {
+            orig.call(this, win);
+            if (!win.get_compositor_private() || !this._isMyWindow(win))
+                return;
+            this._guavaMinimized ??= new Set();
+            if (this._guavaMinimized.has(win))
+                return;
+            this._guavaMinimized.add(win);
+            win.connectObject('notify::minimized', () => {
+                if (!live)
+                    return;
+                if (win.minimized)
+                    this._doRemoveWindow(win);
+                else
+                    this._doAddWindow(win);
+            }, this);
         });
     }
 

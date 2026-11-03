@@ -1,7 +1,7 @@
 # Mission Control, Launchpad, app switcher, gestures, hot corners
 
 ## Mission Control and App Exposé (`mission-control`, on)
-GNOME's overview restyled: a Spaces bar on top, the current Space's windows spread out, no search and no dash.
+GNOME's overview restyled: a Spaces bar on top, the current Space's windows spread out, no search and no dash. As on macOS, windows minimized into the Dock are not in the spread (a window minimized or restored while it is open leaves or joins it); App Exposé shows them in its strip.
 - **Open:** F3, Ctrl+Up (`mission-control-shortcut`; also the XF86LaunchA key), a three- or four-finger swipe up, the optional dock tile, a hot corner.
 - **App Exposé:** Ctrl+Down (`app-expose-shortcut`), the dock's Show All Windows, a four-finger swipe down. Shows one app's windows with its minimized ones in a strip at the bottom.
 - **Spaces bar:** add with +, remove with x, drag to reorder.
