@@ -8,7 +8,6 @@ description: GNOME Shell 50 extension anatomy and lifecycle for Guava OS. Use wh
 Running code: GNOME Shell **50.6** JS is extracted at
 `/home/user/.swarm/guava-os/refs/gnome-shell-50.6-js/org/gnome/shell/` (paths below are relative
 to it). C sources (50.6 tag, `src/` only): `/home/user/.swarm/guava-os/refs/gnome-shell-src/src/`.
-Read the real code before trusting any blog post; GNOME changes private API every release.
 
 ## 1. Anatomy (what GNOME gives you)
 
@@ -20,8 +19,6 @@ Read the real code before trusting any blog post; GNOME changes private API ever
 - ESM only: `import X from 'gi://X'`, `import * as Main from 'resource:///org/gnome/shell/ui/main.js'`.
   Shell process must never import `Gtk/Gdk/Adw`; prefs process never `Clutter/Meta/St/Shell`
   (Guava's eslint enforces both, `docs/architecture/code-map.md` §8).
-- `this.getSettings()` (`extensions/sharedInternals.js:92`), `this.gettext`, `this.path`,
-  `this.dir`, `this.metadata`.
 
 ## 2. Lifecycle facts that bite (verified in 50.6)
 
@@ -52,13 +49,9 @@ Consequences for Guava:
 
 ## 3. Guava's lifecycle mapping
 
-```
-GNOME enable()  -> extension.js enable(): CleanupRegistry, OriginalsStore.restoreStale,
-                   core services (events, desktop, layout, motion, timers, appMenus, osd),
-                   FeatureRegistry.registerAll(FEATURES).start(ctx)
-GNOME disable() -> extension.js disable(): registry.stop() (reverse order), services stop
-feature        -> new Cls(ctx, cleanup); enable(); ... disable(); cleanup.dispose()
-```
+- `extension.js enable()`: CleanupRegistry, `restoreStale`, core services (events, desktop,
+  layout, motion, timers, appMenus, osd), `FeatureRegistry.start(ctx)`; `disable()` mirrors it.
+  Per feature: `new Cls(ctx, cleanup)`, `enable()`, … `disable()`, `cleanup.dispose()`.
 
 - One `CleanupRegistry` per feature (`lib/disposables.js:14`), disposed newest-first right
   after `disable()`. Register at creation time: `cleanup.connect(obj, sig, fn)` (`:54`),
@@ -81,8 +74,8 @@ Two equivalent tools:
 | `InjectionManager` (`extensions/extension.js`, class at ~:35) `overrideMethod(proto, name, orig => function (...args) {...})`, `restoreMethod`, `clear()` | GNOME's official helper; same idea. Not used in Guava; don't mix both on one method. |
 
 Rules:
-- Patch **prototypes**, not instances, when the Shell may create new instances (50 turned
-  `MessageTray` into a native class: patch `MessageTray.prototype`, `lib/compat.js:210-214`).
+- Patch **prototypes**, not instances, when the Shell may create new ones (50 made `MessageTray`
+  native: patch `MessageTray.prototype`, `lib/compat.js:210-214`).
 - Bound handlers can't be patched: the Shell connects `this._minimizeWindow.bind(this)` to
   `Shell.WM` (`ui/windowManager.js:528-533`). Guava blocks the **oldest** handler with
   `GObject.signal_handler_find(wm, {signalId})` + `signal_handler_block`, never `*_matched`
@@ -143,23 +136,16 @@ From gjs.guide/extensions/review-guidelines:
 - Modifying or reloading other extensions is "discouraged, reviewed case by case": the
   Dash to Dock hand-off (§2) needs a justification in the review notes.
 - `session-modes` must be omitted when only `user`; `unlock-dialog` needs the comment.
-- `run_dispose()` only with a comment saying why.
 - AI-assisted code is allowed, but imaginary APIs / prompt comments get rejected: never ship a
   call you have not seen work in the harness.
 
-## 8. Pitfalls checklist
+## 8. Pitfalls
 
-- `connectObject(obj, 'sig', fn, owner)` / `disconnectObject(owner)` (`misc/signalTracker.js:209,256`)
-  is the Shell's own tracker; Guava's `cleanup.connect` is preferred, but Shell objects you hand
-  `this` to (e.g. `win.connectObject(..., rec)` in `features/roundedCorners/index.js:120`) need a
-  matching `disconnectObject(rec)`.
-- JS `Signals.EventEmitter` objects (PopupMenu, PressureBarrier) have no GObject `destroy`;
-  `CleanupRegistry.connect` handles them (`lib/disposables.js:61`).
-- `St.Widget` subclasses must be registered with `GObject.registerClass` and a unique
-  `GTypeName` if any — a second registration of the same GTypeName (enable after disable)
-  throws. Register lazily at module level once (`features/roundedCorners/effect.js:94`).
-- Never hold `Meta.Window` / actors in module-level variables across disable.
-- `global.compositor.get_laters().add(Meta.LaterType.BEFORE_REDRAW, fn)` is the way to run
-  "just before the next frame" (`features/dock/index.js:373`); remove it on dispose.
-- Remote desktop sessions and software rendering **inhibit animations** globally
-  (`ui/main.js:1027-1056`): never assume `enable_animations` is true.
+- Shell objects given `connectObject(..., owner)` (`misc/signalTracker.js:209`) need
+  `disconnectObject(owner)` (e.g. `features/roundedCorners/index.js:120,131`).
+- Register GObject classes lazily, once per module (`features/roundedCorners/effect.js:94`);
+  a duplicate `GTypeName` throws on the next enable.
+- Never keep `Meta.Window`/actors in module variables across disable.
+- "Before the next frame": `global.compositor.get_laters().add(Meta.LaterType.BEFORE_REDRAW, fn)`
+  (`features/dock/index.js:373`); remove on dispose.
+- Remote desktop and software rendering **inhibit animations** (`ui/main.js:1027-1056`).
