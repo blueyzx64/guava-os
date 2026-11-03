@@ -77,7 +77,7 @@ prefs.js metadata.json stylesheet.css schemas/ po/`). `make pack-check` verifies
 | `desktop.js` | feeds the model from Mutter; one tracker, ref-counted | `acquire(owner)`, `model`, `metaWindow(id)`, `tracking`, `stop()` |
 | `layoutModel.js` | edge claims -> rects and work area | `claim(spec)`, `update(id, fields)`, `release(id)`, `compute(index, monitorRect, {base, primary, strutsApplied})` |
 | `layout.js` | claims the menu bar itself; Mutter's work area as the base; an `actor` claim is chrome (hidden over full screen), with struts while its reserve is `strut` (`update({reserve})` switches live) | `acquire(owner)`, `claim(owner, spec)` -> `{rect, update, release}`, `rect(id, monitor)`, `workArea(monitor)` |
-| `motionModel.js` | durations, curves, springs; animations-off and reduced-motion rules | `DURATIONS`, `CURVES`, `SPRINGS`, `resolve(request, env)`, `splitProps`, `springAt`, `springDuration`, `springKeyframes` |
+| `motionModel.js` | durations, curves, springs; animations-off and reduced-motion rules; velocity-continuous retargets; the frame budget behind load degradation | `DURATIONS`, `CURVES`, `CURVE_FNS`, `SPRINGS`, `resolve(request, env)`, `splitProps`, `springAt`, `springDuration`, `springKeyframes`, `springState`/`springPlan` (retarget with position and velocity), `easeState`, `FrameBudget` (sets `env.degraded` under load), `mustShowFirst` (a fade-in on a hidden actor shows it first) |
 | `motion.js` | applies them to actors; cancellable | `start/stop`, `env`, `duration(req)`, `ease(actor, props, req, owner)`, `spring(actor, prop, to, req, owner)`, `tween(actor, req, onFrame(p), owner)` (a 0..1 progress for meshes and computed layouts) |
 | `desktopActions.js` (+`Model`) | one desktop action (Mission Control, App Exposé, Desktop, Notification Center, Launchpad, lock, display sleep) for hot corners, gestures and the switcher; asks the owner by event or `ctx.features`, stock fallback when nobody listens | `new DesktopActions(ctx)`, `run(action, {source, appId?})`, `allowed(action)`; `DESKTOP_ACTIONS`, `normalizeAction` |
 | `originals.js` | the user's value of GNOME keys Guava owns (pure; the Shell side is a Gio.Settings) | `OriginalsStore`, `SettingOwner(store, settings, key, {type, transform/value, onOriginalChanged})` with `sync/reapply/release/original`, `restoreStale(store, openSettings)`; `ListMembersOwner(store, settings, key, members)` takes only some members out of a string list (Dash to Dock from `enabled-extensions`) and adds back just those |
@@ -104,7 +104,7 @@ pinch, hot corner), `split-view-changed` (Split View), `recording-started` /
 
 | File | Role |
 |---|---|
-| `featureRegistry.js` | the engine of `features.js` (edge-triggered, lazy `load()`, `needs`/`conflictsWith`, failure isolation, `onChange`) |
+| `featureRegistry.js` | the engine of `features.js` (edge-triggered, lazy `load()`, `needs`/`conflictsWith`, failure isolation, `onChange`); staged start: `start(ctx, {holdBack})` keeps entries marked `later` unloaded until `release()` after the login animation; `timings()` per-feature start cost |
 | `disposables.js` | `CleanupRegistry`: signals, timeouts, idles, injections, actors, files; `dispose()` undoes all, newest first |
 | `settings.js` | `GuavaSettings` (typed access, per-key watchers) |
 | `compat.js` (+`compatModel.js`, `gioCompat.js`) | everything that differs between Shell 50 and 51; the reduced-motion source; shader effects; `isMaximized`, `maximizeWindow` |
@@ -186,3 +186,5 @@ feature is removed with it. Internal keys: `saved-originals`, `clipboard-recordi
 Shell modules; Shell code may not import GTK) + strict schema compile + `make css-check` +
 `tests/run.sh` (every `tests/*.test.js` under `gjs -m`). `make pack-check` packs and checks the
 zip. Real Shell: `GUAVA_SRC=$PWD tools/harness/run-f44.sh 20` (see `tools/harness/README.md`).
+Performance: `X2=/tmp/claude-0/x2 tools/scenarios/run-perf.sh` (login, idle, burst, CPU overload,
+against a stock GNOME login in the same run; thresholds in `tools/scenarios/README.md`).

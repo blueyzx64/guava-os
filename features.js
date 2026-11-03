@@ -7,6 +7,12 @@
 // feature that is off costs nothing), and `conflictsWith` / `needs` if it shares a resource
 // with another feature. Put everything it sets up in the `cleanup` registry it is given.
 //
+// `later: true` (login, B2): a feature that only answers input (a shortcut, a gesture, a click
+// on something stock) and shows nothing until then. It is neither imported nor started until
+// the Shell's startup animation is over and the main loop is idle, so the login frames pay only
+// for the chrome the user sees. Anything that changes what is on screen at login must NOT be
+// `later`, or it would appear late.
+//
 // Shared-resource rules, defined once here:
 //   - button-layout: app-buttons owns it (the user's value is restored on disable).
 //   - Do Not Disturb: the Control Center provides it while on (dnd-button steps aside).
@@ -84,12 +90,12 @@ export const FEATURES = [
     {
         // Sequoia tiling: drag zones, the drag-to-top layout picker, Ctrl+Super shortcuts.
         // Owns org.gnome.mutter edge-tiling (off while it runs). Asked through 'window-tile-requested'.
-        id: 'window-tiling', setting: 'windows-tiling',
+        id: 'window-tiling', later: true, setting: 'windows-tiling',
         load: async () => (await import('./features/windows/index.js')).WindowTiling,
     },
     {
         // Hide / Hide Others (Super+H, 'app-hide-requested'); takes Super+H from GNOME's minimize
-        id: 'app-hide', setting: 'windows-app-hide',
+        id: 'app-hide', later: true, setting: 'windows-app-hide',
         load: async () => (await import('./features/windows/hide.js')).AppHide,
     },
     {
@@ -111,17 +117,17 @@ export const FEATURES = [
     {
         // Full-screen app grid with folders and jiggle delete; GNOME's folders and order are
         // its data. Takes Super+A from GNOME's app grid while on (core/originals).
-        id: 'launchpad', setting: 'launchpad',
+        id: 'launchpad', later: true, setting: 'launchpad',
         load: async () => (await import('./features/launchpad/index.js')).Launchpad,
     },
     {
         // Full screen Split View (shortcuts on a full-screen window); builds on full screen as its own Space
-        id: 'split-view', setting: 'split-view',
+        id: 'split-view', later: true, setting: 'split-view',
         load: async () => (await import('./features/splitView/index.js')).SplitView,
     },
     {
         // Super tap / shortcut opens Spotlight; the clipboard rows come from clipboard-history
-        id: 'spotlight', setting: 'spotlight',
+        id: 'spotlight', later: true, setting: 'spotlight',
         load: async () => (await import('./features/spotlight/index.js')).SpotlightFeature,
     },
     {
@@ -167,7 +173,7 @@ export const FEATURES = [
     {
         // Low Power Mode per power source (power-profiles-daemon holds). Always runs; it holds
         // nothing until one of its two choices is on, and idles without the daemon.
-        id: 'low-power',
+        id: 'low-power', later: true,
         load: async () => (await import('./features/lowPower/index.js')).LowPower,
     },
     {
@@ -193,7 +199,7 @@ export const FEATURES = [
     {
         // Genie / Scale minimize into the dock (or any target a provider gives). 'gnome' keeps
         // GNOME's own effect, so the feature does not run then.
-        id: 'minimize-effect',
+        id: 'minimize-effect', later: true,
         when: ctx => ctx.settings.get_string('dock-minimize-effect') !== 'gnome',
         keys: ['dock-minimize-effect'],
         load: async () => (await import('./features/minimizeEffect/index.js')).MinimizeEffect,
@@ -208,19 +214,19 @@ export const FEATURES = [
     },
     {
         // Its own entry so the shortcut still works while Stage Manager is off
-        id: 'stage-manager-shortcut',
+        id: 'stage-manager-shortcut', later: true,
         when: ctx => ctx.settings.get_strv('stage-manager-shortcut').length > 0,
         restartOn: ['stage-manager-shortcut'],
         load: async () => (await import('./features/stageManager/shortcut.js')).StageManagerShortcut,
     },
     {
         // Caps Lock and input-source badge at the text caret (lib/caret.js)
-        id: 'input-indicator', setting: 'input-indicator',
+        id: 'input-indicator', later: true, setting: 'input-indicator',
         load: async () => (await import('./features/inputIndicator/index.js')).InputIndicator,
     },
     {
         // Emoji & Symbols popover (Super+Ctrl+Space); types through lib/paste.js
-        id: 'emoji-picker', setting: 'emoji-picker',
+        id: 'emoji-picker', later: true, setting: 'emoji-picker',
         load: async () => (await import('./features/emoji/index.js')).EmojiPicker,
     },
     {
@@ -233,7 +239,7 @@ export const FEATURES = [
     {
         // The clock opens a right-side column (the menu bar emits notification-center-requested):
         // the date, the history grouped by app, widgets. Off: the calendar card opens instead.
-        id: 'notification-center', setting: 'notification-center',
+        id: 'notification-center', later: true, setting: 'notification-center',
         load: async () => (await import('./features/notificationCenter/index.js')).NotificationCenter,
     },
     {
@@ -244,20 +250,20 @@ export const FEATURES = [
     },
     {
         // Shift+Super+3/4/5, the toolbar and the floating thumbnail, on GNOME's own screenshot UI
-        id: 'screenshots', setting: 'screenshots',
+        id: 'screenshots', later: true, setting: 'screenshots',
         restartOn: ['screenshots-shortcut-screen', 'screenshots-shortcut-selection', 'screenshots-shortcut-toolbar'],
         load: async () => (await import('./features/screenshots/index.js')).Screenshots,
     },
     {
         // Super+Tab and Super+`: Guava's handlers for switch-applications and switch-group while
         // on, the Shell's own given back after (the user's shortcuts are never written)
-        id: 'app-switcher', setting: 'app-switcher',
+        id: 'app-switcher', later: true, setting: 'app-switcher',
         restartOn: ['switcher-cycle-windows'],
         load: async () => (await import('./features/switcher/index.js')).AppSwitcher,
     },
     {
         // 3/4-finger touchpad gestures; GNOME's own swipes stay (the router only watches them)
-        id: 'gestures', setting: 'gestures',
+        id: 'gestures', later: true, setting: 'gestures',
         load: async () => (await import('./features/gestures/index.js')).Gestures,
     },
     {
@@ -269,13 +275,13 @@ export const FEATURES = [
     {
         // The Tahoe volume / brightness pill under the menu bar: a sink of core/osd.js, which
         // routes each change to the notch or here (osd-location). Off with 'system'.
-        id: 'osd', when: ctx => ctx.settings.get_string('osd-location') !== 'system',
+        id: 'osd', later: true, when: ctx => ctx.settings.get_string('osd-location') !== 'system',
         keys: ['osd-location'],
         load: async () => (await import('./features/osd/index.js')).OsdPill,
     },
     {
         // macOS-style glass alerts: the Shell's modal dialogs restyled (theme only)
-        id: 'dialogs', setting: 'dialogs-glass',
+        id: 'dialogs', later: true, setting: 'dialogs-glass',
         load: async () => (await import('./features/dialogs/index.js')).Dialogs,
     },
     {
@@ -305,7 +311,7 @@ export const FEATURES = [
     {
         // The Setup Assistant, offered once (features/onboarding/model.js): runs only while
         // it has never been offered, opens the preferences, then stops
-        id: 'onboarding', when: ctx => ctx.settings.get_string('onboarding') === 'new',
+        id: 'onboarding', later: true, when: ctx => ctx.settings.get_string('onboarding') === 'new',
         load: async () => (await import('./features/onboarding/index.js')).Onboarding,
     },
 ];

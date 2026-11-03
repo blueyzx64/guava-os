@@ -41,15 +41,6 @@ const KEYS_THAT_NEVER_AFFECT_FEATURES = new Set(['clipboard-recording', STORE_KE
     STORE_BACKUP_KEY, 'dock-recent-apps', 'screenshots-last-selection', 'emoji-recents', 'emoji-skin-tone',
     'timers-state', 'notch-shelf', 'widgets-layout', 'desktop-icons-layout', 'menubar-item-registry', 'focus-state', 'focus-last']);
 
-// Staged start (login, B2): features that only answer input (a shortcut, a gesture, a click on
-// something stock) and show nothing until then. They are neither imported nor started until the
-// Shell's startup animation is over and the main loop is idle, so the login frames pay only for
-// the chrome the user sees (menu bar, dock, notch, glass, Mission Control's start). Anything
-// that changes what is on screen at login must NOT be here, or it would appear late.
-const STARTS_AFTER_LOGIN = new Set(['app-hide', 'window-tiling', 'launchpad', 'split-view', 'spotlight',
-    'minimize-effect', 'stage-manager-shortcut', 'input-indicator', 'emoji-picker', 'notification-center',
-    'screenshots', 'app-switcher', 'gestures', 'osd', 'dialogs', 'onboarding', 'low-power']);
-
 // Schemas whose keys Guava may own through core/originals.js
 const openSettings = schemaId =>
     Gio.SettingsSchemaSource.get_default()?.lookup(schemaId, true)
@@ -124,7 +115,8 @@ export default class GuavaExtension extends Extension {
             changedKeys.add(key);
         });
 
-        const holdBack = entry => STARTS_AFTER_LOGIN.has(entry.id);
+        // Staged start (login, B2): entries marked `later` in features.js start after the login
+        const holdBack = entry => entry.later === true;
         this._features.start({
             extension: this,
             settings: this._settings,
