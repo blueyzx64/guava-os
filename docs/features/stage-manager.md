@@ -1,24 +1,137 @@
 # Stage Manager
 
-## What it does
-The focused app's windows sit at the centre (the stage). Other apps wait as live, tilted previews in a strip at the screen edge; click one to swap it onto the stage. Registry ids `stage-manager` (key `stage-manager`, **off by default**) and `stage-manager-shortcut`.
+Registry ids `stage-manager` (key `stage-manager`, **off by default**) and `stage-manager-shortcut`.
+This page is the behavioural spec. Every rule has a number (SM-n); unit tests, the fuzz test and
+the harness scenarios (`tools/scenarios/stage-manager-*.sh`) cite them. A rule marked (guess) is
+our adaptation or a guess about macOS Sonoma/Sequoia; the rest follows macOS.
 
-## Use
-- **Switch:** click a strip entry. Opening an app puts it on the stage alone and the old set waits in the strip as one entry (or joins the set, see New windows).
-- **Sets:** drag an entry onto the stage, or Shift-click it, to use it with the windows already there. Drop on the left or right part for two windows side by side; the middle adds it as is. A set shows as one stacked entry. Take a window out by dragging its title bar onto the strip, or with Ctrl+Super+Down.
-- **Wallpaper click:** moves the stage into the strip to show the desktop; click again to bring it back.
-- **Per Space:** each workspace has its own strip, which slides on a Space switch and hides in Mission Control.
-- **Keyboard:** Super+Alt+Page Down / Page Up for the next / previous set, Super+Alt+1 to 6 for strip entries. Toggle shortcut is empty by default (preferences offers Ctrl+Super+S).
-- Minimize sends a window to the strip. Show Desktop moves the stage into the strip.
+## Vocabulary
+- **Set**: the windows shown and hidden together. With `stage-manager-group-by-app` (default) a set
+  is all the windows of one app; otherwise one window. A set the user built (Shift-click) holds
+  several apps.
+- **Stage**: the set in the centre, visible. At most one per workspace.
+- **Strip**: the recent sets, as thumbnails on the left (or right, `stage-manager-side`) edge of the
+  primary monitor. Most recent first, at most 6 shown.
+- **Hidden set**: a set that is not the stage. Its windows are invisible and click-through but
+  keep running, so the thumbnails stay live (SM-30).
+
+## Sets and the stage
+- **SM-1** Windows of the focused set are visible; every other managed window is hidden. The stage
+  never holds two sets unless the user joined them (SM-5).
+- **SM-2** Focusing a window of another set by any means (dock, switcher, Mission Control, a click
+  on its thumbnail, a keyboard shortcut) makes that set the stage. The old stage goes to the front
+  of the strip. Nothing else changes order.
+- **SM-3** A new window of the app on the stage joins that set. A new window of another app takes
+  the stage alone and the old set goes to the strip (setting `stage-manager-new-windows`: `join`
+  adds it to the stage set instead). Dialogs and other transient windows follow their parent.
+- **SM-4** Closing a window of the stage set removes it; the set stays while it has windows. When
+  the last window of the stage closes, the stage waits 400 ms for a new window (an Open dialog
+  closes before the document opens), then the most recent strip set takes the stage. (guess:
+  macOS leaves the stage empty.) Closing a window of a hidden set removes it from its thumbnail;
+  an empty set disappears.
+- **SM-5** Shift-click on a thumbnail adds that set to the stage as one set. Dropping a thumbnail
+  on the stage is the same (guess: v1 offers only the Shift-click and the keyboard).
+- **SM-6** The strip shows the most recent sets, at most 6. Older sets stay hidden and come back
+  into the strip as it frees; they are reachable from the dock, switcher and Mission Control.
+- **SM-7** A window that is not managed is never hidden: sticky (on all workspaces), always-on-top,
+  skip-taskbar, picture-in-picture, Quick Look, windows on other monitors, windows another feature
+  set aside (`hidden`, `splitView` flags) and orphan dialogs.
+
+## Minimize
+- **SM-8** Minimize (panel button, window button, Super+H, the app's own request, the menu) is
+  Mutter's normal minimize. The window goes to the Dock (Genie), **not** to the strip. It leaves
+  its set. Stage Manager never prevents or reverses a minimize.
+- **SM-9** If the minimized window was the last of the stage set, SM-4 applies (a replacement
+  comes after the grace period). A minimized window of a hidden set leaves that thumbnail.
+- **SM-10** Restoring a window from the Dock makes it the stage (SM-2): it becomes a set of its
+  app (joining the app's other windows).
+- **SM-11** Windows the user minimized before Stage Manager started, and after it stops, stay
+  minimized. Stage Manager itself never minimizes a window.
+
+## Maximize, zoom, full screen
+- **SM-12** Maximize (green button, Super+Up, title double-click) is Mutter's normal maximize. The
+  window stays in its set on the stage and covers the whole work area, including the strip area.
+  Unmaximize restores the old frame. A maximize never splits the set (guess).
+- **SM-13** A stage window that overlaps the strip area hides the strip (SM-16). Hidden sets stay
+  hidden.
+- **SM-14** A full-screen window covers the monitor: the strip is hidden and cannot be revealed,
+  and the sets behind it stay hidden. Leaving full screen returns the strip.
+  (The separate "full screen in its own Space" feature is paused while Stage Manager runs.)
+
+## The strip
+- **SM-15** The strip is visible when `stage-manager-show-recent` is on and no stage window
+  overlaps its area (SM-13). With show-recent off it appears only on reveal (SM-17).
+- **SM-16** `stage-manager-autohide` on: a stage window overlapping the strip area slides the strip
+  off the edge (220 ms, `ctx.motion`); when the overlap ends it slides back. Off: the strip stays.
+- **SM-17** Reveal by pointer: the pointer rests on the screen edge pixel (within the strip's
+  vertical band) and either dwells 150 ms or pushes (3 motion events towards the edge within
+  400 ms). The strip slides in over the windows.
+- **SM-18** It slides out again when the pointer has been out of the strip (strip width + 24 px)
+  for 500 ms and SM-13 still holds. Reveal and hide reverse mid-slide from the current position
+  (interruptible); no jump, no flicker.
+- **SM-19** Keyboard reveal: the cycle and slot shortcuts (Super+Alt+PageUp/PageDown/1..6) reveal
+  the strip for 1.5 s. Thumbnails are focusable; Enter activates (accessibility).
+- **SM-20** Thumbnails are live clones of the window actors at native resolution (never a
+  downscaled texture), tilted by `stage-manager-tilt` degrees, stacked for sets of several
+  windows, with the app icon badge. Rounded corners follow `rounded-corners`.
+
+## Switching
+- **SM-21** Click on a thumbnail swaps: the thumbnail's windows fly from their slot to their stage
+  place, the old stage windows fly to the thumbnail slot, 360 ms (scaled by
+  `stage-manager-animation-speed`), one motion per actor, no jump, no reversal, no flicker.
+  The focus goes to the lead window of the set.
+- **SM-22** A swap is interruptible: a second click mid-swap retargets every flight from its current
+  pose to the new destination; nothing snaps and the end state is the same as if the clicks had
+  come one after the other.
+- **SM-23** With animations off or reduced motion the swap is instant (`core/motionModel.js`).
+- **SM-24** Super+Alt+PageDown / PageUp cycle to the next / previous set; Super+Alt+1..6 pick a
+  strip slot. The remove shortcut takes the focused window out of its set into its own set.
+- **SM-25** Dragging a stage window by its title and dropping it on the strip sends it to the strip
+  as its own set (guess for a thumbnail under the pointer: it joins that set). The drop never
+  resizes or tiles the window.
+- **SM-26** Wallpaper click (`stage-manager-wallpaper-click`) = Show Desktop (SM-31).
+
+## Workspaces and monitors
+- **SM-27** Each workspace has its own stage and strip; the sets are per workspace. A window moved
+  to another workspace joins that workspace's sets. The strip slides with a Space switch.
+- **SM-28** Only the primary monitor has a strip. Windows on other monitors are never hidden (guess:
+  macOS has a strip per display).
+
+## Public API (kept)
+- **SM-29** `toggleDesktop()` / `isDesktopShown`, `openIntoStage(appId)` (the next window of that
+  app joins the stage set within 10 s), and the `'staged'` window flag (a window hidden by Stage
+  Manager) read by Mission Control and the adaptive menu bar. `WindowState.stageActive` is true
+  while it runs.
+- **SM-30** Hidden windows keep their frame, workspace, stacking and run normally. Mission Control
+  shows the stage and the minimized-to-dock windows' rules of its own; hidden sets show only as
+  thumbnails.
+- **SM-31** Show Desktop moves the stage set into the strip (all windows hidden, no stage); calling
+  it again or activating any window brings the previous stage back.
+
+## Disable and teardown
+- **SM-32** Turning Stage Manager off, disabling Guava, or an error in the adapter leaves **every**
+  window as it would be without Stage Manager: visible (opacity 255), reactive and mapped, not
+  minimized (unless the user minimized it, SM-11), stacking and frame unchanged. No actor, signal,
+  timer, binding or WindowState flag survives. Enable after disable starts from the focused window
+  as the stage.
+- **SM-33** The adapter reconciles the real windows against the model on every event: a missed or
+  reordered signal heals on the next event instead of leaving a window hidden or stuck.
+
+## How windows are hidden (design)
+A hidden window gets opacity 0 and is hidden from picking (`Shell.util_set_hidden_from_pick`). It is
+not minimized, unmapped or moved: that is fully reversible (restore = opacity back + pick back, a
+single synchronous step that cannot fail midway), the app keeps drawing (live thumbnails) and
+Mutter's own minimize bookkeeping stays untouched. A `notify::opacity` guard undoes the Shell's own
+fade-in. Keyboard focus never rests on a hidden window: the model moves it to the stage lead.
 
 ## Settings (default)
-`stage-manager` off · `stage-manager-side` `left` (`right`) · `stage-manager-show-recent` on (off: the strip appears only when the pointer pushes the edge) · `stage-manager-autohide` on (the strip steps aside under overlapping windows) · `stage-manager-group-by-app` on (all of an app's windows at once; off: one entry per window; changing it restarts the feature) · `stage-manager-new-windows` `replace` (`join`) · `stage-manager-wallpaper-click` on · `stage-manager-tilt` 22 degrees · `stage-manager-animation-speed` 1.0 · shortcuts `stage-manager-shortcut`, `-remove-`, `-next-`, `-previous-`, `-slot-1..6-shortcut`.
-
-## Limits
-- While it runs, full screen in its own Space is paused (the saved value is kept) and Stage Manager owns window placement.
-- Side by side uses `move_resize_frame` (Mutter has no public tiling API). A set of more than two windows gets equal columns; an app whose minimum width is larger keeps it, and windows are then spread evenly inside the stage.
-- Sets live in memory per workspace for the session.
-- Windows out of the stage are hidden by opacity and picking, not minimized, so apps keep running normally. Turning it off puts every window back.
+`stage-manager` off · `stage-manager-side` `left` (`right`) · `stage-manager-show-recent` on ·
+`stage-manager-autohide` on · `stage-manager-group-by-app` on (restarts the feature) ·
+`stage-manager-new-windows` `replace` (`join`) · `stage-manager-wallpaper-click` on ·
+`stage-manager-tilt` 22 degrees · `stage-manager-animation-speed` 1.0 · shortcuts
+`stage-manager-shortcut` (empty), `-remove-`, `-next-`, `-previous-`, `-slot-1..6-shortcut`.
 
 ## Code
-`features/stageManager/` (`model.js` StageMachine, `geometry.js`, `index.js`, `view.js`, `flights.js`, `windows.js`, `shortcut.js`); strip claimed through `core/layout.js` (opposite a side dock); `core/windowState.js`.
+`features/stageManager/`: `model.js` (pure state machine), `geometry.js` (pure), `index.js`
+(adapter), `view.js` (strip), `windows.js` (hider), `flights.js`, `shortcut.js`. The strip is claimed
+through `core/layout.js` (opposite a side dock).
