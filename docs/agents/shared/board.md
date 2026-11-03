@@ -17,7 +17,7 @@
 | B14 | Windows minimized to the Dock must stay out of Mission Control | L1 | merged | 6bd5e88 |
 | B15 | Top bar blur jumps when leaving Mission Control | L4 | merged | 6bbf98f |
 | S1 | Agent infra: memory, ownership log, workflow, principles | O | done | |
-| S2 | Skills for GNOME/GJS/Clutter/extensions | R1 | todo | |
+| S2 | Skills for GNOME/GJS/Clutter/extensions (+ Kiwi apple-design, gjs) | R1, W1 | done | 20bf317, c65717a |
 | B16 | Stage Manager: minimize emits nothing with SM on; windows stay minimized+unmapped after SM off (L1 finding) | L8 | merged | fc45180 |
 | B17 | Green exit-full-screen control in revealed full-screen menu bar | wave 2 | todo | |
 | B18 | Dock magnification upscales 48px bitmaps (blurry) (R2 finding) | wave 2 | todo | |
