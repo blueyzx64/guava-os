@@ -18,18 +18,23 @@
 | S1 | Agent infra: memory, ownership log, workflow, principles | O | done | |
 | S2 | Skills for GNOME/GJS/Clutter/extensions (+ Kiwi apple-design, gjs) | R1, W1 | done | 20bf317, c65717a |
 | B16 | Stage Manager: minimize emits nothing with SM on; windows stay minimized+unmapped after SM off (L1 finding) | L8 | merged | fc45180 |
-| B17 | Green exit-full-screen control in revealed full-screen menu bar | wave 2 | todo | |
-| B18 | Dock magnification upscales 48px bitmaps (blurry) (R2 finding) | wave 2 | todo | |
-| B19 | GNOME 50 font-rendering=automatic overrides Guava hinting in GTK4 (R2 finding) | wave 2 | todo | |
-| B20 | Heavier text via environment.d (stem darkening), verified in harness (D-010) | wave 2 | todo | |
-| B21 | Lock runs full disable() (~250 ms block) (R1 #4) | wave 2 | todo | |
-| B22 | Dash to Dock removal can make GNOME re-enable Guava at login (R1 #5, unverified) | wave 2 | todo | |
-| B23 | Tiling snaps without resize animation (R1 #10, Tiling Shell technique) | wave 2 | todo | |
-| B24 | Minimizing a full-screen window shows no Genie (restore animates); cause not traced (L1) | wave 2 | todo | |
+| B17 | Green exit-full-screen control in revealed full-screen menu bar | L10 | merged | d9661c3 |
+| B18 | Dock magnification upscales 48px bitmaps (blurry) (R2 finding) | L13 | merged | c77c831 |
+| B19 | GNOME 50 font-rendering=automatic overrides Guava hinting in GTK4 (R2 finding) | L12 | merged | 65cce5c |
+| B20 | Heavier text via environment.d (stem darkening), verified in harness (D-010) | L12 | merged | 65cce5c |
+| B21 | Lock runs full disable() (~250 ms block) (R1 #4) | L14 | merged | 109e3db |
+| B22 | Dash to Dock removal can make GNOME re-enable Guava at login (R1 #5, unverified) | L13 | merged | c77c831 |
+| B23 | Tiling snaps without resize animation (R1 #10, Tiling Shell technique) | L10 | merged | d9661c3 |
+| B24 | Minimizing a full-screen window shows no Genie (restore animates); cause not traced (L1) | L17 | merged: minimize before isolation keeps Genie; mid-slide gap remains | 2184da9 |
 | B25 | Stage Manager ground-up rewrite: minimize, maximize, left-edge reveal, access all buggy (user) | L8 | merged: 71/71 scenario asserts | fc45180 |
-| B26 | Titlebar drag p95 135 ms vs stock 40 ms (L5 perf suite) | wave 2 | todo | |
-| B27 | Notch moves once after first shown at login | L5/wave 2 | todo | |
-| B28 | Features consume motion.env.degraded (glass, magnify, previews, genie->scale) | wave 2 | todo | |
+| B26 | Titlebar drag p95 135 ms vs stock 40 ms (L5 perf suite) | L15 | merged (drag p95 = harness gaps; Genie/MC previews degraded: L19) | 5518dbd |
+| B27 | Notch moves once after first shown at login | L14 | merged | 9497a7f |
+| B28 | Features consume motion.env.degraded (glass, magnify, previews, genie->scale) | L15 | merged (drag p95 = harness gaps; Genie/MC previews degraded: L19) | 5518dbd |
 | B29 | App menus for every toolkit: Qt PID match, Electron/Flatpak helpers, a11y on, generic menu with real commands | L9 | merged: a11y on, X11/Flatpak helpers, real Edit; Qt Wayland impossible (spike) | 3ffad6f.. |
 | B30 | app-menus-window scenario: Return to Previous Size / Always on Visible Workspace / menus closed fail; cause unknown (O hypotheses wrong; 28cf048 message overstates) | L9 | fixed: test bug (click during submenu animation) | 0d8cce0 |
-| B31 | Stage Manager: drag a thumbnail onto the stage / a window onto a thumbnail (Shift-click joins today) | wave 2 | todo | |
+| B31 | Stage Manager: drag a thumbnail onto the stage / a window onto a thumbnail (Shift-click joins today) | L11 | merged: 88/88 SM asserts | 56ac145 |
+| B32 | macOS-style customizable lock screen (D-022) | L16 | merged: 37/37; real password/HiDPI/real wallpaper untested; field ~5px off-centre; name under avatar not seen in harness | 0be2163 |
+| B33 | Clean-room rewrite of the 4 kem-a-derived files, then Kiwi only as inspiration (D-023) | L17+O | done except po/ translations | 2184da9 |
+| B34 | Login: ready 2604 vs limit 2090 ms, stall total 1357 vs 1256 ms; bound by module parsing (~500 ms) | L18 measured -> L19 (notch + desktop-icons first render) | a1aae77 |
+| B35 | 250 ms misses: clock/Notification Center 366, notch hover 657, Mission Control first open 495; overview.p95 55 vs stock 21; burst stalls 5 vs 3; Genie + MC previews use env.degraded | L19 | merged; final suite: MC first open 416 ms still over | 9c4425c |
+| B36 | Final suite (quiet machine, 9c4425c): 35 PASS 5 FAIL: login.ready 2390/1940, overview.p95 49.5/34.5, overview-load.p95 61/52, degraded never trips under load, Mission Control first open 416 ms > 250 | next wave | todo | |
