@@ -114,7 +114,15 @@ export function summarize(trace, timings = null) {
     }
 
     const work = trace.events.filter(e => e[1] === 'workarea');
-    const ready = Math.max(...[startupComplete, guavaActive, lastStart, lastChrome].filter(v => v !== null));
+    // Features Guava holds back on purpose until after startup-complete (extension.js) start
+    // after it: `ready` counts only those that start during the login
+    let loginStart = lastStart;
+    if (timings && startupComplete !== null) {
+        const during = timings.features.filter(f => f.startedAt !== null && f.startedAt !== undefined &&
+            f.startedAt - trace.t0 <= startupComplete).map(f => f.startedAt - trace.t0);
+        loginStart = during.length ? Math.max(...during) : null;
+    }
+    const ready = Math.max(...[startupComplete, guavaActive, loginStart, lastChrome].filter(v => v !== null));
     // The login window: from the first frame to one second after everything settled
     const window = [0, ready + 1000];
     const stalls = trace.stalls.filter(s => s[0] <= window[1]);

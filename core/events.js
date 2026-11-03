@@ -29,7 +29,8 @@ export const EVENTS = Object.freeze({
     // core/layout.js (LayoutService)
     'work-area-changed': { monitor: 'number' },
     // core/motion.js (Motion)
-    'motion-changed': { reducedMotion: 'boolean', animations: 'boolean' },
+    // degraded: the Shell is too loaded for decorative motion (FrameBudget in core/motionModel.js)
+    'motion-changed': { reducedMotion: 'boolean', animations: 'boolean', degraded: 'boolean' },
     // core/timers.js (TimerService)
     'timers-changed': { timers: 'object[] see core/timersModel.js' },
     'timer-finished': { timer: 'object' },

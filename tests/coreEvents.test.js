@@ -47,8 +47,8 @@ test('once runs one time', () => {
     const hub = new EventHub();
     let n = 0;
     hub.once('motion-changed', () => n++);
-    hub.emit('motion-changed', { reducedMotion: true, animations: true });
-    hub.emit('motion-changed', { reducedMotion: false, animations: true });
+    hub.emit('motion-changed', { reducedMotion: true, animations: true, degraded: false });
+    hub.emit('motion-changed', { reducedMotion: false, animations: true, degraded: false });
     eq(n, 1);
 });
 test('a throwing listener does not stop the others', () => {
@@ -150,7 +150,7 @@ test('an owned once() that is disposed before it fires never runs', () => {
     let n = 0;
     hub.once('motion-changed', () => n++, mine);
     mine.dispose();
-    hub.emit('motion-changed', { reducedMotion: false, animations: true });
+    hub.emit('motion-changed', { reducedMotion: false, animations: true, degraded: false });
     eq(n, 0);
     eq(hub.listenerCount('motion-changed'), 0);
 });

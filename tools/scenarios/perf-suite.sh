@@ -21,7 +21,10 @@ _idle() { # label seconds
   # The probe's own D-Bus calls (2) are in the counts of both runs alike
   echo "IDLE $1 paints=${paints:-0} cpu_ms=$(( (s1 - s0) * 10 )) wakeups_per_s=$(( (c1 - c0) / $2 ))"
 }
-sleep 3
+# Same state in both logins: stock GNOME lands in the overview, Guava on the desktop; the harness's
+# Text Editor would blink its cursor (paints) while focused. No overview, no windows.
+P "Main.overview.hide(); global.get_window_actors().forEach(a=>a.meta_window.delete(global.get_current_time())); return 1" >/dev/null
+sleep 4
 _idle idle 10
 
 # ---- a window to work with ------------------------------------------------------------------------
