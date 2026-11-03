@@ -1,6 +1,6 @@
 // Run: gjs -m tests/appMenusModel.test.js
 import {
-    buildMenus, searchMenus, formatAccel, parseAccel, parseDescribeAll, mergeNativeMenus, cacheKeys,
+    buildMenus, searchMenus, formatAccel, parseAccel, parseDescribeAll, mergeNativeMenus, cacheKeys, accelChord,
 } from '../core/appMenus/model.js';
 
 let failed = 0;
@@ -38,7 +38,7 @@ test('parseDescribeAll keeps names, enabled, parameter and state', () => {
 
 test('generic menus for an app with no actions', () => {
     const m = buildMenus({ appName: 'Foot', generic: { hasWindow: true, canNewWindow: true }, _ });
-    eq(ids(m), ['app', 'file', 'window', 'help']);
+    eq(ids(m), ['app', 'file', 'edit', 'window', 'help']);
     eq(m[0].title, 'Foot');
     eq(item(m, 'app', 'quit').command, { provider: 'generic', name: 'quit' });
     eq(item(m, 'app', 'settings').enabled, false);
@@ -57,13 +57,29 @@ test('app actions replace the generic commands (About and Quit really activate)'
     eq(item(m, 'help', 'help').label, 'Text Editor Help');
 });
 
-test('no Edit menu unless the app provides it; Calculator gets one', () => {
-    eq(ids(buildMenus({ appName: 'Text Editor', actions: editor, _ })).includes('edit'), false);
+test('every app gets an Edit menu: its own actions, else the standard shortcut typed into the window', () => {
+    const t = buildMenus({ appName: 'Text Editor', actions: editor, generic: { hasWindow: true }, _ });
+    eq(item(t, 'edit', 'copy').command, { provider: 'generic', name: 'key', target: '<Control>c' });
+    eq(item(t, 'edit', 'copy').accel, '<Control>c');
+    eq(item(t, 'edit', 'redo').command.target, '<Shift><Control>z');
+    eq(item(t, 'edit', 'copy').enabled, true);
     const m = buildMenus({ appName: 'Calculator', actions: calc, generic: { hasWindow: true }, _ });
     eq(ids(m), ['app', 'file', 'edit', 'window', 'help']);
     eq(item(m, 'edit', 'copy').command, { provider: 'gtk', group: 'win', name: 'copy' });
-    eq(item(m, 'edit', 'undo').enabled, false);
+    eq(item(m, 'edit', 'redo').command.name, 'key');
     eq(item(m, 'app', 'settings').command.group, 'win');
+    const none = buildMenus({ appName: 'Desktop', generic: { hasWindow: false }, _ });
+    eq(item(none, 'edit', 'paste').enabled, false);
+});
+
+test('accelerators become key chords; terminals copy and paste with Shift', () => {
+    eq(accelChord('<Control>c'), ['Control_L', 'c']);
+    eq(accelChord('<Shift><Control>z'), ['Shift_L', 'Control_L', 'z']);
+    eq(accelChord('<Control>c', true), ['Control_L', 'Shift_L', 'C']);
+    eq(accelChord('<Control>a', true), ['Control_L', 'a']);
+    eq(accelChord('F11'), ['F11']);
+    eq(accelChord('<Bogus>a'), null);
+    eq(accelChord(''), null);
 });
 
 test('parameterized actions are never mapped', () => {
@@ -161,7 +177,7 @@ test('native menus merge by id and new ones go before Window', () => {
         { id: 'file', title: 'File', items: [{ kind: 'item', id: 'n1', label: 'Export', enabled: true }] },
         { id: 'go', title: 'Go', items: [{ kind: 'item', id: 'g', label: 'Back', enabled: true }] },
     ]);
-    eq(ids(n), ['app', 'file', 'go', 'window', 'help']);
+    eq(ids(n), ['app', 'file', 'edit', 'go', 'window', 'help']);
     eq(n[1].items[0].label, 'Export');
     eq(n[1].items[1].kind, 'separator');
     eq(mergeNativeMenus(m, []), m);

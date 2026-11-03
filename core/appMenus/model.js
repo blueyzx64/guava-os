@@ -6,7 +6,8 @@
 //
 //   App     About, Settings…, Hide, Hide Others, Show All, Quit
 //   File    New Window, Close Window (+ what the app adds: New Tab, Open…, Save, Print…)
-//   Edit    only when the app exports edit actions (Undo, Cut, Copy, Paste, Select All, Find)
+//   Edit    Undo, Redo, Cut, Copy, Paste, Select All, Find: the app's own actions, else the standard
+//           shortcut typed into the focused window
 //   View    only when the app exports view actions (zoom, reload, full screen)
 //   Window  Minimize, Zoom, Fill, Center, Move & Resize (halves, quarters, Return to Previous
 //           Size), Full Screen, Move to Workspace, Move to Display (2+ monitors), Always on
@@ -101,6 +102,46 @@ const GENERIC = Object.freeze({
     'bring-all-to-front': 'bring-all-to-front',
 });
 
+/**
+ * Edit commands the Shell can do for any app by typing the standard shortcut into the focused
+ * window (core/appMenus/commands.js 'key'). An app's own action always wins.
+ */
+export const EDIT_KEYS = Object.freeze({
+    'undo': '<Control>z',
+    'redo': '<Shift><Control>z',
+    'cut': '<Control>x',
+    'copy': '<Control>c',
+    'paste': '<Control>v',
+    'select-all': '<Control>a',
+    'find': '<Control>f',
+});
+
+const MOD_KEYS = Object.freeze({ Control: 'Control_L', Shift: 'Shift_L', Alt: 'Alt_L', Super: 'Super_L' });
+
+/**
+ * The keys to press for an accelerator like '<Shift><Control>z', in press order (release in
+ * reverse). Terminals read Ctrl+C as an interrupt and Ctrl+V as a literal, so Copy and Paste
+ * there are Ctrl+Shift+C and Ctrl+Shift+V.
+ *
+ * @param {string} accel GTK accelerator
+ * @param {boolean} [terminal]
+ * @returns {?string[]} Clutter KEY_ names (Clutter.KEY_<name>), or null for a bad accelerator
+ */
+export function accelChord(accel, terminal = false) {
+    const m = /^((?:<[A-Za-z]+>)*)([A-Za-z0-9_]+)$/.exec(accel ?? '');
+    if (!m)
+        return null;
+    const mods = [...m[1].matchAll(/<([A-Za-z]+)>/g)].map(x => MOD_KEYS[x[1]]);
+    if (mods.includes(undefined))
+        return null;
+    let key = m[2];
+    if (terminal && mods.length === 1 && mods[0] === 'Control_L' && (key === 'c' || key === 'v')) {
+        mods.push('Shift_L');
+        key = key.toUpperCase();
+    }
+    return [...mods, key];
+}
+
 // Window-manager shortcuts (org.gnome.desktop.wm.keybindings / org.gnome.mutter.keybindings)
 // the adapter reads for these slots; the labels show what really works.
 export const WM_ACCEL_SLOTS = Object.freeze({
@@ -174,6 +215,13 @@ function slotItem(slot, label, { filled, accels }, { optional = false, generic =
     if (optional)
         return null;
     const name = generic ? GENERIC[slot] ?? null : null;
+    const typed = !name && generic ? EDIT_KEYS[slot] ?? null : null;
+    if (typed) {
+        return {
+            kind: 'item', id: slot, label, enabled: true, accel: accels[slot] ?? typed, checked: null,
+            command: { provider: 'generic', name: 'key', target: typed },
+        };
+    }
     return {
         kind: 'item', id: slot, label,
         enabled: !!name,
@@ -250,13 +298,13 @@ export function buildMenus({ appName, actions = [], generic = {}, accels = {}, _
     ]);
 
     const edit = tidy([
-        item('undo', _('Undo'), { optional: true }),
-        item('redo', _('Redo'), { optional: true }), SEP,
-        item('cut', _('Cut'), { optional: true }),
-        item('copy', _('Copy'), { optional: true }),
-        item('paste', _('Paste'), { optional: true }),
-        item('select-all', _('Select All'), { optional: true }), SEP,
-        item('find', _('Find…'), { optional: true }),
+        item('undo', _('Undo')),
+        item('redo', _('Redo')), SEP,
+        item('cut', _('Cut')),
+        item('copy', _('Copy')),
+        item('paste', _('Paste')),
+        item('select-all', _('Select All')), SEP,
+        item('find', _('Find…')),
     ]);
 
     const view = tidy([
@@ -266,6 +314,11 @@ export function buildMenus({ appName, actions = [], generic = {}, accels = {}, _
         item('reload', _('Reload'), { optional: true }),
         item('app-fullscreen', _('Toggle Full Screen'), { optional: true }),
     ]);
+
+    for (const it of edit) {
+        if (it.kind === 'item' && !filled.has(it.id) && !win)
+            it.enabled = false;
+    }
 
     const windowItems = [
         item('minimize', _('Minimize')),
@@ -305,7 +358,7 @@ export function buildMenus({ appName, actions = [], generic = {}, accels = {}, _
         { id: 'window', title: _('Window'), items: windowMenu },
         { id: 'help', title: _('Help'), items: help },
     ];
-    // Edit and View appear only when the app provides something for them
+    // View appears only when the app provides something for it
     return menus.filter(m => m.items.some(i => i.kind === 'item') || m.id === 'help');
 }
 

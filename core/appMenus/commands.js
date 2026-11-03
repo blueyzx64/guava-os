@@ -18,7 +18,9 @@
 // Shell API: Shell.AppSystem, Shell.App (request_quit, open_new_window, activate_window),
 // Meta.Window, global.workspace_manager, Main.activateWindow.
 
+import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
 import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -27,6 +29,9 @@ import { DesktopAppInfo, isMaximized, maximizeWindow, unmaximizeWindow } from '.
 import { WindowState } from '../windowState.js';
 import { isUserFacing } from '../desktopModel.js';
 import { ZONES } from '../tileActions.js';
+import { FOCUS_SETTLE_MS } from '../../lib/paste.js';
+import { pasteChordFor } from '../../lib/pasteModel.js';
+import { accelChord } from './model.js';
 
 const now = () => global.get_current_time();
 
@@ -40,10 +45,14 @@ export class GenericCommands {
         this._desktop = desktop;
         this._layout = layout;
         this._hidden = new Set(); // Meta.Window minimized by the Hide fallback
+        this._typing = new Set(); // GLib timeout ids of shortcuts waiting for the app's focus
     }
 
     stop() {
         this._hidden.clear();
+        for (const id of this._typing)
+            GLib.source_remove(id);
+        this._typing.clear();
     }
 
     /** True for a window this object's Hide fallback minimized (and has not shown again). */
@@ -129,6 +138,8 @@ export class GenericCommands {
             else
                 win.stick();
             return true;
+        case 'key':
+            return this._typeAccel(win, arg);
         case 'tile':
             return this._tile(win, arg);
         case 'move-to-workspace':
@@ -140,6 +151,44 @@ export class GenericCommands {
             return true;
         }
         return false;
+    }
+
+    // Edit commands for apps that export none: type the standard shortcut into the window. The
+    // menu's grab ends first and the app needs a moment to take the keyboard back (FOCUS_SETTLE_MS),
+    // so the keys go out once the window is focused and no Shell modal is up.
+    _typeAccel(win, accel) {
+        const chord = accelChord(accel, pasteChordFor(win.get_wm_class()) === 'ctrl-shift-v');
+        if (!chord)
+            return false;
+        if (global.display.focus_window !== win)
+            Main.activateWindow(win);
+        let tries = 0;
+        const id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, FOCUS_SETTLE_MS, () => {
+            const ready = Main.modalCount === 0 && global.display.focus_window === win;
+            if (!ready && ++tries < 12)
+                return GLib.SOURCE_CONTINUE;
+            this._typing.delete(id);
+            if (ready)
+                this._press(chord);
+            return GLib.SOURCE_REMOVE;
+        });
+        this._typing.add(id);
+        return true;
+    }
+
+    _press(chord) {
+        try {
+            const backend = global.stage.context?.get_backend?.() ?? Clutter.get_default_backend();
+            const dev = backend.get_default_seat().create_virtual_device(Clutter.InputDeviceType.KEYBOARD_DEVICE);
+            const keys = chord.map(n => Clutter[`KEY_${n}`]);
+            let t = GLib.get_monotonic_time();
+            for (const k of keys)
+                dev.notify_keyval(t += 1000, k, Clutter.KeyState.PRESSED);
+            for (const k of [...keys].reverse())
+                dev.notify_keyval(t += 1000, k, Clutter.KeyState.RELEASED);
+        } catch (e) {
+            console.warn(`[Guava] app menus: cannot type ${chord.join('+')}: ${e.message}`);
+        }
     }
 
     _about(appId) {
