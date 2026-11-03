@@ -81,3 +81,9 @@
   TrueType fonts (Inter) stay thin under `font-hinting none`; CFF fonts darken either way. Measure
   text weight as ink (sum of |pixel - background|) over a crop of a harness screenshot. GNOME 50
   `font-rendering automatic` makes GTK4 ignore `font-hinting`: own `manual`.
+- **Mutter hides a window with NO `minimize` signal while the compositor switches workspace** (B24):
+  minimizing a full-screen window inside features/fullscreenSpace's slowed Space switch (isolation 600 ms +
+  3x switch, about 3 s after entering full screen) gets no effect from any extension; later it does. A scenario
+  that checks the full-screen Genie waits 4.5 s first.
+- **A window actor can fly without stretching a small bitmap:** scale it about its frame corner so the frame
+  follows a travelling rect (features/windows/tileMotion.js); grow = resize first, shrink = resize on arrival.

@@ -2,7 +2,7 @@
 import {
     chooseText, touchesBar, barLook, leadingAlignment, parseOsRelease, systemLogoNames, parseCpuInfo, parseMemTotal,
     formatBytes, deviceModel, chassisIcon, gpuNames, parseRecentXbel, forceQuitRows,
-    privacyDots, micApps, confirmationHolds, fillPlaceholders, fitMenus,
+    privacyDots, micApps, confirmationHolds, fillPlaceholders, fitMenus, fullscreenExitTarget,
 } from '../features/menuBar/model.js';
 import { relativeLuminance, wallpaperBand, bandLuminance, decodesByRatio } from '../lib/wallpaperModel.js';
 
@@ -24,6 +24,16 @@ const near = (a, b, d = 0.01) => {
     if (Math.abs(a - b) > d)
         throw new Error(`expected ~${b}, got ${a}`);
 };
+
+test('exit full screen target: focused first, else topmost, same monitor, not minimized', () => {
+    const w = (id, o = {}) => ({ id, fullscreen: true, minimized: false, monitor: 0, focused: false, ...o });
+    eq(fullscreenExitTarget([], 0), null);
+    eq(fullscreenExitTarget([w(1, { fullscreen: false })], 0), null);
+    eq(fullscreenExitTarget([w(1), w(2)], 0), 2);
+    eq(fullscreenExitTarget([w(1, { focused: true }), w(2)], 0), 1);
+    eq(fullscreenExitTarget([w(1, { monitor: 1 })], 0), null);
+    eq(fullscreenExitTarget([w(1, { minimized: true })], 0), null);
+});
 
 test('luminance of black, white and grey', () => {
     eq(relativeLuminance(0, 0, 0), 0);

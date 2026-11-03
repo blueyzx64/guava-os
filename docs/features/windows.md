@@ -7,6 +7,7 @@ macOS Sequoia tiling. One engine for every way in.
 - **The menu bar's Window menu:** same actions. (The green-button menu is gone with the top-bar window controls: window buttons stay on the app's own titlebar, [window-controls.md](window-controls.md).)
 - **Shortcuts (Ctrl+Super; macOS uses Fn-Ctrl):** arrows for left, right, top, bottom; `F` fill; `C` center; `R` return to previous size; add Shift for arrangements (Left & Right, Right & Left, Top & Bottom, Bottom & Top); add Alt+Shift for Left/Right/Top/Bottom & Quarters. An arrangement gives the focused window the first place and the windows used before it the others.
 - `windows-tile-margins` (off) adds a small gap around tiles.
+- **Tiles fly:** every tile (drag drop, shortcuts, Fill, halves, Center, Return to Previous Size, a work-area change) moves the window to its frame in a medium `emphasized` flight instead of jumping. The real window actor is scaled about its frame's corner so its frame sits on a rect that travels old to new (`tileMotion.js`, pure part `tileMotionModel.js`): a window that grows is resized at once and its larger buffer flies in; one that shrinks shrinks its old buffer first and is resized on arrival, so only a larger bitmap is ever scaled down. A new tile mid-flight starts from where the window is; a grab ends it. No flight with animations off, Reduce Motion, a hidden or full-screen window, or a move under 2 px. The last frame is the app's own, drawn 1:1.
 - GNOME's own edge tiling is off while this runs (`core/originals.js`). A shortcut GNOME or Stage Manager already uses is left unbound (Stage Manager's Ctrl+Super+Down wins while it runs).
 
 ## Hide and Hide Others (`app-hide`, key `windows-app-hide`, on)
@@ -26,4 +27,4 @@ A top-bar button (`show-desktop-button`, on), Super+D (`show-desktop-shortcut`) 
 - A window with a minimum size larger than its tile keeps that size.
 
 ## Code
-`features/windows/` (`index.js`, `drag.js`, `snapBar.js`, `snapModel.js`, `model.js`, `hide.js`, `hideModel.js`), `core/tileActions.js`, `features/fullscreenSpace/`, `features/splitView/`, `features/showDesktop/`.
+`features/windows/` (`index.js`, `tileMotion.js`, `tileMotionModel.js`, `drag.js`, `snapBar.js`, `snapModel.js`, `model.js`, `hide.js`, `hideModel.js`), `core/tileActions.js`, `features/fullscreenSpace/`, `features/splitView/`, `features/showDesktop/`.

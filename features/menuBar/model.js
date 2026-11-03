@@ -65,6 +65,20 @@ export function touchesBar(frame, area) {
 }
 
 /**
+ * Which window the "exit full screen" control of the revealed menu bar leaves full screen: the
+ * focused full-screen window of the bar's monitor, else the topmost one.
+ *
+ * @param {{id: *, fullscreen: boolean, minimized: boolean, monitor: number, focused: boolean}[]} windows
+ *   in stacking order, bottom first
+ * @param {number} monitor the monitor the bar is on
+ * @returns {* | null} the window's id, null when none is full screen there
+ */
+export function fullscreenExitTarget(windows, monitor) {
+    const on = windows.filter(w => w.fullscreen && !w.minimized && w.monitor === monitor);
+    return (on.find(w => w.focused) ?? on[on.length - 1])?.id ?? null;
+}
+
+/**
  * The menu bar's look.
  *
  * @param {object} s

@@ -17,6 +17,11 @@
 //
 // The notch lives inside the bar, so it reveals with it.
 //
+// Exit control (macOS slides the title bar with its traffic lights in over a full-screen window):
+// while the bar is revealed, a green round button leads the bar. A click leaves full screen for
+// the window it belongs to (model.fullscreenExitTarget), the same call as the green button of the
+// app's titlebar (features/appButtons/greenButton.js); the bar then follows the pointer as usual.
+//
 // Private Shell API: Main.layoutManager._trackedActors (the panelBox's trackFullscreen flag,
 // for "always"), _updateVisibility() to give the Shell its rule back. Same in 48-51.
 
@@ -25,8 +30,11 @@ import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import * as A11y from '../../lib/a11y.js';
+import { PanelLayout } from '../../core/panelLayout.js';
+import { fullscreenExitTarget } from './model.js';
 
 const REVEALED = 'guava-menubar-revealed';
+const EXIT_ROLE = 'guava-menubar-fullscreen-exit';
 
 export class FullscreenReveal {
     /**
@@ -43,6 +51,7 @@ export class FullscreenReveal {
         this._armed = false;     // the pointer was off the edge since it appeared
         this._anim = null;
         this._menuWatch = 0;     // token of the one handler waiting for the open menu to close
+        this._exit = null;       // the green exit-full-screen button
     }
 
     /** True while the bar is slid in over a full-screen window (tests, the harness). */
@@ -100,6 +109,8 @@ export class FullscreenReveal {
             return Clutter.EVENT_PROPAGATE;
         });
 
+        this._buildExitButton();
+
         // The panel (reactive, unlike its box) says when the pointer leaves the bar
         const panel = Main.panel;
         const hover = panel.track_hover;
@@ -120,6 +131,38 @@ export class FullscreenReveal {
         cleanup.connect(Main.overview, 'showing', sync);
         cleanup.connect(Main.overview, 'hidden', sync);
         this._sync();
+    }
+
+    _buildExitButton() {
+        const button = new St.Button({
+            style_class: 'guava-menubar-fullscreen-exit', can_focus: true, reactive: true, track_hover: true,
+            visible: false, y_align: Clutter.ActorAlign.CENTER,
+            accessible_name: this._ctx.gettext('Exit Full Screen'),
+        });
+        button.set_child(new St.Icon({ icon_name: 'view-restore-symbolic', style_class: 'guava-menubar-fullscreen-exit-icon' }));
+        this._exit = button;
+        PanelLayout.claim(this._cleanup, {
+            id: EXIT_ROLE, actor: button, box: 'left', anchor: { before: ['guava-menubar-logo'], fallback: 'first' },
+        });
+        this._cleanup.connect(button, 'clicked', () => {
+            const win = this._exitWindow();
+            win?.unmake_fullscreen();
+            this._maybeConceal();
+        });
+        this._cleanup.add(() => {
+            this._exit = null;
+            button.destroy();
+        });
+    }
+
+    /** The window the exit control leaves full screen (Meta.Window) or null. */
+    _exitWindow() {
+        const monitor = Main.layoutManager.primaryIndex;
+        const focus = global.display.focus_window;
+        const wins = global.get_window_actors().map(a => a.meta_window).filter(Boolean);
+        return fullscreenExitTarget(wins.map(w => ({
+            id: w, fullscreen: w.is_fullscreen(), minimized: w.minimized, monitor: w.get_monitor(), focused: w === focus,
+        })), monitor);
     }
 
     _inFullscreen() {
@@ -154,6 +197,8 @@ export class FullscreenReveal {
         const panelBox = Main.layoutManager.panelBox;
         this._revealed = true;
         this._edge.visible = false;
+        if (this._exit)
+            this._exit.visible = !!this._exitWindow();
         this._anim?.cancel();
         Main.panel.add_style_class_name(REVEALED);
         panelBox.show();
@@ -209,6 +254,8 @@ export class FullscreenReveal {
             panelBox.translation_y = 0;
             panelBox.opacity = 255;
             Main.panel.remove_style_class_name(REVEALED);
+            if (this._exit)
+                this._exit.visible = false;
             // The Shell's rule again: hidden while the monitor is in full screen
             if (this._inFullscreen())
                 panelBox.hide();

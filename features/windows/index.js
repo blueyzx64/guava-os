@@ -15,6 +15,9 @@
 // Return from full screen: Mutter puts a window back to its pre-fullscreen frame, which for a
 // tiled window is its tile; the tile is re-applied then, in case the work area changed meanwhile.
 //
+// Tiles fly (tileMotion.js, ctx.motion): the window moves to its new frame instead of jumping;
+// stats in `tileStats`, read by the harness.
+//
 // Shell API: Meta.Window (move_resize_frame, move_frame, get_frame_rect, resizeable,
 // get_stable_sequence, size-changed), Main.layoutManager.monitors.
 
@@ -34,6 +37,7 @@ import {
     planArrangement, untileRect, zoneRect,
 } from './model.js';
 import { TileDrag } from './drag.js';
+import { TileMotion } from './tileMotion.js';
 
 const MUTTER_SCHEMA = 'org.gnome.mutter';
 
@@ -60,6 +64,7 @@ export class WindowTiling {
         this._desktop = this._ctx.desktop.acquire(cleanup);
         this._layout = this._ctx.layout.acquire(cleanup);
         this._book = new TileBook();
+        this._motion = new TileMotion(this._ctx, cleanup);
 
         const edgeTiling = new SettingOwner(this._ctx.originals,
             new Gio.Settings({ schema_id: MUTTER_SCHEMA }), 'edge-tiling', { type: 'b', value: false });
@@ -102,6 +107,11 @@ export class WindowTiling {
     /** Shortcut keys left unbound because their accelerator is taken: [{key, accel, with}]. */
     get skippedShortcuts() {
         return this._skipped;
+    }
+
+    /** {flights, frames} of the tile motion (harness). */
+    get tileStats() {
+        return this._motion?.stats ?? null;
     }
 
     /** @returns {?string} the zone a window holds ('center' counts), or null */
@@ -177,7 +187,7 @@ export class WindowTiling {
         }
         const area = this._layout.workArea(win.get_monitor());
         const rect = area && !this._inside(restore, area) ? centerRect(area, restore.width, restore.height) : restore;
-        win.move_resize_frame(true, rect.x, rect.y, rect.width, rect.height);
+        this._motion.move(win, rect, () => win.move_resize_frame(true, rect.x, rect.y, rect.width, rect.height));
     }
 
     /** A tiled window is being dragged away: back to its pre-tile size under the pointer. */
@@ -193,6 +203,11 @@ export class WindowTiling {
 
     /** A grab started on the window: the user moves or resizes it, Guava stops placing it. */
     cancelSettle(win) {
+        this._motion.cancel(win);
+        this._dropSettle(win);
+    }
+
+    _dropSettle(win) {
         const entry = this._tracked.get(win);
         if (entry?.settle) {
             entry.cleanup.release(entry.settle);
@@ -238,7 +253,7 @@ export class WindowTiling {
         this._track(win);
         const frame = win.get_frame_rect();
         const c = centerRect(area, frame.width, frame.height);
-        win.move_frame(true, c.x, c.y);
+        this._motion.move(win, { ...c, width: frame.width, height: frame.height }, () => win.move_frame(true, c.x, c.y));
         if (wasTiled) {
             WindowState.set(win, 'tiled', false);
             this._ctx.events.emit('window-tiled', { window: win, zone: null });
@@ -279,27 +294,30 @@ export class WindowTiling {
     // window whose minimum size beats the tile is placed again once its real size arrives
     // (Wayland clients resize asynchronously).
     _place(win, zone, rect, area) {
-        this.cancelSettle(win);
+        this._dropSettle(win);
         const entry = this._tracked.get(win);
         if (!win.resizeable) {
             const f = win.get_frame_rect();
             const p = placeIn(zone, rect, f, area);
-            win.move_frame(true, p.x, p.y);
+            this._motion.move(win, { ...p, width: f.width, height: f.height },
+                () => win.move_frame(true, p.x, p.y));
             return;
         }
-        win.move_resize_frame(true, rect.x, rect.y, rect.width, rect.height);
-        const now = win.get_frame_rect();
-        if (!entry || (now.width === rect.width && now.height === rect.height))
-            return;
-        entry.settle = entry.cleanup.connect(win, 'size-changed', () => {
-            entry.cleanup.release(entry.settle);
-            entry.settle = 0;
-            const f = win.get_frame_rect();
-            if (f.width === rect.width && f.height === rect.height)
+        this._motion.move(win, rect, () => {
+            win.move_resize_frame(true, rect.x, rect.y, rect.width, rect.height);
+            const now = win.get_frame_rect();
+            if (!entry || (now.width === rect.width && now.height === rect.height))
                 return;
-            const p = placeIn(zone, rect, f, area);
-            if (p.x !== f.x || p.y !== f.y)
-                win.move_frame(true, p.x, p.y);
+            entry.settle = entry.cleanup.connect(win, 'size-changed', () => {
+                entry.cleanup.release(entry.settle);
+                entry.settle = 0;
+                const f = win.get_frame_rect();
+                if (f.width === rect.width && f.height === rect.height)
+                    return;
+                const p = placeIn(zone, rect, f, area);
+                if (p.x !== f.x || p.y !== f.y)
+                    win.move_frame(true, p.x, p.y);
+            });
         });
     }
 

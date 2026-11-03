@@ -8,7 +8,7 @@ Turns GNOME's top bar into the macOS menu bar: logo menu, the focused app's name
 - **App menus:** the bold app name, then its menus. Where they come from: [app-menus.md](app-menus.md).
 - **Ctrl+F2** moves the keyboard focus into the menus.
 - **Clock:** a click opens the Notification Center ([notification-center-focus.md](notification-center-focus.md)); Alt-click toggles Do Not Disturb.
-- **Full screen:** the bar hides and slides in when the pointer touches the top edge.
+- **Full screen:** the bar hides and slides in when the pointer touches the top edge. While it is slid in, a green round button leads the bar (macOS slides the title bar with its traffic lights in): a click leaves full screen for the focused full-screen window of the bar's monitor (else the topmost), as the app's own green button does. Not shown when "always show the menu bar in full screen" is on.
 - **Privacy dots:** orange microphone, green camera, purple screen sharing; click to see which app.
 - **Status items:** tray icons of apps (StatusNotifierItem) with their menus, controls pinned from the Control Center ("Show in Menu Bar"), battery percentage, an item order and an overflow chevron for items that do not fit.
 

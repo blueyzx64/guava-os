@@ -2627,6 +2627,39 @@ StWidget.guava-glass.guava-glass-contrast {
   padding: 5px 16px;
 }
 
+/* ---- exit full screen: the green traffic light that leads the revealed bar (fullscreenReveal.js) ---- */
+.guava-menubar-fullscreen-exit {
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  min-height: 12px;
+  margin: 0 6px 0 10px;
+  padding: 0;
+  border-radius: 6px;
+  background-color: #28c840;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.18);
+}
+
+.guava-menubar-fullscreen-exit:hover,
+.guava-menubar-fullscreen-exit:focus {
+  background-color: #1fb133;
+}
+
+.guava-menubar-fullscreen-exit:focus {
+  outline: 2px solid -st-accent-color;
+  outline-offset: 2px;
+}
+
+.guava-menubar-fullscreen-exit-icon {
+  icon-size: 8px;
+  color: rgba(0, 0, 0, 0);
+}
+
+.guava-menubar-fullscreen-exit:hover .guava-menubar-fullscreen-exit-icon,
+.guava-menubar-fullscreen-exit:focus .guava-menubar-fullscreen-exit-icon {
+  color: rgba(0, 70, 8, 0.85);
+}
+
 /* ==== features/menuBarItems/style.css ==== */
 
 /* feature: menu-bar-items */
