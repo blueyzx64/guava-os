@@ -43,6 +43,27 @@ test('the same function twice is two subscriptions', () => {
     hub.emit('feature-changed', { id: 'x', active: true });
     eq(n, 3);
 });
+test('a tap sees every event before its listeners, never breaks them, and stops with null', () => {
+    const hub = new EventHub();
+    const seen = [];
+    hub.on('feature-changed', p => seen.push(`listener ${p.id}`));
+    hub.setTap((name, p) => seen.push(`tap ${name} ${p.id}`));
+    hub.emit('feature-changed', { id: 'dock', active: true });
+    eq(seen, ['tap feature-changed dock', 'listener dock']);
+    hub.setTap(() => {
+        throw new Error('boom');
+    });
+    hub.emit('feature-changed', { id: 'notch', active: false });
+    eq(seen[seen.length - 1], 'listener notch', 'a failing tap does not stop the listeners');
+    hub.setTap(null);
+    hub.emit('feature-changed', { id: 'x', active: true });
+    eq(seen.length, 4);
+    hub.setTap(() => seen.push('again'));
+    hub.clear();
+    hub.emit('feature-changed', { id: 'y', active: true });
+    eq(seen.length, 4, 'clear() drops the tap');
+});
+
 test('once runs one time', () => {
     const hub = new EventHub();
     let n = 0;

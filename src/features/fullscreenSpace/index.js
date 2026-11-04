@@ -274,6 +274,7 @@ export class FullscreenSpace {
         const follow = win.has_focus() || ws === active;
         const others = this._windowsOf(ws).filter(w => w !== win).length;
         const decision = isolateDecision({ index, others, sticky: false });
+        this._ctx.debug?.('fullscreen-space', 'isolate', { window: win.get_stable_sequence(), index, others, decision });
 
         if (decision === 'alone') {
             info.isolated = true;
@@ -349,6 +350,7 @@ export class FullscreenSpace {
     // ---- going back ---------------------------------------------------------------------
 
     _restore(win, info) {
+        this._ctx.debug?.('fullscreen-space', 'restore', { window: win.get_stable_sequence(), home: info.homeIdx });
         info.pendingSpace = null;
         if (this._wins.get(win) !== info || win.is_on_all_workspaces())
             return;

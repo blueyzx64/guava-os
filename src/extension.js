@@ -13,6 +13,7 @@ import { SurfaceLedger, sweepTargets } from './lib/lockModel.js';
 import { Glass } from './lib/glass.js';
 import { IconStyle } from './lib/iconStyle.js';
 import { EventHub } from './core/events.js';
+import { DebugLog } from './core/debugLog.js';
 import { DesktopService } from './core/desktop.js';
 import { LayoutService } from './core/layout.js';
 import { Motion } from './core/motion.js';
@@ -106,6 +107,9 @@ export default class GuavaExtension extends Extension {
             now: () => GLib.get_monotonic_time() / 1000,
         });
         this._features.registerAll(FEATURES);
+        // Off unless debug-logging is set (tools/guava-logs.sh): then a timeline in the journal
+        this._debug = new DebugLog(this._settings, this._events, this, () => this._features);
+        this._debug.start(this._cleanup);
         // Lock screen: ctx.session.locked, the 'session-locked' / 'session-unlocked' events
         const session = this._session = { locked: Main.sessionMode.isLocked };
         // Safety net for Guava-named chrome and panel buttons that no feature registered as a surface
@@ -209,6 +213,8 @@ export default class GuavaExtension extends Extension {
             timers: this._timers,
             appMenus: this._appMenus,
             session,
+            // A line in the debug log (a no-op while it is off): ctx.debug('dock', 'bounce', {appId})
+            debug: (scope, message, data) => this._debug?.log(scope, message, data),
         };
         this._features.start(ctx, { holdBack: entry => isLater(entry, ctx) });
         this._features.setLocked(session.locked);
@@ -255,6 +261,7 @@ export default class GuavaExtension extends Extension {
         this._desktop?.stop();
         this._events?.clear();
         this._appMenus = this._motion = this._layout = this._desktop = this._events = this._osd = this._timers = null;
+        this._debug = null;
         this._originals = null;
         this._session = null;
         IconStyle.configure(null);

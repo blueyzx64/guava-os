@@ -28,13 +28,18 @@ preferences process, including errors whose stack follows a blank line.
 
 Before you start: turn the old Kiwi extension off (both take over the same parts of the Shell),
 then `make install`, log out and back in, `gnome-extensions enable guava-os@blueyzx64`.
-If anything below is wrong, send the output of:
+If anything below is wrong, record it with the log monitor and send the file it makes:
 
 ```sh
-journalctl --user -b -o cat /usr/bin/gnome-shell | grep -i -A12 'guava\|JS ERROR' > guava-log.txt
+tools/guava-logs.sh record genie-skipped   # turns Guava's debug log on; reproduce the problem;
+                                           # type a note + Enter to mark each step; q + Enter to stop
+tools/guava-logs.sh snapshot               # or: no recording, just this boot's log and your setup
 ```
 
-plus a screenshot or a short screen recording (Ctrl+Shift+Alt+R).
+It saves `~/guava-logs/<date>-<label>.tar.gz` with the Shell log, Guava's debug timeline (events,
+window effects, the overview, slow frames, main-loop stalls, feature start times; never window
+titles or other text), your marks, and your versions, GPU, monitors and Guava settings. Add a
+screen recording (Ctrl+Shift+Alt+R) if it is about how something looks or moves.
 
 ### 2.1 Look and sharpness (your GPU, your displays)
 - [ ] **Frosted blur (default, Liquid Glass off):** menu bar, Control Center, notch, dock and menus show a

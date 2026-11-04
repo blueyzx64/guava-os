@@ -91,6 +91,17 @@ export class EventHub {
     constructor(spec = EVENTS) {
         this._spec = spec;
         this._listeners = new Map(); // name -> Set<fn>
+        this._tap = null;
+    }
+
+    /**
+     * Observe every emitted event (core/debugLog.js), or stop with null. The tap sees an event
+     * before its listeners; its failures are swallowed.
+     *
+     * @param {((name: string, payload: object) => void)|null} fn
+     */
+    setTap(fn) {
+        this._tap = fn;
     }
 
     _check(name) {
@@ -148,6 +159,13 @@ export class EventHub {
             if (!(field in payload))
                 throw new Error(`EventHub: '${name}' payload lacks '${field}'`);
         }
+        if (this._tap) {
+            try {
+                this._tap(name, payload);
+            } catch (_e) {
+                // an observer never breaks an event
+            }
+        }
         const set = this._listeners.get(name);
         if (!set?.size)
             return;
@@ -168,5 +186,6 @@ export class EventHub {
     /** Drop every listener (extension teardown). */
     clear() {
         this._listeners.clear();
+        this._tap = null;
     }
 }

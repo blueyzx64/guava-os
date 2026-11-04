@@ -18,6 +18,11 @@
       </key>
 
       <!-- Setup Assistant (features/onboarding) -->
+      <key name="debug-logging" type="b">
+        <default>false</default>
+        <summary>Debug log</summary>
+        <description>Write a timeline of what Guava and the Shell do (events, window effects, the overview, slow frames, main-loop stalls, feature start times, setting changes) to the journal as "[Guava debug]" lines, for bug reports. Never writes window titles or other text. tools/guava-logs.sh turns it on while it records and back off after.</description>
+      </key>
       <key name="onboarding" type="s">
         <choices>
           <choice value="new"/>

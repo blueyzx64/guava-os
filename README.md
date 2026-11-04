@@ -214,6 +214,8 @@ To help translate Guava OS, see the [translation guide](i18n/README.md).
 Shell 50 (Fedora 44 packages). What still needs a real machine is in
 [docs/testing/real-machine-checklist.md](docs/testing/real-machine-checklist.md).
 
+Found a bug? `tools/guava-logs.sh record <label>` records what Guava does while you reproduce it and packs the logs into one file to send.
+
 ## Contributors
 
 - **[blueyzx64](https://github.com/blueyzx64)**: maintainer of Guava OS.

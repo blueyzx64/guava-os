@@ -109,6 +109,7 @@ export class MissionControl {
         this._touchActive();
         warmOverviewPaint(c, this._ctx.motion, r => {
             this.warmup = r;
+            this._ctx.debug?.('mission-control', 'first-open warm-up', r);
         });
         c.add(() => {
             this._view = ALL;

@@ -231,6 +231,10 @@ export class MinimizeEffect {
         // A picture above a slide may carry on after it (it stays above window_group); one in
         // window_group may not carry on during a slide, which covers window_group
         const resume = carried?.mode === mode && !(detached && !carried.detached) ? carried : null;
+        this._ctx.debug?.('minimize-effect', restoring ? 'restore' : 'minimize', {
+            mode, detached, resume: !!resume, overview, edge: target?.edge ?? null,
+            app: win?.get_wm_class() ?? null, degraded: !!this._ctx.motion.env?.degraded,
+        });
         if (carried && !resume)
             carried.dispose();
         if (detached && (mode === 'stock' || mode === 'none'))
