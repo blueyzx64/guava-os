@@ -40,3 +40,8 @@
 | B36 | Final suite (quiet machine, 9c4425c): 35 PASS 5 FAIL: login.ready 2390/1940, overview.p95 49.5/34.5, overview-load.p95 61/52, degraded never trips under load, Mission Control first open 416 ms > 250 | next wave | todo | |
 | B37 | Repo restructure to src/ layout (D-025) | O | done | c561c19 |
 | A1 | Hand-over audit: checks that failed open, hidden errors, 6 reviews (5 high, 24 medium), 6 fix lanes, X11/multi-monitor/scale harness | O + RV1-6 + F1-F6 | merged; final verification running | c561c19 |
+| W5 | Wave 5 (2026-11-03, base main 11b3750). Limits: 3 sonnet, 6 haiku (user, was 6/12). 4 CPUs: perf numbers only from O's serial final run | O | done, on branch 09b40be | |
+| B38 | Login ready: warm 2059/2207 PASS, cold 2885/2234 over (glass first-frame shaders) | Q1 | merged (app-menus late reverted by O) | 7870460 |
+| B39 | MC first open: warm 179, cold 267 (was 308-349); warm-up invisible, 0 Clutter warnings | Q2 + O | merged | a4c916f |
+| B40 | Burst stalls 3-5 vs 3; handlers only 15-25% of stall; no fix | Q3 | tools merged, open | 429fe47 |
+| B41 | Liquid Glass off by default, frosted Gaussian blur | Q4 | merged | 9a87632 |
