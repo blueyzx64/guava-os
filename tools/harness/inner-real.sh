@@ -43,6 +43,11 @@ MARGS=""; for m in $MONS; do MARGS="$MARGS --virtual-monitor $m"; done
 X11ARG="--no-x11"; [ -f /opt/guava-x11 ] && X11ARG=""
 # A scale above 1 needs fractional scaling for non-integer values; set before the Shell starts
 if [ -f /opt/guava-scale ]; then gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']"; fi
+# As in a real session the activation environment is set before the Shell starts: Mutter's
+# first socket in this fresh runtime dir is wayland-0 (the loop below corrects it if not). Set
+# only after the socket appeared, a prefs window activated early (onboarding, at the first idle)
+# lost the race under load and failed with "Failed to open display".
+dbus-update-activation-environment WAYLAND_DISPLAY=wayland-0 XDG_RUNTIME_DIR=$W/run GDK_BACKEND=wayland XDG_CURRENT_DESKTOP=GNOME GSETTINGS_BACKEND=keyfile HOME=$HOME XDG_CONFIG_HOME=$XDG_CONFIG_HOME XDG_DATA_HOME=$XDG_DATA_HOME GSETTINGS_SCHEMA_DIR=$GSETTINGS_SCHEMA_DIR >/dev/null 2>&1
 gnome-shell --headless --wayland $X11ARG $MARGS >$W/shell.log 2>&1 &
 SP=$!
 # As in a real session, D-Bus-activated apps (the prefs window the Setup Assistant opens at first
