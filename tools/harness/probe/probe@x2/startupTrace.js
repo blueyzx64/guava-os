@@ -12,6 +12,7 @@ import { summarize } from './startupModel.js';
 
 const STOP_AFTER_MS = 8000;
 const HARD_STOP_MS = 40000;
+const TASK_MIN_MS = 12;
 const GUAVA = 'guava-os@blueyzx64';
 // Chrome found by name (walked a few times a second until each one exists)
 const NAMED = ['guava-dock', 'guava-notch', 'guava-stage-manager', 'guava-desktop-icons', 'guava-widgets-layer'];
@@ -43,6 +44,52 @@ export function startTrace() {
         frames: [], stalls: [], events: [], actors: {}, running: true,
     };
     const rel = () => now() - t0;
+    // CPU ms the Shell has used (main thread, whole process) at the first frames and signals: wall
+    // time swells when the machine is busy, CPU time does not. trace.cpu: [t, mainMs, processMs, label]
+    trace.cpu = [];
+    const cpuMs = file => {
+        try {
+            const [, raw] = GLib.file_get_contents(file);
+            const f = new TextDecoder().decode(raw).split(')')[1].trim().split(' ');
+            return (Number(f[11]) + Number(f[12])) * 10;
+        } catch (_e) {
+            return -1;
+        }
+    };
+    const cpuMark = label => {
+        if (trace.cpu.length < 40)
+            trace.cpu.push([Math.round(rel()), cpuMs('/proc/thread-self/stat'), cpuMs('/proc/self/stat'), label]);
+    };
+    cpuMark('probe');
+    // Task profile: every GLib idle / timeout callback that holds the main loop for more than
+    // TASK_MIN_MS, with the stack of the code that registered it (trace.tasks: [start, ms, kind, where])
+    trace.tasks = [];
+    const restoreSources = [];
+    // Off unless GUAVA_TRACE_TASKS is set (GUAVA_PRE="export GUAVA_TRACE_TASKS=1"): taking a stack per
+    // registration is itself a cost at login
+    for (const kind of GLib.getenv('GUAVA_TRACE_TASKS') ? ['idle_add', 'timeout_add', 'timeout_add_seconds'] : []) {
+        const orig = GLib[kind];
+        GLib[kind] = function (...args) {
+            const i = args.findIndex(a => typeof a === 'function');
+            if (i < 0 || !trace.running)
+                return orig.apply(this, args);
+            const fn = args[i];
+            const where = new Error().stack.split('\n').slice(1, 4)
+                .map(l => l.replace(/file:\/\/\S*\/guava-os@blueyzx64\//, '').replace('resource:///org/gnome/shell/', 'S:')).join('|');
+            args[i] = function (...a) {
+                const t = now();
+                try {
+                    return fn.apply(this, a);
+                } finally {
+                    const d = now() - t;
+                    if (d > TASK_MIN_MS)
+                        trace.tasks.push([Math.round(t - t0), Math.round(d), kind, where]);
+                }
+            };
+            return orig.apply(this, args);
+        };
+        restoreSources.push(() => (GLib[kind] = orig));
+    }
     const ev = (name, detail = null) => trace.events.push([rel(), name, detail]);
     const ids = [];
     const conn = (obj, sig, fn) => {
@@ -87,6 +134,7 @@ export function startTrace() {
     };
 
     conn(global.stage, 'after-paint', () => {
+        cpuMark('paint');
         const t = rel();
         trace.frames.push(t);
         if (t - lastWalk > 250) {
@@ -95,6 +143,13 @@ export function startTrace() {
         }
         sample(t);
     });
+    // Frame phases of the first frames (trace.phases: [t, name]): where one long frame spends its time
+    trace.phases = [];
+    for (const sig of ['before-update', 'prepare-frame', 'before-paint', 'paint-view', 'after-paint', 'after-update'])
+        conn(global.stage, sig, () => {
+            if (trace.phases.length < 300 && rel() < 2000)
+                trace.phases.push([Math.round(rel()), sig]);
+        });
     let expected = now() + 10;
     const hb = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 10, () => {
         const n = now();
@@ -110,6 +165,7 @@ export function startTrace() {
             return;
         trace.running = false;
         ev('trace-stop');
+        restoreSources.forEach(f => f());
         for (const [obj, id] of ids) {
             try {
                 obj.disconnect(id);
@@ -123,9 +179,10 @@ export function startTrace() {
 
     if (!lm._startingUp)
         ev('startup-complete', 'before-probe');
-    conn(lm, 'startup-prepared', () => ev('startup-prepared'));
+    conn(lm, 'startup-prepared', () => { ev('startup-prepared'); cpuMark('prepared'); });
     conn(lm, 'startup-complete', () => {
         ev('startup-complete');
+        cpuMark('complete');
         if (stopTimer)
             GLib.source_remove(stopTimer);
         stopTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, STOP_AFTER_MS, () => {
@@ -163,7 +220,7 @@ export function startTrace() {
         // Guava's FeatureRegistry timings, when the extension exposes them
         summary: () => {
             const reg = Main.extensionManager.lookup(GUAVA)?.stateObj?._features;
-            return summarize(trace, reg?.timings?.() ?? null);
+            return { ...summarize(trace, reg?.timings?.() ?? null), featureRows: (reg?.timings?.().features ?? []).map(f => [f.id, Math.round(f.loadedAt - trace.t0), Math.round(f.startedAt - trace.t0), Math.round(f.enableMs)]), tasks: trace.tasks, cpu: trace.cpu, phases: trace.phases };
         },
     };
 }

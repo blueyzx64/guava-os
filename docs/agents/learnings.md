@@ -138,6 +138,16 @@
   parses in ~50 ms; Shell imports cost ~0.17 ms/KB (~250 ms for the 1.5 MB login path) and
   `enable()` ~290 ms. The desktop counts as ready at the first frame of the notch and desktop icons
   after startup-complete, behind a ~285 ms stall from their first render: spread first builds out.
+- **The harness login is mostly cold shader compiles** (B38/Q1): each run has a fresh home, so
+  Mesa's disk cache is empty and llvmpipe JITs every shader of the first frame. Guava ready minus
+  stock startup-complete: ~720 ms cold, ~340 ms with `GUAVA_MESA_SEED` (a user's second login).
+  The blur on the panel and dock alone is ~200 ms of the cold first frame. Guava paints no frame
+  before startup-complete (the enable chain holds the loop), so ready = enable chain + one heavy
+  frame; only CPU removed from either helps. Work that shows nothing until something happens
+  (menu bar app menus, privacy dots, pointer shake, fullscreen Space, green button) starts
+  `afterLogin`/`later`: ~50-100 ms of ready. Persisting the cache in `/var/tmp` of one root and
+  running A/B from a copied tree without the new harness files both gave false "no gain" runs:
+  copy `tools/harness` too.
 - **Re-importing a GObject module with a `?query` URL segfaults the Shell.** Don't use cache-busting
   imports to time module loads.
 

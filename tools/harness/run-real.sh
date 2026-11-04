@@ -35,11 +35,17 @@ rm -f $R/opt/guava-monitors $R/opt/guava-scale $R/opt/guava-x11
 [ -n "${GUAVA_SCALE:-}" ] && echo "$GUAVA_SCALE" > $R/opt/guava-scale
 [ -n "${GUAVA_X11:-}" ] && touch $R/opt/guava-x11
 rm -f $R/opt/guava-stock $R/opt/guava-skip-probes; [ -n "$GUAVA_STOCK" ] && touch $R/opt/guava-stock; [ -n "$GUAVA_SKIP_PROBES" ] && touch $R/opt/guava-skip-probes
+# Shader cache: GUAVA_MESA_SEED=dir starts the run with that cache (a user's second login);
+# GUAVA_MESA_SEED_OUT=dir takes the run's cache back out (tools/harness/seed-mesa.sh)
+rm -rf $R/opt/mesa-seed $R/opt/mesa-out $R/opt/mesa-seed-out
+[ -n "${GUAVA_MESA_SEED:-}" ] && [ -d "$GUAVA_MESA_SEED" ] && cp -a "$GUAVA_MESA_SEED" $R/opt/mesa-seed
+[ -n "${GUAVA_MESA_SEED_OUT:-}" ] && touch $R/opt/mesa-seed-out
 ENTER="$HARNESS_DIR/enter.sh"; [ -x $R.enter.sh ] && ENTER=$R.enter.sh; export ARCH_ROOT=$R
 trap '"$HARNESS_DIR/killroot.sh" "$R"' EXIT
 timeout -k 5 600 $ENTER bash /opt/inner-real.sh $N >$OUT/last-run.txt 2>&1 9>&-
 "$HARNESS_DIR/killroot.sh" "$R"
 cp $R/opt/shell.log $OUT/shell.log 2>/dev/null
+[ -n "${GUAVA_MESA_SEED_OUT:-}" ] && [ -d $R/opt/mesa-out ] && { rm -rf "$GUAVA_MESA_SEED_OUT"; mkdir -p "$GUAVA_MESA_SEED_OUT"; cp -a $R/opt/mesa-out "$GUAVA_MESA_SEED_OUT/mesa_shader_cache"; }
 cp -r $R/opt/shots $OUT/shots 2>/dev/null
 ln -sfn $OUT/last-run.txt $X2/last-run.txt
 python3 -I - $OUT/shell.log <<'PY' | tee -a $OUT/last-run.txt

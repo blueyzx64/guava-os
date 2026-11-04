@@ -8,7 +8,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import { CleanupRegistry } from './lib/disposables.js';
-import { FeatureRegistry } from './lib/featureRegistry.js';
+import { FeatureRegistry, isLater } from './lib/featureRegistry.js';
 import { SurfaceLedger, sweepTargets } from './lib/lockModel.js';
 import { Glass } from './lib/glass.js';
 import { IconStyle } from './lib/iconStyle.js';
@@ -194,8 +194,7 @@ export default class GuavaExtension extends Extension {
         });
 
         // Staged start (login, B2): entries marked `later` in features.js start after the login
-        const holdBack = entry => entry.later === true;
-        this._features.start({
+        const ctx = {
             extension: this,
             settings: this._settings,
             gettext: this.gettext.bind(this),
@@ -210,7 +209,8 @@ export default class GuavaExtension extends Extension {
             timers: this._timers,
             appMenus: this._appMenus,
             session,
-        }, { holdBack });
+        };
+        this._features.start(ctx, { holdBack: entry => isLater(entry, ctx) });
         this._features.setLocked(session.locked);
         if (session.locked)
             sweepNow();

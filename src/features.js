@@ -13,6 +13,9 @@
 // for the chrome the user sees. Anything that changes what is on screen at login must NOT be
 // `later`, or it would appear late.
 //
+// `later` can also be a function of ctx, for a feature that shows something at login only in some
+// settings (desktop-widgets: a saved layout).
+//
 // `lockScreen: true` (D-018, D-022): the feature runs on the lock screen. Without it, a feature is
 // suspended while the screen is locked (its surfaces hidden and inert, nothing torn down;
 // lib/lockModel.js). With it, it stays active, reads ctx.session.locked and gets the optional
@@ -56,7 +59,7 @@ export const FEATURES = [
     },
     {
         // Full screen as its own Space, the macOS default
-        id: 'move-window-to-new-workspace', setting: 'move-window-to-new-workspace',
+        id: 'move-window-to-new-workspace', later: true, setting: 'move-window-to-new-workspace',
         load: async () => (await import('./features/fullscreenSpace/index.js')).FullscreenSpace,
     },
 
@@ -89,7 +92,7 @@ export const FEATURES = [
     },
     {
         // The maximize (green) button of the apps' titlebars enters / leaves full screen
-        id: 'green-button', setting: 'windows-green-button-fullscreen',
+        id: 'green-button', later: true, setting: 'windows-green-button-fullscreen',
         load: async () => (await import('./features/appButtons/greenButton.js')).GreenButton,
     },
     {
@@ -299,6 +302,9 @@ export const FEATURES = [
         // Pointer: shake to locate, hide while typing, size and colours (macOS Accessibility >
         // Display > Pointer). Runs while any of them is on.
         id: 'pointer',
+        // Shake and hide-while-typing only answer input; a size or colours set shows at login
+        later: ctx => ctx.settings.get_string('pointer-size') === 'system' &&
+            !ctx.settings.get_boolean('pointer-custom-colors'),
         when: ctx => ['pointer-shake-to-locate', 'pointer-hide-while-typing', 'pointer-custom-colors']
             .some(k => ctx.settings.get_boolean(k)) || ctx.settings.get_string('pointer-size') !== 'system',
         load: async () => (await import('./features/pointer/index.js')).Pointer,
@@ -306,6 +312,8 @@ export const FEATURES = [
     {
         // Desktop widgets above the wallpaper, below windows (core/widgets is the shared model)
         id: 'desktop-widgets', setting: 'widgets',
+        // Nothing to draw until a layout is saved; the gallery and the desktop menu can wait for the login
+        later: ctx => ctx.settings.get_string('widgets-layout') === '',
         load: async () => (await import('./features/widgets/index.js')).DesktopWidgets,
     },
     {

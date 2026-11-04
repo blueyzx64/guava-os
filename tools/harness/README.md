@@ -41,6 +41,7 @@ GUAVA_SRC=$PWD tools/harness/run-f44.sh 20       # standard probes + 20 enable/d
 - **Options:**
   - `GUAVA_EXTRA=file`: your scenario.
   - `GUAVA_PRE=file`: setup before the Shell starts (mocks).
+  - `GUAVA_MESA_SEED=dir`: start the run with a warm Mesa shader cache (`seed-mesa.sh` builds it). Every run has a fresh home, so without it each login compiles its shaders cold (llvmpipe JIT): ~300 ms of a Guava login's first frame and ~500 ms of stall in a stock one. A user's second login has the cache. Compare A/B runs with the same setting.
   - `GUAVA_ONLY="notch spotlight"`: enable only these feature switches.
   - `run-f44.sh 0`: no cycles.
   - `GUAVA_STOCK=1`: log in to stock GNOME (Guava not enabled at start; the perf baseline).
