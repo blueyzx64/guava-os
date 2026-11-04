@@ -33,6 +33,19 @@
 
 import { isSuspended } from './lockModel.js';
 
+/**
+ * Whether an entry waits for the end of the login (features.js `later`): true, or a function of
+ * ctx for a feature that shows something at login only in some settings (a widgets layout that
+ * is not empty, a panel icon that is on).
+ *
+ * @param {{later?: boolean|((ctx: object) => boolean)}} entry
+ * @param {object} ctx the ctx start() was given
+ * @returns {boolean}
+ */
+export function isLater(entry, ctx) {
+    return typeof entry.later === 'function' ? !!entry.later(ctx) : entry.later === true;
+}
+
 export class FeatureRegistry {
     /**
      * @param {typeof CleanupRegistry} CleanupClass class used for each entry's own registry

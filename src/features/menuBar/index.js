@@ -32,6 +32,7 @@ import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
 
 import { PanelLayout } from '../../core/panelLayout.js';
 import { NotificationRouter } from '../../core/notificationRouter.js';
+import { afterLogin } from '../../lib/afterLogin.js';
 import { CleanupRegistry } from '../../lib/disposables.js';
 import { Keybindings, MODAL_MODES } from '../../lib/keybindings.js';
 import { GuavaSettings } from '../../lib/settings.js';
@@ -109,14 +110,21 @@ export class MenuBar {
         this._syncActivities(ks);
 
         // The parts, left to right
-        const part = (name, wanted, make, keysToWatch) => {
+        // `late`: shows nothing until something happens (an app takes focus, the microphone starts),
+        // so it starts after the login's first frames, not before them (B38)
+        const part = (name, wanted, make, keysToWatch, { late = false } = {}) => {
+            let started = false;
             const sync = () => {
+                started = true;
                 this._stopPart(name);
                 if (wanted())
                     this._startPart(name, make);
             };
             ks.watch(keysToWatch, sync);
-            sync();
+            if (late)
+                afterLogin(cleanup, () => started || sync(), `menu bar: ${name}`);
+            else
+                sync();
         };
         part('logo', () => ks.string('menubar-logo') !== 'none', reg => {
             const logo = new LogoMenu({
@@ -144,7 +152,7 @@ export class MenuBar {
             apps.start();
             return apps;
         }, ['menubar-app-menu', 'menubar-native-menus', 'menubar-atspi-menus', 'menubar-atspi-popovers',
-            'appmenus-accessibility']);
+            'appmenus-accessibility'], { late: true });
         part('look', () => ks.bool('menubar-transparent'), reg => {
             const look = new AdaptiveBar(this._ctx, reg, { solidOnWindow: ks.bool('menubar-solid-on-window') });
             look.start();
@@ -164,7 +172,7 @@ export class MenuBar {
             const dots = new PrivacyDots(this._ctx, reg);
             dots.start();
             return dots;
-        }, ['menubar-privacy-dots']);
+        }, ['menubar-privacy-dots'], { late: true });
 
         this._hookClock(ks);
     }

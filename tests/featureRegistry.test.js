@@ -1,7 +1,7 @@
 // Run: gjs -m tests/featureRegistry.test.js
 import GLib from 'gi://GLib';
 
-import { FeatureRegistry } from '../src/lib/featureRegistry.js';
+import { FeatureRegistry, isLater } from '../src/lib/featureRegistry.js';
 import { CleanupRegistry } from '../src/lib/disposables.js';
 import { FEATURES } from '../src/features.js';
 
@@ -355,6 +355,35 @@ test('B2 staged start: stop() while held drops the hold; a throwing predicate ho
     eq(log, ['+a', '-a']);
     reg.start(ctx, { holdBack: () => { throw new Error('x'); } });
     eq(log, ['+a', '-a', '+a', '+b']);
+});
+test('B38 isLater: true, or a function of ctx; anything else starts at login', () => {
+    eq(isLater({ later: true }, {}), true);
+    eq(isLater({}, {}), false);
+    eq(isLater({ later: false }, {}), false);
+    eq(isLater({ later: ctx => ctx.empty }, { empty: true }), true);
+    eq(isLater({ later: ctx => ctx.empty }, { empty: false }), false);
+    eq(isLater({ later: () => 1 }, {}), true, 'a truthy answer holds it back');
+});
+test('B38 desktop widgets start at login only with a saved layout; the look-only features wait', () => {
+    const get = id => FEATURES.find(f => f.id === id);
+    const ctx = (layout, pointer = 'system', colors = false) => ({
+        settings: {
+            get_string: k => (k === 'widgets-layout' ? layout : k === 'pointer-size' ? pointer : ''),
+            get_boolean: k => k === 'pointer-custom-colors' && colors,
+        },
+    });
+    eq(isLater(get('desktop-widgets'), ctx('')), true, 'nothing to draw yet');
+    eq(isLater(get('desktop-widgets'), ctx('[{"id":"clock"}]')), false, 'a layout is on screen at login');
+    for (const id of ['move-window-to-new-workspace', 'green-button', 'pointer'])
+        eq(isLater(get(id), ctx('')), true, id);
+    eq(isLater(get('pointer'), ctx('', 'large')), false, 'a pointer size shows at login');
+    eq(isLater(get('pointer'), ctx('', 'system', true)), false, 'pointer colours show at login');
+    // Look on screen the moment a menu opens or a window shows: never held back
+    for (const id of ['popup-menu-styling', 'rounded-corners'])
+        eq(isLater(get(id), ctx('')), false, id);
+    // Visible at login: never held back
+    for (const id of ['menu-bar', 'dock', 'notch', 'desktop-icons', 'liquid-glass', 'control-center', 'calendar'])
+        eq(isLater(get(id), ctx('')), false, id);
 });
 test('timings(): one row per entry with start time and enable cost', () => {
     let t = 0;
