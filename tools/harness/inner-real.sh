@@ -2,6 +2,9 @@
 # Inside the Arch chroot.
 N=${1:-20}
 W=/tmp/w; rm -rf $W; mkdir -p $W/home/.config $W/home/.cache $W/run; chmod 700 $W/run
+# GUAVA_MESA_SEED (/opt/mesa-seed): a Mesa shader cache the run starts with, as a user's second
+# login has (tools/harness/seed-mesa.sh); without it every run compiles its shaders cold
+[ -d /opt/mesa-seed ] && { cp -a /opt/mesa-seed/. $W/home/.cache/; echo "== mesa seed: $(find $W/home/.cache -type f | wc -l) files"; }
 UUID=guava-os@blueyzx64
 X=$W/home/.local/share/gnome-shell/extensions
 mkdir -p $X; cp -r /opt/guava-src $X/$UUID; cp -r /opt/probe/probe@x2 $X/
@@ -170,6 +173,8 @@ echo "== SHELL LOG ANALYSIS"
 L=$W/shell.log
 echo "lines: $(wc -l <$L)"; head -3 $L
 cp $L /opt/shell.log
+# GUAVA_MESA_SEED_OUT: hand this run's shader cache back (seed-mesa.sh)
+rm -rf /opt/mesa-out; [ -f /opt/mesa-seed-out ] && cp -a $W/home/.cache/mesa_shader_cache /opt/mesa-out 2>/dev/null
 grep -E "guava-os@blueyzx64|\[Guava\]" $L | sed -E 's/^[0-9:.]+ *//' | sed -E 's/0x[0-9a-f]+/N/g' | sort | uniq -c | sort -rn | head -60
 echo "-- CRITICAL/JS ERROR (all)"
 grep -E "CRITICAL|JS ERROR|Gjs-WARNING|WARNING \*\*" $L | sed -E 's/^[0-9:.]+ *//;s/0x[0-9a-f]+/N/g' | cut -c1-200 | sort | uniq -c | sort -rn | head -40

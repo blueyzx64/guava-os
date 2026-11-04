@@ -18,7 +18,10 @@ for t in motionSmoothness motionModel startupModel; do
   if gjs -m "$REPO/tests/$t.test.js" >"$OUT/$t.txt" 2>&1; then echo "PASS unit:$t"; else echo "FAIL unit:$t"; grep FAIL "$OUT/$t.txt"; unit=1; fi
 done
 
-echo "== real Shell (stock and Guava logins, in parallel)"
+# A warm Mesa shader cache (tools/harness/seed-mesa.sh) when one was built: what a user's second
+# login has. GUAVA_COLD=1 measures the cold first login instead (README.md, "Login first frame").
+if [ -z "${GUAVA_COLD:-}" ] && [ -z "${GUAVA_MESA_SEED:-}" ] && [ -d "$X2/mesa-seed" ]; then export GUAVA_MESA_SEED=$X2/mesa-seed; fi
+echo "== real Shell (stock and Guava logins, in parallel)${GUAVA_MESA_SEED:+, warm shader cache}"
 "$K/bundle.sh" "$OUT/extra.sh" "$K/lib.sh" "$K/perf-lib.sh" "$K/classify.js" "$HERE/perf-latency.sh" "$HERE/perf-suite.sh" >/dev/null
 GUAVA_STOCK=1 GUAVA_SKIP_PROBES=1 GUAVA_EXTRA=$OUT/extra.sh GUAVA_SRC=$REPO "$REPO/tools/harness/run-f44.sh" 0 >"$OUT/stock.txt" 2>&1 &
 sp=$!

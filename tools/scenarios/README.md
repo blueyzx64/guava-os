@@ -59,3 +59,15 @@ take more than 50 ms, `ctx.motion.env.degraded` turns true and `motion-changed` 
 | `login-modules.sh` | Real Shell: import cost of 76 pure model modules (re-import with `?query`), ~0.17 ms per KB (file read + compile + evaluate). The login path is ~1.5 MB, so ~250 ms. |
 
 The login trace summary has `stallAt` (`ms@time`) to place each main-loop stall.
+
+## Login first frame (B38)
+
+Guava paints no frame before startup-complete (its enable chain keeps the main loop busy; stock paints
+its panel ~0.5 s earlier), so `login.ready` = the enable chain + ONE heavy first frame with all the
+chrome. In the harness that frame is dominated by cold shader compiles (llvmpipe JIT): ready minus
+stock's startup-complete is 700-800 ms cold and 330-380 ms with a warm shader cache, which is what a
+user's second login has. `GUAVA_MESA_SEED=$X2/mesa-seed` (built once by `tools/harness/seed-mesa.sh`)
+starts a run, stock or Guava, from the same warm cache. The login trace summary also carries
+`cpu` (main-thread CPU ms at the first frames), `featureRows` (id, loaded, started, enable ms),
+`phases` (frame signals of the first 2 s) and, with `GUAVA_PRE="export GUAVA_TRACE_TASKS=1"`, `tasks`
+(idle/timeout callbacks over 12 ms with the stack that registered them).
