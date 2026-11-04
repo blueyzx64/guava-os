@@ -152,7 +152,7 @@ export class MenuBar {
             apps.start();
             return apps;
         }, ['menubar-app-menu', 'menubar-native-menus', 'menubar-atspi-menus', 'menubar-atspi-popovers',
-            'appmenus-accessibility'], { late: true });
+            'appmenus-accessibility']);   // not late: with no window focused it shows Files' menus at login
         part('look', () => ks.bool('menubar-transparent'), reg => {
             const look = new AdaptiveBar(this._ctx, reg, { solidOnWindow: ks.bool('menubar-solid-on-window') });
             look.start();

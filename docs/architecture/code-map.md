@@ -113,7 +113,7 @@ pinch, hot corner), `split-view-changed` (Split View), `recording-started` /
 | File | Role |
 |---|---|
 | `featureRegistry.js` | the engine of `features.js` (edge-triggered, lazy `load()`, `needs`/`conflictsWith`, failure isolation, `onChange`); staged start: `start(ctx, {holdBack})` keeps entries marked `later` (`true`, or a function of ctx via `isLater`) unloaded until `release()` after the login animation; `timings()` per-feature start cost; `setLocked(bool)` and the `lockScreen` entry flag (lock screen: every other feature is suspended, nothing torn down) |
-| `afterLogin.js` | `afterLogin(cleanup, fn)`: run fn at the first idle after the login's startup-complete (at once when the Shell is already up); for the parts of a feature that show nothing until something happens (menu bar app menus, privacy dots) |
+| `afterLogin.js` | `afterLogin(cleanup, fn)`: run fn at the first idle after the login's startup-complete (at once when the Shell is already up); for the parts of a feature that show nothing until something happens (the menu bar's privacy dots) |
 | `disposables.js` | `CleanupRegistry`: signals, timeouts, idles, injections, actors, files; `dispose()` undoes all, newest first; `surface(actor)` / `suspend(bool)` hide a feature's actors while the screen is locked |
 | `lockModel.js` | pure lock-screen rules: `isSuspended`, `lockPlan`, `SurfaceLedger` (hide and restore actors as they were); tests `tests/lockModel.test.js` |
 | `settings.js` | `GuavaSettings` (typed access, per-key watchers) |

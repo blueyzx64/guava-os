@@ -42,4 +42,4 @@ Turns GNOME's top bar into the macOS menu bar: logo menu, the focused app's name
 
 ## Login
 
-The `apps` (app menus) and `privacy` (microphone / camera dots) parts start after the login's first frames (`lib/afterLogin.js`): both show nothing until an app takes focus or a device starts recording, and starting them costs 40-100 ms before the first frame. A key change before then starts the part at once.
+The `privacy` part (microphone / camera dots) starts after the login's first frames (`lib/afterLogin.js`): it shows nothing until a device starts recording. A key change before then starts it at once. The `apps` part (app menus) starts with the bar: with no window focused it shows Files' menus, so starting it late would make them pop in after the login fade.

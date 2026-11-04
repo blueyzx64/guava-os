@@ -144,8 +144,9 @@
   The blur on the panel and dock alone is ~200 ms of the cold first frame. Guava paints no frame
   before startup-complete (the enable chain holds the loop), so ready = enable chain + one heavy
   frame; only CPU removed from either helps. Work that shows nothing until something happens
-  (menu bar app menus, privacy dots, pointer shake, fullscreen Space, green button) starts
-  `afterLogin`/`later`: ~50-100 ms of ready. Persisting the cache in `/var/tmp` of one root and
+  (privacy dots, pointer shake, fullscreen Space, green button) starts `afterLogin`/`later`:
+  ~50-100 ms of ready. Not the app menus: on the bare desktop they show Files' menus, and Guava's
+  login fade ends before startup-complete, so anything started after it pops in visibly. Persisting the cache in `/var/tmp` of one root and
   running A/B from a copied tree without the new harness files both gave false "no gain" runs:
   copy `tools/harness` too.
 - **Re-importing a GObject module with a `?query` URL segfaults the Shell.** Don't use cache-busting
