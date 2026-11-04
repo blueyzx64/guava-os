@@ -39,8 +39,8 @@ export const PANELS = [
 
 /** Guava switches the spec names. `key` is a boolean key in Guava's schema. */
 export const GUAVA_TOGGLES = [
-    { key: 'liquid-glass', title: N_('Liquid Glass'), keywords: ['blur', 'translucent', 'glass', 'transparency'] },
-    { key: 'stage-manager', title: N_('Stage Manager'), keywords: ['windows', 'stage', 'strip'] },
+    { key: 'dock-magnification', title: N_('Dock Magnification'), keywords: ['dock', 'magnify', 'zoom', 'icons'] },
+    { key: 'dock-autohide', title: N_('Automatically Hide the Dock'), keywords: ['dock', 'hide', 'autohide'] },
 ];
 
 /**

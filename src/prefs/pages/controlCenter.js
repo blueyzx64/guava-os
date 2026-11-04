@@ -5,14 +5,15 @@
 import Adw from 'gi://Adw';
 
 import { addFeatureGroups } from '../widgets.js';
-import * as controlCenterPrefs from '../../features/controlCenter/prefs.js';
 import * as lowPowerPrefs from '../../features/lowPower/prefs.js';
 
-export const PAGE = { id: 'control-center', icon: 'preferences-system-symbolic' };
+export const PAGE = { id: 'control-center', icon: 'battery-symbolic' };
 
 export function build(args) {
-    const page = new Adw.PreferencesPage({ title: args._('Control Center'), icon_name: PAGE.icon });
-    addFeatureGroups(page, controlCenterPrefs, args);
+    const page = new Adw.PreferencesPage({ title: args._('Battery'), icon_name: PAGE.icon });
+    // GNOME's own Quick Settings: Guava's Control Center (control-center) is off and has no rows,
+    // nor have the options that only exist inside it (user row, battery percentage). Its code and
+    // prefs module stay (features/controlCenter)
     addFeatureGroups(page, lowPowerPrefs, args);
     return page;
 }

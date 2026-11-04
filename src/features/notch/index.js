@@ -386,12 +386,11 @@ export class NotchFeature {
             } : null,
         });
 
-        // Over a full-screen window there is no bar, so only something transient shows, unless
-        // the bar slides in (the menu bar's full-screen reveal): then the notch is part of it and
-        // slides and fades with it.
-        const barShown = !!Main.layoutManager.panelBox?.visible;
-        this._view.setShown(wants || !fullscreen || barShown);
-        this._view.followBar(fullscreen && !wants && barShown);
+        // Over a full-screen window only something transient shows: also while the menu bar is
+        // slid in there (features/menuBar/fullscreenReveal.js), where an idle notch emerging with
+        // the bar looked broken and sat in the way of the bar
+        this._view.setShown(wants || !fullscreen);
+        this._view.followBar(false);
         // A pill drawn over a fullscreen window needs the compositor to stop direct scanout
         const overFullscreen = wants && fullscreen;
         if (overFullscreen !== this._overFullscreen) {

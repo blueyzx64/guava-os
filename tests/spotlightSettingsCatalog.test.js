@@ -47,22 +47,22 @@ test('Digital Wellbeing row', () => eq(rank(settingsItems(_, env()), 'wellbeing'
 test('no panels when Settings is missing', () =>
     eq(settingsItems(_, env({ panelsAvailable: false })).some(i => i.action.type === 'panel'), false));
 test('toggle hidden when the key does not exist', () => {
-    const ids = settingsItems(_, env({ has: k => k === 'liquid-glass' })).map(i => i.id);
-    eq(ids.includes('guava:liquid-glass'), true);
-    eq(ids.includes('guava:stage-manager'), false);
+    const ids = settingsItems(_, env({ has: k => k === 'dock-magnification' })).map(i => i.id);
+    eq(ids.includes('guava:dock-magnification'), true);
+    eq(ids.includes('guava:dock-autohide'), false);
 });
 test('toggle flips the current value', () => {
-    const on = settingsItems(_, env({ read: () => true })).find(i => i.id === 'guava:liquid-glass');
-    eq(on.action, { type: 'toggle', key: 'liquid-glass', to: false });
-    const off = settingsItems(_, env()).find(i => i.id === 'guava:liquid-glass');
+    const on = settingsItems(_, env({ read: () => true })).find(i => i.id === 'guava:dock-magnification');
+    eq(on.action, { type: 'toggle', key: 'dock-magnification', to: false });
+    const off = settingsItems(_, env()).find(i => i.id === 'guava:dock-magnification');
     eq(off.action.to, true);
 });
-test('toggle keys are in the catalog list', () => eq(GUAVA_TOGGLES.map(t => t.key), ['liquid-glass', 'stage-manager']));
+test('toggle keys are in the catalog list', () => eq(GUAVA_TOGGLES.map(t => t.key), ['dock-magnification', 'dock-autohide']));
 test('search finds Wi-Fi by keyword', () => {
     const r = rank(settingsItems(_, env()), 'wireless');
     eq(r[0].action.panel === 'wifi' || r[0].action.panel === 'bluetooth', true);
 });
-test('search finds Liquid Glass', () => eq(rank(settingsItems(_, env()), 'liquid')[0].id, 'guava:liquid-glass'));
+test('search finds Dock Magnification', () => eq(rank(settingsItems(_, env()), 'magnif')[0].id, 'guava:dock-magnification'));
 test('usageBoost falls off and floors at 0', () => {
     eq(usageBoost(0) > usageBoost(3), true);
     eq(usageBoost(50), 0);

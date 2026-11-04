@@ -103,6 +103,24 @@ export class Pointer {
 
         this._shake = new ShakeDetector();
         this._typing = new TypingHider();
+        // Interacting, not looking for the pointer: a window drag or resize (Mutter's grab ops),
+        // a click or a touch just now (the held buttons are seen on motion; touches on the stage)
+        this._grabOp = false;
+        this._pressAt = -Infinity;
+        cleanup.connect(global.display, 'grab-op-begin', () => {
+            this._grabOp = true;
+        });
+        cleanup.connect(global.display, 'grab-op-end', () => {
+            this._grabOp = false;
+            this._pressAt = GLib.get_monotonic_time() / 1000;
+        });
+        cleanup.connect(global.stage, 'captured-event', (_s, event) => {
+            const type = event.type();
+            if (type === Clutter.EventType.BUTTON_PRESS || type === Clutter.EventType.BUTTON_RELEASE ||
+                type === Clutter.EventType.TOUCH_BEGIN || type === Clutter.EventType.TOUCH_UPDATE)
+                this._pressAt = GLib.get_monotonic_time() / 1000;
+            return Clutter.EVENT_PROPAGATE;
+        });
         cleanup.connect(this._tracker, 'position-invalidated', () => this._onMotion());
 
         this._caret = Caret.acquire(cleanup);
@@ -214,9 +232,14 @@ export class Pointer {
 
     // `mods`: the pointer state a caller already read (a motion event reads it once, not twice)
     _blocked(mods = global.get_pointer()[2]) {
+        const now = GLib.get_monotonic_time() / 1000;
+        if (mods & BUTTONS)
+            this._pressAt = now;
         return isBlocked({
             buttons: !!(mods & BUTTONS),
             grabbed: !!global.display.is_grabbed?.(),
+            grabOp: this._grabOp,
+            sincePressMs: now - this._pressAt,
             overview: Main.overview.visible,
             modalCount: Main.modalCount,
         });
@@ -246,10 +269,21 @@ export class Pointer {
         }
         if (this._big?.visible)
             this._big.set_position(x, y);
-        if (shaking && !this._shaking)
+        // Over the menu bar, the notch or the dock the user is aiming at something: no big pointer
+        if (shaking && !this._shaking && !this._overChrome(x, y))
             this._showBig(x, y);
         if (shaking)
             this._armShrink();
+    }
+
+    // Shell chrome under the pointer (the menu bar, the notch, the dock, their menus): anything
+    // reactive that is not a window or the wallpaper. Picked only when a shake is detected.
+    _overChrome(x, y) {
+        const actor = global.stage.get_actor_at_pos(Clutter.PickMode.REACTIVE, x, y);
+        if (!actor || actor === global.stage)
+            return false;
+        // Windows and the wallpaper (its background group, desktop icons, widgets) are in window_group
+        return !global.window_group.contains(actor);
     }
 
     _ensureBig() {

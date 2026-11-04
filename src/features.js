@@ -317,6 +317,12 @@ export const FEATURES = [
         load: async () => (await import('./features/widgets/index.js')).DesktopWidgets,
     },
     {
+        // "Show Desktop Icons" / "Show Widgets" in the desktop's right-click menu (always on: the
+        // only switches those two features have)
+        id: 'desktop-menu',
+        load: async () => (await import('./features/desktopMenu/index.js')).DesktopMenu,
+    },
+    {
         // The Finder desktop: the files of ~/Desktop as icons from the top-right corner, below the
         // widgets. Steps aside itself while Desktop Icons NG (DING) is enabled (see its header).
         id: 'desktop-icons', setting: 'desktop-icons',

@@ -5,7 +5,6 @@
 // Display (Reduce Transparency, Increase Contrast, Show Borders).
 
 import Adw from 'gi://Adw';
-import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
@@ -26,27 +25,6 @@ const BMS_DIRS = [
 ];
 
 /** The Clear <-> Tinted slider, with the two ends named under it like macOS. */
-function _tintRow(settings, _) {
-    const row = new Adw.ActionRow({
-        title: _('Liquid Glass'),
-        subtitle: _('Clear is more see-through. Tinted is more opaque and easier to read.'),
-    });
-    const scale = new Gtk.Scale({
-        orientation: Gtk.Orientation.HORIZONTAL,
-        adjustment: new Gtk.Adjustment({ lower: 0, upper: 100, step_increment: 1, page_increment: 10 }),
-        draw_value: false,
-        hexpand: true,
-        valign: Gtk.Align.CENTER,
-        width_request: 220,
-    });
-    scale.add_mark(0, Gtk.PositionType.BOTTOM, _('Clear'));
-    scale.add_mark(100, Gtk.PositionType.BOTTOM, _('Tinted'));
-    scale.update_property([Gtk.AccessibleProperty.LABEL], [_('Liquid Glass: Clear to Tinted')]);
-    settings.bind('glass-tint', scale.get_adjustment(), 'value', Gio.SettingsBindFlags.DEFAULT);
-    row.add_suffix(scale);
-    return row;
-}
-
 function _surfaceRow(settings, surface, title) {
     const row = new Adw.SwitchRow({ title });
     const key = 'liquid-glass-surfaces';
@@ -76,29 +54,6 @@ function _surfaceRow(settings, surface, title) {
 export function buildPrefs({ settings, extension }) {
     const _ = s => extension?.gettext?.(s) ?? s;
 
-    const look = new Adw.PreferencesGroup({
-        title: _('Translucency'),
-        description: _('Guava\'s surfaces blur what is behind them under a neutral translucent fill. Liquid Glass adds boosted colour, a tint gradient with a sheen, a rim and a shadow. App windows keep their own look.'),
-    });
-    look.add(switchRow(settings, _('Liquid Glass'),
-        _('Off is a plain frosted blur. On adds the sheen, the rim and a colour boost'), 'liquid-glass'));
-    const tint = _tintRow(settings, _);
-    look.add(tint);
-    const wallpaper = switchRow(settings, _('Allow Wallpaper Tinting'),
-        _('A little of the wallpaper\'s colour shows through the glass'), 'glass-wallpaper-tint');
-    look.add(wallpaper);
-    const grain = switchRow(settings, _('Frosted Grain'),
-        _('A faint grain instead of the top-to-bottom sheen'), 'glass-noise');
-    look.add(grain);
-    if (BMS_DIRS.some(dir => GLib.file_test(dir, GLib.FileTest.IS_DIR))) {
-        const notice = new Adw.ActionRow({
-            title: _('Blur my Shell is installed'),
-            subtitle: _('Its blur and its own Liquid Glass effect overlap with Guava\'s glass. Use one of them for each surface. Guava never changes Blur my Shell.'),
-        });
-        notice.add_prefix(new Gtk.Image({ icon_name: 'dialog-information-symbolic' }));
-        look.add(notice);
-    }
-
     const access = new Adw.PreferencesGroup({
         title: _('Accessibility'),
         name: 'accessibility',     // prefs/pages/appearance.js adds the colour filters here
@@ -118,18 +73,16 @@ export function buildPrefs({ settings, extension }) {
     for (const [surface, title] of SURFACES)
         where.add(_surfaceRow(settings, surface, _(title)));
 
-    // macOS greys the Liquid Glass choice out while Reduce Transparency or Increase Contrast
-    // is on; the slider, the wallpaper tint and the grain are Liquid Glass options only
-    const sync = () => {
-        const on = settings.get_boolean('liquid-glass');
-        const opaque = settings.get_boolean('glass-reduce-transparency') ||
-            settings.get_boolean('glass-increase-contrast');
-        for (const row of [tint, wallpaper, grain])
-            row.sensitive = on && !opaque;
-    };
-    sync();
-    for (const key of ['liquid-glass', 'glass-reduce-transparency', 'glass-increase-contrast'])
-        watchKey(settings, key, look, sync);
+    // Liquid Glass (liquid-glass) is off and has no row: its tint, wallpaper tint and grain went with
+    // it. The feature's code stays (features/liquidGlass, lib/glassParams.js 'glass' style).
+    if (BMS_DIRS.some(dir => GLib.file_test(dir, GLib.FileTest.IS_DIR))) {
+        const notice = new Adw.ActionRow({
+            title: _('Blur my Shell is installed'),
+            subtitle: _('Its blur overlaps with Guava\'s. Use one of them for each surface. Guava never changes Blur my Shell.'),
+        });
+        notice.add_prefix(new Gtk.Image({ icon_name: 'dialog-information-symbolic' }));
+        where.add(notice);
+    }
 
-    return [look, access, where];
+    return [access, where];
 }

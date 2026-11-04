@@ -47,6 +47,9 @@ import {
     liveCaptureDue, textureSide, LIVE_CAPTURE_MS,
 } from './glassParams.js';
 
+// Copy only the redraw clip's rects into the cached backdrop (off: whole captures, see _capture)
+const PARTIAL_CAPTURE = false;
+
 const monotonicMs = () => GLib.get_monotonic_time() / 1000;
 
 /** Live recapture keeps going this long after invalidate() (the wallpaper cross-fade is 1 s). */
@@ -454,7 +457,11 @@ class GlassBlurEffect extends Clutter.Effect {
         const ow = textureSide(tw, step);
         const oh = textureSide(th, step);
 
-        const reuseBg = !!this._bg && this._bg.w === bw && this._bg.h === bh && this._bgKey === key && this._bgOk;
+        // Patching the cached backdrop with only the damaged rects showed as squares where new and
+        // old pixels meet (user report, fractional scale): every capture now takes the whole
+        // backdrop, asking for a whole-surface redraw when the clip does not cover it
+        const reuseBg = PARTIAL_CAPTURE &&
+            !!this._bg && this._bg.w === bw && this._bg.h === bh && this._bgKey === key && this._bgOk;
         // (the clip is rounded inwards, the box outwards: at a fractional scale they differ by a pixel)
         const pad = Number.isInteger(scale) ? 0 : 1;
         const inner = { x1: box.x1 + pad, y1: box.y1 + pad, x2: box.x2 - pad, y2: box.y2 - pad };

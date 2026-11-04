@@ -4,8 +4,7 @@
 import Adw from 'gi://Adw';
 import Gtk from 'gi://Gtk';
 
-import { addFeatureGroups, addSwitchRows } from '../widgets.js';
-import * as lockScreenPrefs from '../../features/lockScreen/prefs.js';
+import { addSwitchRows } from '../widgets.js';
 
 /**
  * Keys Reset Everything leaves alone, read from the schema so a new cache cannot be missed:
@@ -31,8 +30,8 @@ export function build(args) {
     ]);
     page.add(gestures);
 
-    addFeatureGroups(page, lockScreenPrefs, args);
-
+    // The lock screen customization (features/lockScreen, lockscreen-style) is off and has no
+    // rows; its code and prefs module stay
     const reset = new Adw.PreferencesGroup();
     const button = new Gtk.Button({
         label: _('Reset Everything'),

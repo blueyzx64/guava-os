@@ -15,7 +15,8 @@
 // pointer already at the top (the window just went full screen) stays unarmed until the
 // pointer has left it once, so a maximize then full screen never leaves the bar shown.
 //
-// The notch lives inside the bar, so it reveals with it.
+// The notch stays hidden while the bar is revealed over a full-screen window (features/notch);
+// only transient notch content (a notification, a live activity) shows there.
 //
 // Exit control (macOS slides the title bar with its traffic lights in over a full-screen window):
 // while the bar is revealed, a green round button leads the bar. A click leaves full screen for
@@ -26,6 +27,7 @@
 // for "always"), _updateVisibility() to give the Shell its rule back. Same in 48-51.
 
 import Clutter from 'gi://Clutter';
+import GLib from 'gi://GLib';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
@@ -34,6 +36,11 @@ import { PanelLayout } from '../../core/panelLayout.js';
 import { fullscreenExitTarget } from './model.js';
 
 const REVEALED = 'guava-menubar-revealed';
+// While revealed the pointer is checked this often; the bar goes once it has been below the bar
+// for LEAVE_CHECKS checks in a row (~0.4 s), so crossing the bar or its edge never flickers it
+const WATCH_MS = 100;
+const LEAVE_CHECKS = 4;
+const BELOW_MARGIN = 6;       // px under the bar that still count as on it
 const EXIT_ROLE = 'guava-menubar-fullscreen-exit';
 
 export class FullscreenReveal {
@@ -53,6 +60,8 @@ export class FullscreenReveal {
         this._menuWatch = 0;     // token of the one handler waiting for the open menu to close
         this._concealCheck = 0;  // token of the pending conceal check
         this._exit = null;       // the green exit-full-screen button
+        this._watch = 0;         // token of the pointer watch while revealed
+        this._away = 0;          // consecutive checks with the pointer below the bar
     }
 
     /** True while the bar is slid in over a full-screen window (tests, the harness). */
@@ -118,7 +127,7 @@ export class FullscreenReveal {
         const hover = panel.track_hover;
         panel.track_hover = true;
         cleanup.add(() => (panel.track_hover = hover));
-        cleanup.connect(panel, 'notify::hover', () => this._maybeConceal());
+        // (the pointer watch started by reveal() decides when the pointer has left the bar)
         // Keyboard: over a full-screen window the edge is the only mapped piece, so it stands
         // for the bar in Ctrl+Alt+Tab; choosing it slides the bar in and focuses it. The bar
         // stays while the focus is in it and goes when the focus leaves.
@@ -199,6 +208,7 @@ export class FullscreenReveal {
         const panelBox = Main.layoutManager.panelBox;
         this._revealed = true;
         this._edge.visible = false;
+        this._startWatch();
         if (this._exit)
             this._exit.visible = !!this._exitWindow();
         this._anim?.cancel();
@@ -232,12 +242,15 @@ export class FullscreenReveal {
     }
 
     _concealIfIdle() {
-        if (!this._revealed || Main.panel.hover || A11y.focusWithin(Main.panel))
+        // The pointer's place, not the panel's hover: the notch and the exit button are separate
+        // actors on top of the bar, and moving onto them is not leaving the bar
+        if (!this._revealed || this._pointerOnBar() || A11y.focusWithin(Main.panel))
             return;
         const menu = Main.panel.menuManager.activeMenu;
         if (menu) {
             // Wait for the menu to close, then check the pointer again (one handler at a time)
-            this._unwatchMenu();
+            if (this._menuWatch)
+                return;
             this._menuWatch = this._cleanup.connect(menu, 'open-state-changed', (_m, open) => {
                 if (open)
                     return;
@@ -249,6 +262,39 @@ export class FullscreenReveal {
         this._conceal(true);
     }
 
+    // The pointer is on the bar: within the primary monitor, above the bar's bottom (plus a margin)
+    _pointerOnBar() {
+        const monitor = Main.layoutManager.primaryMonitor;
+        if (!monitor)
+            return false;
+        const [x, y] = global.get_pointer();
+        return x >= monitor.x && x < monitor.x + monitor.width &&
+            y >= monitor.y - 1 && y < monitor.y + this._barHeight() + BELOW_MARGIN;
+    }
+
+    // While revealed: conceal once the pointer has stayed off the bar for a moment
+    _startWatch() {
+        if (this._watch)
+            return;
+        this._away = 0;
+        this._watch = this._cleanup.timeout(WATCH_MS, () => {
+            if (!this._revealed) {
+                this._watch = 0;
+                return GLib.SOURCE_REMOVE;
+            }
+            this._away = this._pointerOnBar() ? 0 : this._away + 1;
+            if (this._away >= LEAVE_CHECKS)
+                this._maybeConceal();
+            return GLib.SOURCE_CONTINUE;
+        }, { name: 'menu bar reveal watch' });
+    }
+
+    _stopWatch() {
+        if (this._watch)
+            this._cleanup.release(this._watch);
+        this._watch = 0;
+    }
+
     _unwatchMenu() {
         this._cleanup.release(this._menuWatch);
         this._menuWatch = 0;
@@ -258,6 +304,12 @@ export class FullscreenReveal {
         if (!this._revealed)
             return;
         this._revealed = false;
+        this._stopWatch();
+        // Concealed with the pointer still at the top: the edge waits for it to leave once,
+        // or it would reveal again at once (the bar flickering in and out)
+        const monitor = Main.layoutManager.primaryMonitor;
+        if (monitor && global.get_pointer()[1] <= monitor.y)
+            this._armed = false;
         const panelBox = Main.layoutManager.panelBox;
         this._anim?.cancel();
         const done = () => {

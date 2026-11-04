@@ -112,15 +112,22 @@ export class ShakeDetector {
     }
 }
 
+/** How long after a click or touch a shake still counts as part of that interaction. */
+export const PRESS_GRACE_MS = 600;
+
 /**
- * Whether the pointer is busy with something else: dragging (a button held or a compositor
- * grab such as a window move or resize), the overview, or a modal. Shaking and hiding both
+ * Whether the pointer is busy with something else: dragging (a button held, a compositor grab
+ * such as a window move or resize, or a grab op Mutter reported), a click or touch just now
+ * (`sincePressMs` below PRESS_GRACE_MS), the overview, or a modal. Shaking and hiding both
  * stand aside then.
  *
- * @param {{buttons?: boolean, grabbed?: boolean, overview?: boolean, modalCount?: number}} s
+ * @param {{buttons?: boolean, grabbed?: boolean, grabOp?: boolean, sincePressMs?: number,
+ *   overview?: boolean, modalCount?: number}} s
  */
-export function isBlocked({ buttons = false, grabbed = false, overview = false, modalCount = 0 } = {}) {
-    return !!(buttons || grabbed || overview || modalCount > 0);
+export function isBlocked({
+    buttons = false, grabbed = false, grabOp = false, sincePressMs = Infinity, overview = false, modalCount = 0,
+} = {}) {
+    return !!(buttons || grabbed || grabOp || sincePressMs < PRESS_GRACE_MS || overview || modalCount > 0);
 }
 
 /**

@@ -10,6 +10,7 @@ import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import { CleanupRegistry } from './lib/disposables.js';
 import { FeatureRegistry, isLater } from './lib/featureRegistry.js';
 import { SurfaceLedger, sweepTargets } from './lib/lockModel.js';
+import { retireOptions } from './lib/retiredOptions.js';
 import { Glass } from './lib/glass.js';
 import { IconStyle } from './lib/iconStyle.js';
 import { EventHub } from './core/events.js';
@@ -89,6 +90,12 @@ export default class GuavaExtension extends Extension {
             }
         }
         _heldAcrossLock = false;
+        // Options taken out of Preferences: reset once so none stays on without a switch
+        try {
+            retireOptions(this._settings);
+        } catch (err) {
+            console.error('[Guava] could not reset retired options:', err);
+        }
         const generation = this._generation = (this._generation ?? 0) + 1;
 
         this._events = new EventHub();

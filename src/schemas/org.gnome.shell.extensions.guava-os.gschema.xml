@@ -23,6 +23,11 @@
         <summary>Debug log</summary>
         <description>Write a timeline of what Guava and the Shell do (events, window effects, the overview, slow frames, main-loop stalls, feature start times, setting changes) to the journal as "[Guava debug]" lines, for bug reports. Never writes window titles or other text. tools/guava-logs.sh turns it on while it records and back off after.</description>
       </key>
+      <key name="options-revision" type="i">
+        <default>0</default>
+        <summary>Options revision</summary>
+        <description>Internal: which one-time resets of options taken out of Preferences have run (lib/retiredOptions.js).</description>
+      </key>
       <key name="onboarding" type="s">
         <choices>
           <choice value="new"/>
@@ -197,7 +202,7 @@
           <choice value="scale"/>
           <choice value="gnome"/>
         </choices>
-        <default>'genie'</default>
+        <default>'scale'</default>
         <summary>Minimize windows using</summary>
         <description>The effect that takes a window into the Dock and back: genie (the magic lamp, the macOS default), scale (a plain shrink) or gnome (GNOME's own). Reduced motion turns both into a fade.</description>
       </key>
@@ -357,7 +362,7 @@
         <description>While Alt (the macOS Option key) is held during a drag, the half outlines show at once, without reaching the edge.</description>
       </key>
       <key name="windows-tile-margins" type="b">
-        <default>false</default>
+        <default>true</default>
         <summary>Tiled windows have margins</summary>
         <description>Leave a small margin around and between tiled windows. Off by default, as on macOS.</description>
       </key>
@@ -636,7 +641,7 @@
 
       <!-- Control Center (features/controlCenter) -->
       <key name="control-center" type="b">
-        <default>true</default>
+        <default>false</default>
         <summary>Control Center</summary>
         <description>Re-lay out the Quick Settings menu like the macOS Control Center: blocks for connectivity, focus, display, sound and media, with Stage Manager and Liquid Glass tiles. GNOME keeps running every toggle. Off restores the stock menu.</description>
       </key>
@@ -928,7 +933,7 @@
 
       <!-- Desktop widgets (features/widgets, core/widgets) -->
       <key name="widgets" type="b">
-        <default>true</default>
+        <default>false</default>
         <summary>Desktop widgets</summary>
         <description>Widgets on the desktop, above the wallpaper and below windows. None are placed until you add some with Edit Widgets… (right-click the desktop).</description>
       </key>
@@ -950,7 +955,7 @@
 
       <!-- Desktop icons (features/desktopIcons) -->
       <key name="desktop-icons" type="b">
-        <default>true</default>
+        <default>false</default>
         <summary>Desktop icons</summary>
         <description>Show the files and folders of your Desktop folder on the desktop, from the top-right corner as Finder does. Guava steps aside while the Desktop Icons NG extension (DING) is enabled.</description>
       </key>
@@ -1491,7 +1496,7 @@
 
       <!-- Lock screen like macOS (features/lockScreen, D-022) -->
       <key name="lockscreen-style" type="b">
-        <default>true</default>
+        <default>false</default>
         <summary>Style the lock screen like macOS</summary>
         <description>Restyles GNOME's own lock screen: large clock, the desktop wallpaper, and the user and password field at the bottom centre. Sign-in itself is GNOME's and never changes.</description>
       </key>

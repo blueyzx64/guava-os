@@ -35,6 +35,8 @@ SCHEMA=$(grep -o 'id="[^"]*"' $X/$UUID/schemas/*.xml | head -1); echo "schema: $
 # turn on the new features before start
 ALL='notch liquid-glass control-center stage-manager clipboard-history spotlight show-window-controls show-window-title panel-styling popup-menu-styling'
 [ -f /opt/guava-only ] && GUAVA_ONLY=$(cat /opt/guava-only)
+# The harness turns retired options on on purpose: the one-time reset (lib/retiredOptions.js) is done
+gs options-revision 1
 if [ -n "$GUAVA_ONLY" ]; then for k in $ALL; do gs $k false; done; for k in $GUAVA_ONLY; do gs $k true; done; else for k in $ALL; do gs $k true; done; fi
 # Optional per-agent setup before the Shell starts (GUAVA_PRE): mock system services, audio, ...
 if [ -f /opt/guava-pre.sh ]; then echo "== PRE"; . /opt/guava-pre.sh; fi

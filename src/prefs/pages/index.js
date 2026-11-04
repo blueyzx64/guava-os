@@ -16,13 +16,10 @@ import * as notifications from './notifications.js';
 import * as keyboard from './keyboard.js';
 import * as about from './about.js';
 import * as controlCenter from './controlCenter.js';
-import * as stageManagerPrefs from '../../features/stageManager/prefs.js';
 import * as missionControlPrefs from '../../features/missionControl/prefs.js';
 import * as notchPrefs from '../../features/notch/prefs.js';
 import * as spotlightPrefs from '../../features/spotlight/prefs.js';
 import * as clipboardPrefs from '../../features/clipboard/prefs.js';
-import * as widgetsPrefs from '../../features/widgets/prefs.js';
-import * as desktopIconsPrefs from '../../features/desktopIcons/prefs.js';
 import * as screenshotsPrefs from '../../features/screenshots/prefs.js';
 import { addFeatureGroups } from '../widgets.js';
 
@@ -44,10 +41,9 @@ function featurePage(id, title, icon, mod) {
 export const SECTIONS = [
     { title: N_('General'), pages: [general, loginItems] },
     { title: N_('Desktop'), pages: [menuBar, dock, windows, navigation,
-        featurePage('mission-control', N_('Mission Control'), 'view-grid-symbolic', missionControlPrefs),
-        featurePage('stage-manager', N_('Stage Manager'), 'view-app-grid-symbolic', stageManagerPrefs),
-        featurePage('desktop-icons', N_('Desktop Icons'), 'user-desktop-symbolic', desktopIconsPrefs),
-        featurePage('widgets', N_('Widgets'), 'preferences-desktop-apps-symbolic', widgetsPrefs)] },
+        featurePage('mission-control', N_('Mission Control'), 'view-grid-symbolic', missionControlPrefs)] },
+    // Stage Manager, Desktop Icons and Widgets have no pages: Stage Manager is off, and the desktop's
+    // right-click menu shows or hides the icons and the widgets. Their code and prefs modules stay.
     { title: N_('Features'), pages: [
         notifications,
         featurePage('notch', N_('Notch'), 'preferences-system-notifications-symbolic', notchPrefs),

@@ -2,7 +2,7 @@
 // features/inputIndicator/model.js and lib/caretModel.js: badge text, caret trust, placement.
 import {
     CAPS_GLYPH, CARET_GAP, CapsWatch, POINTER_OFFSET, SCREEN_MARGIN, badgeFor, isSourceSwitch, placeBadge,
-    readConfig, sourceLabel,
+    readConfig, sourceLabel, staysOn,
 } from '../src/features/inputIndicator/model.js';
 import { CaretTracker } from '../src/lib/caretModel.js';
 
@@ -69,6 +69,13 @@ test('place: by the pointer without a caret', () => {
     const second = { x: 1280, y: 0, width: 1024, height: 768 };
     eq(placeBadge({ caret: null, pointer: { x: 2300, y: 760 }, size, area: second }),
         { x: 1280 + 1024 - 24 - SCREEN_MARGIN, y: 768 - 20 - SCREEN_MARGIN, anchor: 'pointer' });
+});
+
+test('Caps Lock on stays until it goes off; the other badges pass', () => {
+    const cfg = { capsLock: true, source: true, enabled: true };
+    eq(staysOn(badgeFor({ type: 'caps', on: true }, cfg)), true);
+    eq(staysOn(badgeFor({ type: 'caps', on: false }, cfg)), false);
+    eq(staysOn(null), false);
 });
 
 if (failed) {

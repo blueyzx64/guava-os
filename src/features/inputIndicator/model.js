@@ -8,7 +8,15 @@
 // The caret comes from lib/caret.js (the IBus panel service); without one the badge goes next
 // to the pointer.
 
-export const BADGE_MS = 1500;      // how long the badge stays (macOS hides it after a pause)
+export const BADGE_MS = 1500;      // how long a passing badge stays (Caps Lock off, a source switch)
+
+/**
+ * Whether a badge stays until the state changes: Caps Lock on stays as long as Caps Lock is on,
+ * as on macOS; the others go after BADGE_MS.
+ */
+export function staysOn(content) {
+    return content?.style === 'caps-on';
+}
 export const CARET_GAP = 3;        // px between the caret's bottom and the badge
 export const POINTER_OFFSET = Object.freeze({ x: 14, y: 20 });
 export const SCREEN_MARGIN = 4;

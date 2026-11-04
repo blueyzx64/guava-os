@@ -2,7 +2,7 @@
 // features/pointer/model.js: shake detection (and its gate while blocked), hide while typing, config, Xcursor recolouring;
 // lib/caretModel.js: caret moves.
 import {
-    SHAKE, ShakeDetector, TypingHider, anyOn, indexTheme, isBlocked, parseHex, pickXcursorImage, readConfig, recolorPixel, recolorXcursor,
+    PRESS_GRACE_MS, SHAKE, ShakeDetector, TypingHider, anyOn, indexTheme, isBlocked, parseHex, pickXcursorImage, readConfig, recolorPixel, recolorXcursor,
     themeName,
 } from '../src/features/pointer/model.js';
 import { CaretTracker } from '../src/lib/caretModel.js';
@@ -122,6 +122,12 @@ test('isBlocked: button, grab, overview or a modal', () => {
     eq(isBlocked({ overview: true }), true);
     eq(isBlocked({ modalCount: 1 }), true);
     eq(isBlocked({ modalCount: 0 }), false);
+});
+
+test('isBlocked: a window drag Mutter reported, or a click or touch just now', () => {
+    eq(isBlocked({ grabOp: true }), true, 'dragging a window: no big pointer');
+    eq(isBlocked({ sincePressMs: 100 }), true, 'right after a click or touch');
+    eq(isBlocked({ sincePressMs: PRESS_GRACE_MS }), false, 'a while after it: a shake is a shake');
 });
 
 test('typing: two caret moves with a still pointer hide it; motion shows it', () => {

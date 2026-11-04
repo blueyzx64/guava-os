@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Text-cursor indicators (macOS Sonoma): a small glass badge at the text caret when Caps Lock
-// toggles or the input source changes. It fades out after BADGE_MS.
+// toggles or the input source changes. Caps Lock on stays until Caps Lock goes off (as on macOS);
+// the others fade out after BADGE_MS.
 //
 // Shell API (checked on 50; the same in 48-51):
 // - the caret: lib/caret.js (the IBus panel service's set-cursor-location);
@@ -20,7 +21,7 @@ import { Caret } from '../../lib/caret.js';
 import { Glass } from '../../lib/glass.js';
 import { GuavaSettings } from '../../lib/settings.js';
 import {
-    BADGE_MS, CapsWatch, badgeFor, contains, isSourceSwitch, placeBadge, readConfig,
+    BADGE_MS, CapsWatch, badgeFor, contains, isSourceSwitch, placeBadge, readConfig, staysOn,
 } from './model.js';
 
 const STYLES = ['caps-on', 'caps-off', 'source'];
@@ -47,8 +48,13 @@ export class InputIndicator {
         this._caret = Caret.acquire(cleanup);
 
         const backend = global.stage.context?.get_backend?.() ?? Clutter.get_default_backend();
-        const keymap = backend.get_default_seat().get_keymap();
+        const keymap = this._keymap = backend.get_default_seat().get_keymap();
         this._caps = new CapsWatch(keymap.get_caps_lock_state());
+        // Caps Lock on stays at the caret: it follows the caret as it moves
+        this._caret.onMoved(cleanup, () => {
+            if (staysOn(this._shown))
+                this._show({ type: 'caps', on: true });
+        });
         cleanup.connect(keymap, 'state-changed', () => {
             const on = this._caps.update(keymap.get_caps_lock_state());
             if (on !== null)
@@ -145,9 +151,17 @@ export class InputIndicator {
 
         if (this._hideToken)
             this._cleanup.release(this._hideToken);
+        this._hideToken = 0;
+        // Caps Lock on stays until Caps Lock goes off (macOS); a passing badge (Caps Lock off, an
+        // input source) goes, and gives way to the Caps Lock badge again while Caps Lock is on
+        if (staysOn(content))
+            return;
         this._hideToken = this._cleanup.timeout(BADGE_MS, () => {
             this._hideToken = 0;
-            this._hide();
+            if (this._config.capsLock && this._keymap?.get_caps_lock_state())
+                this._show({ type: 'caps', on: true });
+            else
+                this._hide();
         }, { name: 'input-badge-hide' });
     }
 
