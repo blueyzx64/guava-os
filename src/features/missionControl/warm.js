@@ -100,23 +100,47 @@ function paintOnce(cleanup, report) {
     };
     cleanup.add(() => finish(Main.overview.visible));
 
+    // Two steps, a frame apart, or Clutter warns "Can't update stage views ... needs an
+    // allocation" for the overview's actors (measured in the harness, B39):
+    //   1. the group is shown empty, so it gets its first allocation (Guava skips the login
+    //      overview, so nothing has allocated it yet);
+    //   2. it is hidden again, the views and thumbnails are built, and it is shown: thumbnails
+    //      built inside a shown group are not allocated on the next frame.
+    const build = () => {
+        try {
+            group.hide();
+            controls.prepareToEnterOverview();
+            box._createThumbnails();
+            controls._stateAdjustment.value = ControlsState.WINDOW_PICKER;
+            group.show();
+        } catch (e) {
+            console.warn(`${LOG} first-open warm-up failed: ${e.message}`);
+            finish(false);
+            return;
+        }
+        ids.push(stage.connect('after-paint', () => {
+            if (++frames === FRAMES)
+                cleanup.idle(() => finish(false), { name: 'guava mission control warm end' });
+        }));
+    };
     try {
         group.opacity = 1;
         Shell.util_set_hidden_from_pick(group, true);
         group.show();
-        controls.prepareToEnterOverview();
-        box._createThumbnails();
-        controls._stateAdjustment.value = ControlsState.WINDOW_PICKER;
     } catch (e) {
         console.warn(`${LOG} first-open warm-up failed: ${e.message}`);
         finish(false);
         return;
     }
     holders.push(Main.overview.connect('showing', () => finish(true)));
-    ids.push(stage.connect('after-paint', () => {
-        if (++frames === FRAMES)
-            cleanup.idle(() => finish(false), { name: 'guava mission control warm end' });
-    }));
+    const first = stage.connect('after-paint', () => {
+        stage.disconnect(first);
+        ids.splice(ids.indexOf(first), 1);
+        if (live)
+            cleanup.idle(() => live && build(), { name: 'guava mission control warm build' });
+    });
+    ids.push(first);
+    stage.queue_redraw();
     cleanup.timeout(GIVE_UP_MS, () => {
         finish(false);
         return GLib.SOURCE_REMOVE;

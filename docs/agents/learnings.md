@@ -182,3 +182,9 @@
   `_thumbnailsBox._createThumbnails()` and `_stateAdjustment.value = WINDOW_PICKER` paint the real first frame and emit no `showing`
   (the ThumbnailsBox builds its thumbnails on `showing`, so a warm without `_createThumbnails` helps nothing: the Spaces bar wallpapers
   were ~70 ms of the 280). features/missionControl/warm.js.
+- **Painting the overview without `Overview.show()`** (features/missionControl/warm.js, B39): build the
+  views and thumbnails in a hidden group and show it after, and give a never-allocated group one empty
+  shown frame first; any other order makes Clutter warn "Can't update stage views ... needs an
+  allocation" for the overview's actors. Anything that follows `controls._stateAdjustment` (the menu-bar
+  glass) must also check `Main.overview.visible`. A scenario that checks a login-time job must re-run it
+  under watch: the harness attaches after login (copy the module to a new name: GJS has no `?query`).

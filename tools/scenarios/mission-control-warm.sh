@@ -21,6 +21,8 @@ assert warm-ran "inst('mission-control').warmup?.frames>=1 && !inst('mission-con
 _kjs "const dir=Main.extensionManager.lookup('guava-os@blueyzx64').dir.get_uri(); const src=Gio.File.new_for_uri(dir+'/features/missionControl/warm.js'), again=Gio.File.new_for_uri(dir+'/features/missionControl/warm-again.js'); src.copy(again,Gio.FileCopyFlags.OVERWRITE,null,null); const m=await import(again.get_uri()); again.delete(null); const {CleanupRegistry}=await import(dir+'/lib/disposables.js'); globalThis.__wc=new CleanupRegistry(); m.warmOverviewPaint(__wc, inst('mission-control')._ctx.motion, r=>{globalThis.__wr=r}); return 'started degraded='+inst('mission-control')._ctx.motion.env.degraded+' idle='+global.backend.get_core_idle_monitor().get_idletime()+' modal='+Main.modalCount+' starting='+Main.layoutManager._startingUp"
 sleep 14
 _kjs "return 'second warm-up '+JSON.stringify(globalThis.__wr)+' '+JSON.stringify(__w)"
+# No Clutter "needs an allocation" warnings from the warm-ups (group shown after the build)
+assert warm-no-alloc-warnings "(()=>{const [ok,b]=GLib.file_get_contents('/tmp/w/shell.log');return !/needs an allocation/.test(new TextDecoder().decode(b))})()"
 assert warm-observed "globalThis.__wr?.frames>=1 && !globalThis.__wr.tookOver && __w.seen>0"
 assert warm-invisible "__w.maxOp<=1"
 # The menu bar glass follows the overview state adjustment only while the overview is open
