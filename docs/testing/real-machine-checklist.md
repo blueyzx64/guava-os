@@ -100,35 +100,43 @@ plus a screenshot or a short screen recording (Ctrl+Shift+Alt+R).
 ## 4. Performance
 
 Measured with `tools/scenarios/run-perf.sh` on software rendering (llvmpipe), against a stock
-GNOME login in the same run. Absolute times on your GPU will be lower; what matters here is the
-comparison with stock GNOME and the 250 ms response rule.
+GNOME login in the same run, with every optional feature on (Liquid Glass included: the worst
+case, not the frosted default). Absolute times on your GPU will be lower; what matters is the
+comparison with stock GNOME and the 250 ms response rule. The suite runs twice: with a warm
+shader cache (`$X2/mesa-seed`, for both logins: what every login after your first one is like)
+and cold (`GUAVA_COLD=1`: the first login after installing). Single runs vary by tens of ms.
 
-**Response time (input → first visible frame, slowest 5%; limit 250 ms):**
+**Response time (input → first visible frame, slowest 5%; limit 250 ms), final run (wave 5):**
 
-| Action | Guava | Stock GNOME |
-|---|---|---|
-| Notch hover | 73–98 ms | — |
-| Dock click | 65–107 ms | — |
-| Window drag start | 66–77 ms | 64–67 ms |
-| App menu in the menu bar | 90–164 ms | — |
-| Control Center | 114–167 ms | 59–64 ms |
-| App switcher (Super+Tab) | 131–158 ms | 190–209 ms |
-| Launchpad | 139–196 ms | — |
-| Spotlight (Super tap) | 157–233 ms | 77–113 ms |
-| Notification Center (clock) | 208–252 ms (2 of 3 runs under 250) | 119–168 ms |
-| **Mission Control, first open** | **308–349 ms** | — (later opens ~50–80 ms) |
+| Action | Guava warm | Guava cold | Stock GNOME |
+|---|---|---|---|
+| Notch hover | 76 ms | 80 ms | — |
+| Dock click | 120 ms | 82 ms | — |
+| Window drag start | 100 ms | 66 ms | 63 ms |
+| App menu in the menu bar | 132 ms | 83 ms | — |
+| Control Center | 146 ms | 170 ms | 64 ms |
+| App switcher (Super+Tab) | 179 ms | 131 ms | 192–194 ms |
+| Launchpad | 183 ms | 186 ms | — |
+| Spotlight (Super tap) | 205 ms | 132 ms | 56–65 ms |
+| Notification Center (clock) | **304 ms** | 243 ms | 142–145 ms |
+| Mission Control, first open | 179 ms | **267 ms** | — |
 
-**Against stock GNOME:** idle is clean (0 paints, 1–2 wakeups/s), window drags and the overview
-stay within the limits, no jumps, reversals or flicker in any measured animation.
+Before this wave, the first Mission Control open took 308–349 ms. It is now painted once,
+invisibly, while you are idle after login (features/missionControl/warm.js).
+
+**Login (ready, ms after start):** warm 2059 against a limit of 2207 (pass); cold 2885 against
+2234 (over). Work that shows nothing at login now starts after it. The chrome appears in its
+final place (0 jumps) and no overview flashes.
 
 **Still over the limits on this software renderer:**
-- **Login:** ready ~2.5–2.9 s against stock's ~1.9 s (limit +0.6 s). Guava's own start costs
-  ~2.4 s here; the default JPEG XL wallpaper decode now runs at low priority (it competed with
-  the Shell). The chrome appears in its final place (0 jumps), only later than stock's.
-- **Mission Control's first open** after login: the overview's first paint compiles shaders and
-  uploads textures. Later opens are fast.
-- **Bursts** (six windows opening and closing, overview spam): 5–6 stalls over 50 ms against a
-  limit of 4.5, varying between runs.
+- **First login after installing** (cold shader cache): about 0.65 s over the limit. The blur
+  behind the menu bar and dock costs ~200 ms of the first frame while its shaders compile.
+- **Notification Center from the clock:** 243–304 ms between runs, at the 250 ms line.
+- **Overview and menu frame times:** the slowest 5% of frames are 1.5–2.5x stock's (overview
+  42–59 ms against 31; menus 35–51 ms against 19–20).
+- **Bursts** (six windows opening and closing, overview spam): 3–5 stalls over 50 ms against a
+  stock-relative limit of 3. Guava's own window handlers explain only 15–25% of each stall
+  (tools/scenarios/burst-handlers.sh); no feature switched off changes it measurably.
 
-On your machine: tell me if logging in, the first Mission Control open or a burst of windows feels
-slow. These are the three places where a real GPU decides whether the gap matters.
+On your machine: tell me if your first login, the Notification Center, the overview or a burst
+of windows feels slow. These are the places where a real GPU decides whether the gap matters.
