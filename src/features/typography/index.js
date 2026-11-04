@@ -11,6 +11,12 @@
 //   document fonts at the user's own size; SF Mono for the monospace font when installed.
 //   Owns font-name, document-font-name (and monospace-font-name). Nothing is set while
 //   neither family is installed; installing one (the preferences offer Inter) applies it.
+// - Rendering style (font-rendering-style): 'macos' is the above; 'lucidglyph' is lucidglyph's
+//   rendering (https://github.com/maximilionus/lucidglyph, GPL-3.0, by maximilionus): its
+//   environment in the same Guava file, its fontconfig rules (./lucidglyph/, copied Guava-marked
+//   to ~/.config/fontconfig/conf.d and removed again when the style goes back), and slight
+//   hinting with grayscale antialiasing. The two switches above do not apply then. Takes full
+//   effect after logging out and in (the environment); apps pick the rules up as they start.
 // The Shell and every app follow these GNOME keys. Each key is owned through core/originals:
 // the user's value comes back when the part goes off or Guava stops, even after a crash.
 // Picking another font or rendering in GNOME Settings or Tweaks turns that part off.
@@ -24,11 +30,17 @@ import GLib from 'gi://GLib';
 import { enqueueUserFileJob, exists, isSymlink, makeDirectory, readText, remove, writeText } from '../../lib/fileOps.js';
 import { GuavaSettings } from '../../lib/settings.js';
 import { SettingOwner } from '../../core/originals.js';
-import { SMOOTHING_FILE, parseFcList, plan, renderingValues, smoothingAction, smoothingText, withFamily } from './model.js';
+import {
+    LUCIDGLYPH_RULES, SMOOTHING_FILE, ownsRendering, parseFcList, plan, renderingValues, ruleAction, smoothingAction,
+    smoothingText, styleOf, withFamily,
+} from './model.js';
 
 const IFACE_SCHEMA = 'org.gnome.desktop.interface';
-const KEYS = { rendering: 'macos-text-rendering', font: 'macos-font', smoothing: 'macos-font-smoothing' };
+const KEYS = {
+    rendering: 'macos-text-rendering', font: 'macos-font', smoothing: 'macos-font-smoothing', style: 'font-rendering-style',
+};
 const envDir = () => Gio.File.new_for_path(GLib.build_filenamev([GLib.get_user_config_dir(), 'environment.d']));
+const rulesDir = () => Gio.File.new_for_path(GLib.build_filenamev([GLib.get_user_config_dir(), 'fontconfig', 'conf.d']));
 const FONT_DIRS = () => ['/usr/share/fonts', GLib.build_filenamev([GLib.get_user_data_dir(), 'fonts'])];
 /** An install writes many files: one scan after the burst. */
 const RESCAN_DELAY_MS = 2000;
@@ -63,13 +75,15 @@ export class Typography {
 
         this._ks.watch(KEYS.rendering, () => this._syncRendering());
         this._ks.watch(KEYS.font, () => this._syncFonts());
-        this._ks.watch(KEYS.smoothing, () => {
+        this._ks.watch([KEYS.smoothing, KEYS.style], () => {
             this._releaseAll(this._rendering);   // hinting differs: own it again
             this._syncRendering();
             this._syncSmoothingFile();
+            this._syncRules();
         });
         this._syncRendering();
         this._syncSmoothingFile();
+        this._syncRules();
         this._watchFontDirs();
         this._scan();
     }
@@ -95,12 +109,21 @@ export class Typography {
             ...opts,
             // The user chose their own value: the part goes off, their value stands
             yieldToUser: true,
-            onOriginalChanged: () => this._ks.setBool(partKey, false),
+            onOriginalChanged: () => {
+                this._ks.setBool(partKey, false);
+                // The rendering keys under the lucidglyph style: the style goes back too
+                if (partKey === KEYS.rendering && this._style() === 'lucidglyph')
+                    this._ctx.settings.set_string(KEYS.style, 'macos');
+            },
         });
     }
 
+    _style() {
+        return styleOf(this._ctx.settings.get_string(KEYS.style));
+    }
+
     _syncRendering() {
-        const want = this._ks.bool(KEYS.rendering);
+        const want = ownsRendering(this._ks.bool(KEYS.rendering), this._style());
         if (!want) {
             this._releaseAll(this._rendering);
             return;
@@ -108,7 +131,7 @@ export class Typography {
         if (this._rendering.length)
             return;
         const schema = this._iface.settings_schema;
-        for (const [key, value] of Object.entries(renderingValues(this._ks.bool(KEYS.smoothing)))) {
+        for (const [key, value] of Object.entries(renderingValues(this._ks.bool(KEYS.smoothing), this._style()))) {
             // font-rendering is new in GNOME 50: older shells lack the key
             if (!schema.has_key(key))
                 continue;
@@ -121,17 +144,44 @@ export class Typography {
     /** Bring ~/.config/environment.d/60-guava-freetype.conf in line with the key (async, queued). */
     _syncSmoothingFile() {
         const want = this._ks.bool(KEYS.smoothing);
+        const style = this._style();
         const file = envDir().get_child(SMOOTHING_FILE);
         enqueueUserFileJob(async () => {
             // A symlink there is the user's (dotfiles): left alone
             if (await exists(file) && await isSymlink(file))
                 return;
-            const action = smoothingAction(await readText(file), want);
+            const action = smoothingAction(await readText(file), want, style);
             if (action === 'remove') {
                 await remove(file);
             } else if (action === 'write') {
                 await makeDirectory(envDir());
-                await writeText(file, smoothingText());
+                await writeText(file, smoothingText(style));
+            }
+        });
+    }
+
+    /** lucidglyph's fontconfig rules in ~/.config/fontconfig/conf.d follow the style (async, queued). */
+    _syncRules() {
+        const style = this._style();
+        const shippedDir = this._ctx.extension.dir.get_child('features').get_child('typography').get_child('lucidglyph');
+        enqueueUserFileJob(async () => {
+            for (const name of LUCIDGLYPH_RULES) {
+                const file = rulesDir().get_child(name);
+                if (await exists(file) && await isSymlink(file))
+                    continue;
+                const shipped = style === 'lucidglyph' ? await readText(shippedDir.get_child(name)) : '';
+                if (shipped === null) {
+                    console.warn(`${LOG} lucidglyph rule ${name} is missing from the extension`);
+                    continue;
+                }
+                const action = ruleAction(await readText(file), shipped, style);
+                if (action === 'remove') {
+                    await remove(file);
+                } else if (action === 'write') {
+                    await makeDirectory(rulesDir().get_parent());   // ~/.config/fontconfig, one level at a time
+                    await makeDirectory(rulesDir());
+                    await writeText(file, shipped);
+                }
             }
         });
     }

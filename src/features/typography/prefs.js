@@ -8,7 +8,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
-import { switchRow } from '../../prefs/widgets.js';
+import { comboRow, switchRow, watchKey } from '../../prefs/widgets.js';
 import { INTER_PACKAGE, MONO_FAMILIES, UI_FAMILIES, pickFamily } from './model.js';
 
 // GNOME Software's session service: it asks before installing anything
@@ -31,12 +31,27 @@ export function buildPrefs({ settings, extension }) {
         title: _('Text'),
         description: _('Fonts and text rendering for the whole desktop, like macOS. Your own choices come back when these go off.'),
     });
-    group.add(switchRow(settings, _('macOS Text Rendering'),
+    group.add(comboRow(settings, {
+        title: _('Rendering Style'),
+        subtitle: _('macOS: Guava\'s rendering below. lucidglyph: the lucidglyph project\'s rendering. Log out and in to see all of it.'),
+        key: 'font-rendering-style', values: ['macos', 'lucidglyph'], labels: [_('macOS'), _('lucidglyph')],
+    }));
+    const macRendering = switchRow(settings, _('macOS Text Rendering'),
         _('Smooth, unhinted letters with grayscale antialiasing, as on a Mac'),
-        'macos-text-rendering'));
-    group.add(switchRow(settings, _('Font Smoothing'),
+        'macos-text-rendering');
+    const smoothing = switchRow(settings, _('Font Smoothing'),
         _('Slightly heavier text, like a Mac. Takes effect after you log out and in.'),
-        'macos-font-smoothing'));
+        'macos-font-smoothing');
+    group.add(macRendering);
+    group.add(smoothing);
+    // lucidglyph brings its own rendering: the macOS switches do not apply then
+    const syncStyle = () => {
+        const mac = settings.get_string('font-rendering-style') !== 'lucidglyph';
+        macRendering.sensitive = mac;
+        smoothing.sensitive = mac;
+    };
+    syncStyle();
+    watchKey(settings, 'font-rendering-style', group, syncStyle);
     const font = switchRow(settings, _('macOS Font'), '', 'macos-font');
     group.add(font);
 

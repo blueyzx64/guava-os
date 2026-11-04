@@ -37,17 +37,60 @@ export const SMOOTHING_FILE = '60-guava-freetype.conf';
 export const SMOOTHING_MARKER = '# Managed by Guava OS (Font Smoothing). Removed when the option is turned off.';
 
 /**
+ * Text rendering styles (font-rendering-style):
+ *   'macos'       Guava's: unhinted grayscale (macOS Text Rendering) and, with Font Smoothing,
+ *                 FreeType stem darkening.
+ *   'lucidglyph'  lucidglyph 0.16.0 (https://github.com/maximilionus/lucidglyph, GPL-3.0, by
+ *                 maximilionus): its stem darkening and Qt setting in the environment, its
+ *                 fontconfig rules (./lucidglyph/, copied to ~/.config/fontconfig/conf.d) and the
+ *                 slight hinting with grayscale antialiasing it is tuned for. The two switches above
+ *                 do not apply then.
+ */
+export const STYLES = Object.freeze(['macos', 'lucidglyph']);
+export const styleOf = value => STYLES.includes(value) ? value : 'macos';
+
+/** lucidglyph's src/modules/environment/*.conf, as it writes them. */
+export const LUCIDGLYPH_ENV = Object.freeze({
+    FREETYPE_PROPERTIES: 'autofitter:no-stem-darkening=0 '
+        + 'autofitter:darkening-parameters=500,400,1000,400,2500,400,4000,0 '
+        + 'cff:no-stem-darkening=0 type1:no-stem-darkening=0 t1cid:no-stem-darkening=0',
+    QT_NO_SYNTHESIZED_BOLD: '1',
+});
+/** Its fontconfig rules, shipped in ./lucidglyph/ with this marker line (Guava's to remove). */
+export const LUCIDGLYPH_RULES = Object.freeze([
+    '11-guava-lucidglyph-grayscale.conf',
+    '11-guava-lucidglyph-hinting-slight.conf',
+    '20-guava-lucidglyph-embolden.conf',
+    '70-guava-lucidglyph-droid-sans.conf',
+    '70-guava-lucidglyph-icon-fonts-auto.conf',
+    '70-guava-lucidglyph-icon-fonts-manual.conf',
+]);
+export const RULE_MARKER = '<!-- Managed by Guava OS (Text rendering: lucidglyph).';
+
+/** Whether Guava owns the rendering keys: macOS Text Rendering on, or the lucidglyph style. */
+export function ownsRendering(textRendering, style) {
+    return styleOf(style) === 'lucidglyph' || !!textRendering;
+}
+
+/**
  * The rendering keys Guava owns; stem darkening needs `slight` hinting to reach TrueType fonts.
  *
  * @param {boolean} smoothing
+ * @param {string} [style]
  * @returns {Record<string, string>}
  */
-export function renderingValues(smoothing) {
+export function renderingValues(smoothing, style = 'macos') {
+    if (styleOf(style) === 'lucidglyph')
+        return { ...MACOS_RENDERING, 'font-hinting': 'slight' };
     return { ...MACOS_RENDERING, 'font-hinting': smoothing ? 'slight' : MACOS_RENDERING['font-hinting'] };
 }
 
-/** @returns {string} the content of Guava's environment.d file */
-export function smoothingText() {
+/** @returns {string} the content of Guava's environment.d file for the style */
+export function smoothingText(style = 'macos') {
+    if (styleOf(style) === 'lucidglyph') {
+        const lines = Object.entries(LUCIDGLYPH_ENV).map(([k, v]) => `${k}=${v}`);
+        return `${SMOOTHING_MARKER}\n# Text rendering: lucidglyph 0.16.0 (GPL-3.0, maximilionus)\n${lines.join('\n')}\n`;
+    }
     return `${SMOOTHING_MARKER}\nFREETYPE_PROPERTIES=${FREETYPE_SMOOTHING}\n`;
 }
 
@@ -55,13 +98,30 @@ export function smoothingText() {
  * What to do with the environment.d file.
  *
  * @param {?string} current its content, null when there is no file
- * @param {boolean} want Font Smoothing is on
+ * @param {boolean} smoothing Font Smoothing is on
+ * @param {string} [style] font-rendering-style ('lucidglyph' always wants its file)
  * @returns {'write'|'remove'|'none'} a file Guava did not write is never replaced or removed
  */
-export function smoothingAction(current, want) {
+export function smoothingAction(current, smoothing, style = 'macos') {
     const ours = current !== null && String(current).startsWith(SMOOTHING_MARKER);
+    const want = smoothing || styleOf(style) === 'lucidglyph';
     if (want)
-        return current === null || (ours && current !== smoothingText()) ? 'write' : 'none';
+        return current === null || (ours && current !== smoothingText(style)) ? 'write' : 'none';
+    return ours ? 'remove' : 'none';
+}
+
+/**
+ * What to do with one lucidglyph rule file in ~/.config/fontconfig/conf.d.
+ *
+ * @param {?string} current its content there, null when absent
+ * @param {string} shipped the file in ./lucidglyph/
+ * @param {string} style
+ * @returns {'write'|'remove'|'none'} a file without Guava's marker is the user's: left alone
+ */
+export function ruleAction(current, shipped, style) {
+    const ours = current !== null && String(current).includes(RULE_MARKER);
+    if (styleOf(style) === 'lucidglyph')
+        return current === null || (ours && current !== shipped) ? 'write' : 'none';
     return ours ? 'remove' : 'none';
 }
 

@@ -1,7 +1,9 @@
 // Run: gjs -m tests/typographyModel.test.js
+import GLib from 'gi://GLib';
 import {
     FREETYPE_SMOOTHING, MACOS_RENDERING, SMOOTHING_MARKER, fontSize, parseFcList, pickFamily, plan,
     renderingValues, smoothingAction, smoothingText, withFamily,
+    LUCIDGLYPH_ENV, LUCIDGLYPH_RULES, RULE_MARKER, ownsRendering, ruleAction, styleOf,
 } from '../src/features/typography/model.js';
 
 let failed = 0;
@@ -70,6 +72,45 @@ test('smoothing file: written when on, removed when off, a foreign file untouche
     eq(smoothingAction('FREETYPE_PROPERTIES=x\n', true), 'none');
     eq(smoothingAction('FREETYPE_PROPERTIES=x\n', false), 'none');
     eq(smoothingAction('', false), 'none');
+});
+
+test('lucidglyph style: its environment, slight hinting, grayscale', () => {
+    eq(styleOf('lucidglyph'), 'lucidglyph');
+    eq(styleOf('nonsense'), 'macos');
+    eq(renderingValues(false, 'lucidglyph'), { 'font-rendering': 'manual', 'font-hinting': 'slight', 'font-antialiasing': 'grayscale' });
+    eq(ownsRendering(false, 'lucidglyph'), true, 'the style owns the keys even with macOS Text Rendering off');
+    eq(ownsRendering(false, 'macos'), false);
+    const t = smoothingText('lucidglyph');
+    eq(t.includes(`FREETYPE_PROPERTIES=${LUCIDGLYPH_ENV.FREETYPE_PROPERTIES}`), true);
+    eq(t.includes('QT_NO_SYNTHESIZED_BOLD=1'), true);
+    eq(smoothingAction(null, false, 'lucidglyph'), 'write', 'wanted without Font Smoothing');
+    eq(smoothingAction(smoothingText(), true, 'lucidglyph'), 'write', 'the macOS file becomes the lucidglyph one');
+    eq(smoothingAction(t, false, 'macos'), 'remove', 'back to macOS without smoothing: gone');
+    eq(smoothingAction(t, true, 'macos'), 'write', 'back to macOS with smoothing: rewritten');
+});
+
+test('lucidglyph rules: written for the style, removed after, the user\'s never touched', () => {
+    const shipped = `<?xml version="1.0"?>\n${RULE_MARKER} ... -->\n<fontconfig/>\n`;
+    eq(ruleAction(null, shipped, 'lucidglyph'), 'write');
+    eq(ruleAction(shipped, shipped, 'lucidglyph'), 'none');
+    eq(ruleAction(shipped.replace('<fontconfig/>', '<fontconfig></fontconfig>'), shipped, 'lucidglyph'), 'write', 'an update');
+    eq(ruleAction(shipped, shipped, 'macos'), 'remove');
+    eq(ruleAction('<fontconfig/>', shipped, 'lucidglyph'), 'none', 'a file the user put there');
+    eq(ruleAction('<fontconfig/>', shipped, 'macos'), 'none');
+    eq(LUCIDGLYPH_RULES.length, 6);
+});
+
+test('the shipped lucidglyph rules are the listed ones, each with Guava\'s marker', () => {
+    const dir = GLib.build_filenamev([GLib.path_get_dirname(GLib.filename_from_uri(import.meta.url)[0]), '..', 'src', 'features', 'typography', 'lucidglyph']);
+    const d = GLib.Dir.open(dir, 0);
+    const names = [];
+    for (let n = d.read_name(); n !== null; n = d.read_name())
+        names.push(n);
+    eq(names.sort(), [...LUCIDGLYPH_RULES].sort());
+    for (const n of names) {
+        const [, bytes] = GLib.file_get_contents(GLib.build_filenamev([dir, n]));
+        eq(new TextDecoder().decode(bytes).includes(RULE_MARKER), true, n);
+    }
 });
 
 if (failed) {

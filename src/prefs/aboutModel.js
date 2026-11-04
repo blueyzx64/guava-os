@@ -34,6 +34,7 @@ export function releaseUrl(name) {
  * Titles and subtitles are marked for translation by the page.
  */
 export const CREDITS = Object.freeze([
+    { title: 'lucidglyph', subtitle: 'Its text rendering (fontconfig rules and FreeType settings, GPL-3.0), by maximilionus', url: 'https://github.com/maximilionus/lucidglyph' },
     { title: 'Blur my Shell', subtitle: 'Code in lib/glassBlur.js (GPL-3.0), by aunetx', url: 'https://github.com/aunetx/blur-my-shell' },
     { title: 'Kiwi (is not Apple)', subtitle: 'Inspiration', url: 'https://github.com/blueyzx64/kiwi-is-not-apple' },
 ]);

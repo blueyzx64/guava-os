@@ -579,6 +579,15 @@
         <summary>Font smoothing</summary>
         <description>Heavier text, like a Mac: FreeType stem darkening through a Guava-marked file in ~/.config/environment.d, with light hinting while macOS text rendering is on. Takes effect after you log out and in. The file is removed when this goes off.</description>
       </key>
+      <key name="font-rendering-style" type="s">
+        <choices>
+          <choice value="macos"/>
+          <choice value="lucidglyph"/>
+        </choices>
+        <default>'macos'</default>
+        <summary>Text rendering style</summary>
+        <description>macos: Guava's rendering (macOS Text Rendering and Font Smoothing). lucidglyph: lucidglyph's rendering (https://github.com/maximilionus/lucidglyph, GPL-3.0): its FreeType stem darkening and Qt setting from the next login, its fontconfig rules in ~/.config/fontconfig/conf.d, slight hinting and grayscale antialiasing. Switching back removes what it wrote.</description>
+      </key>
       <key name="macos-font" type="b">
         <default>true</default>
         <summary>macOS font</summary>
