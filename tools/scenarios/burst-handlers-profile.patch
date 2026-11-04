@@ -1,0 +1,182 @@
+diff --git a/src/core/events.js b/src/core/events.js
+index 2630102..fa64246 100644
+--- a/src/core/events.js
++++ b/src/core/events.js
+@@ -1,3 +1,4 @@
++import GLib from 'gi://GLib';
+ // SPDX-License-Identifier: GPL-3.0-or-later
+ // EventHub: the typed signal hub features use to hear about each other and about the desktop.
+ //
+@@ -114,7 +115,19 @@ export class EventHub {
+             this._listeners.set(name, set);
+         }
+         // Wrap so the same fn can be subscribed twice and removed independently
+-        const entry = payload => fn(payload);
++        const G = globalThis;
++        const site = (new Error().stack.split('\n')[1] ?? '').replace(/file:.*extensions\/[^/]+\//, '').slice(0, 60);
++        const key = `EV ${name} @ ${site}`;
++        const entry = payload => {
++            const t0 = GLib.get_monotonic_time();
++            try { return fn(payload); } finally {
++                if (G.__gprof) {
++                    const d = (GLib.get_monotonic_time() - t0) / 1000;
++                    const e = G.__gprof.t.get(key) ?? {ms: 0, n: 0, max: 0};
++                    e.ms += d; e.n++; e.max = Math.max(e.max, d); G.__gprof.t.set(key, e);
++                }
++            }
++        };
+         set.add(entry);
+         let done = false;
+         const off = () => {
+diff --git a/src/features/stageManager/index.js b/src/features/stageManager/index.js
+index eafbdde..d641538 100644
+--- a/src/features/stageManager/index.js
++++ b/src/features/stageManager/index.js
+@@ -669,3 +669,21 @@ export class StageManager {
+         }, { name: 'stage-manager-drop' });
+     }
+ }
++
++// TEMP-PROFILE
++for (const n of ['_render', '_reconcile', '_hide', '_show', '_syncGeometryWatch', '_syncOverlap', '_apply', '_info', '_removed', '_stageWindows']) {
++    const o = StageManager.prototype[n];
++    if (!o) continue;
++    StageManager.prototype[n] = function (...a) {
++        const t0 = GLib.get_monotonic_time();
++        try { return o.apply(this, a); } finally {
++            const G = globalThis;
++            if (G.__gprof) {
++                const d = (GLib.get_monotonic_time() - t0) / 1000;
++                const key = `SM.${n}`;
++                const e = G.__gprof.t.get(key) ?? {ms: 0, n: 0, max: 0};
++                e.ms += d; e.n++; e.max = Math.max(e.max, d); G.__gprof.t.set(key, e);
++            }
++        }
++    };
++}
+diff --git a/src/features/stageManager/view.js b/src/features/stageManager/view.js
+index fe24db9..4a2723d 100644
+--- a/src/features/stageManager/view.js
++++ b/src/features/stageManager/view.js
+@@ -1,3 +1,4 @@
++import GLib from 'gi://GLib';
+ // SPDX-License-Identifier: GPL-3.0-or-later
+ // Stage Manager strip: the thumbnails of the sets waiting at the screen edge, and the ways the
+ // pointer reaches them. Pure drawing and input; what is shown and when comes from the model.
+@@ -640,3 +641,21 @@ export class StripView {
+         this._pressure.addBarrier(this._barrier);
+     }
+ }
++
++// TEMP-PROFILE
++for (const n of ['update', '_endDrag', '_placeStrip', '_placeEdge', '_cardKey', '_monitorScale', '_makeCard', '_makeThumb', '_syncBarrier']) {
++    const o = StripView.prototype[n];
++    if (!o) continue;
++    StripView.prototype[n] = function (...a) {
++        const t0 = GLib.get_monotonic_time();
++        try { return o.apply(this, a); } finally {
++            const G = globalThis;
++            if (G.__gprof) {
++                const d = (GLib.get_monotonic_time() - t0) / 1000;
++                const key = `VIEW.${n}`;
++                const e = G.__gprof.t.get(key) ?? {ms: 0, n: 0, max: 0};
++                e.ms += d; e.n++; e.max = Math.max(e.max, d); G.__gprof.t.set(key, e);
++            }
++        }
++    };
++}
+diff --git a/src/lib/disposables.js b/src/lib/disposables.js
+index 8299b83..04892d0 100644
+--- a/src/lib/disposables.js
++++ b/src/lib/disposables.js
+@@ -11,6 +11,51 @@ import GObject from 'gi://GObject';
+ 
+ import { SurfaceLedger } from './lockModel.js';
+ 
++
++{
++    const G = globalThis;
++    if (!G.__gprofAll) {
++        G.__gprofAll = true;
++        const proto = GObject.Object.prototype;
++        for (const m of ['connect', 'connect_after']) {
++            const orig = proto[m];
++            proto[m] = function (sig, fn, ...rest) {
++                const st = new Error().stack.split('\n');
++                const caller = st[1] ?? '';
++                if (typeof fn === 'function' && caller.includes('extensions/guava') && !caller.includes('disposables.js') && G.__gprof) {
++                    const site = caller.replace(/file:.*extensions\/[^/]+\//, '').slice(0, 60);
++                    const key = `RAW ${sig} @ ${site}`;
++                    const f0 = fn;
++                    fn = function (...a) {
++                        const t0 = GLib.get_monotonic_time();
++                        try { return f0.apply(this, a); } finally {
++                            const d = (GLib.get_monotonic_time() - t0) / 1000;
++                            const e = G.__gprof.t.get(key) ?? {ms: 0, n: 0, max: 0};
++                            e.ms += d; e.n++; e.max = Math.max(e.max, d); G.__gprof.t.set(key, e);
++                            if (d > 3) (G.__gprof.ev ??= []).push([Math.round(t0 / 1000), +d.toFixed(1), key]);
++                        }
++                    };
++                }
++                return orig.call(this, sig, fn, ...rest);
++            };
++        }
++    }
++}
++const __prof = (kind, fn) => {
++    const G = globalThis;
++    if (!G.__gprof) return fn;
++    const site = (new Error().stack.split('\n')[2] ?? '').replace(/file:.*extensions\/[^/]+\//, '').slice(0, 60);
++    const key = `${kind} @ ${site}`;
++    return function (...a) {
++        const t0 = GLib.get_monotonic_time();
++        try { return fn.apply(this, a); } finally {
++            const d = (GLib.get_monotonic_time() - t0) / 1000;
++            const e = G.__gprof.t.get(key) ?? {ms: 0, n: 0, max: 0};
++            e.ms += d; e.n++; e.max = Math.max(e.max, d); G.__gprof.t.set(key, e); if (d > 3) (G.__gprof.ev ??= []).push([Math.round(t0 / 1000), +d.toFixed(1), key]);
++        }
++    };
++};
++
+ const LOG = '[Guava]';
+ 
+ export class CleanupRegistry {
+@@ -60,6 +105,22 @@ export class CleanupRegistry {
+      */
+     connect(obj, signal, fn) {
+         const rec = this._watchDestroy(obj, false);
++        const G = globalThis;
++        if (!G.__gprof) {
++            const t = new Map();
++            G.__gprof = {reset: () => t.clear(), t, table: () => [...t.entries()].sort((a, b) => b[1].ms - a[1].ms).slice(0, 25).map(([k, v]) => `${v.ms.toFixed(1)}ms n=${v.n} max=${v.max.toFixed(1)} ${k}`).join('\n')};
++        }
++        const site = (new Error().stack.split('\n')[1] ?? '').replace(/file:.*extensions\/[^/]+\//, '').slice(0, 60);
++        const key = `${signal} @ ${site}`;
++        const orig = fn;
++        fn = function (...a) {
++            const t0 = GLib.get_monotonic_time();
++            try { return orig.apply(this, a); } finally {
++                const d = (GLib.get_monotonic_time() - t0) / 1000;
++                const e = G.__gprof.t.get(key) ?? {ms: 0, n: 0, max: 0};
++                e.ms += d; e.n++; e.max = Math.max(e.max, d); G.__gprof.t.set(key, e); if (d > 3) (G.__gprof.ev ??= []).push([Math.round(t0 / 1000), +d.toFixed(1), key]);
++            }
++        };
+         const id = obj.connect(signal, fn);
+         const token = this._add(() => {
+             if (rec?.dead)
+@@ -133,6 +194,7 @@ export class CleanupRegistry {
+      * @returns {number} token for release()
+      */
+     timeout(ms, fn, opts = {}) {
++        fn = __prof('timeout', fn);
+         let token = 0;
+         const sourceId = GLib.timeout_add(opts.priority ?? GLib.PRIORITY_DEFAULT, ms, () => {
+             let again = false;
+@@ -158,6 +220,7 @@ export class CleanupRegistry {
+      * @returns {number} token for release()
+      */
+     idle(fn, opts = {}) {
++        fn = __prof('idle', fn);
+         let token = 0;
+         const sourceId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+             this._entries.delete(token);
