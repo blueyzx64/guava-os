@@ -4,6 +4,11 @@
 
 <p align="center"><b>The macOS desktop, grown on GNOME.</b></p>
 
+> [!WARNING]
+> **EXPERIMENTAL.** Guava OS has no known major bugs, but it is laggy: animations, the overview and
+> logging in can stutter, especially on slower GPUs. Expect rough edges, and please report what you
+> find (`tools/guava-logs.sh record <label>` packs the logs for a bug report).
+
 <p align="center">
   <img alt="GNOME Shell 50" src="https://img.shields.io/badge/GNOME_Shell-50-informational?logo=gnome">
   <img alt="License: GPL-3.0" src="https://img.shields.io/github/license/blueyzx64/guava-os">

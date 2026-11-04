@@ -51,6 +51,12 @@ function headerGroup({ extension, title, _ }) {
     });
     pill.connect('clicked', () => Gtk.show_uri(null, releaseUrl(name), Gdk.CURRENT_TIME));
     column.append(pill);
+    column.append(new Gtk.Label({
+        label: _('EXPERIMENTAL: no known major bugs, but laggy'),
+        css_classes: ['warning', 'caption-heading'],
+        halign: Gtk.Align.CENTER,
+        margin_top: 6,
+    }));
 
     const group = new Adw.PreferencesGroup();
     group.add(column);
