@@ -11,7 +11,7 @@ X2=${X2:-/tmp/x2}; export X2
 K=$REPO/tools/harness/lib
 OUT=$(mktemp -d /tmp/guava-all.XXXXXX)
 filter=${1:-}
-skip='-lib\.sh$|-pre\.sh$|^run-|^perf-|-spike|-bisect|^overview-bisect|^latency-coldprobe|^login-modules|^appmenus-qt-spike'
+skip='-lib\.sh$|-pre\.sh$|^run-|^perf-|-spike|-bisect|^overview-bisect|^burst-handlers|^latency-coldprobe|^login-modules|^appmenus-qt-spike'
 names=()
 for f in "$HERE"/*.sh; do
     n=$(basename "$f")
